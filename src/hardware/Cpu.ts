@@ -2265,7 +2265,7 @@ export default class Cpu {
   public tick(): boolean {
     let cycles = 0;
 
-    while (cycles < 66666) {
+    while (cycles < 66667) {
       let opCode = this.memoryMap.read8(this.PC);
       this.PC += 1;
 

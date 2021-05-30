@@ -1,15 +1,20 @@
 import MemoryMap from './MemoryMap';
 
 const colors = [
-  'transparent',
-  '#AAAAAA',
-  '#555555',
-  '#000000',
+  0x00000000,
+  0xffAAAAAA,
+  0xff555555,
+  0xff000000
 ];
+
+const screenWidth = 160;
+const screenHeight = 144;
 
 export default class Ppu {
   private memoryMap: MemoryMap;
   private ctx: CanvasRenderingContext2D;
+  private imageData: ImageData;
+  private pixelArray: Uint32Array;
 
   private lastUpdate: number = 0;
   private updateSamples: number[] = [];
@@ -24,6 +29,9 @@ export default class Ppu {
       throw new Error('Failed to get canvas 2D Context.');
     }
 
+    this.imageData = ctx.createImageData(screenWidth, screenHeight);
+    this.imageData.data.fill(0x00);
+    this.pixelArray = new Uint32Array(this.imageData.data.buffer);
     this.ctx = ctx;
   }
 
@@ -55,7 +63,7 @@ export default class Ppu {
     const windowY = this.memoryMap.read8(0xFF4A);
     const windowX = this.memoryMap.read8(0xFF4B);
 
-    this.ctx.clearRect(0, 0, 320, 288);
+    this.ctx.clearRect(0, 0, screenWidth, screenHeight);
 
 
     // Test rendering the first sprite
@@ -66,6 +74,7 @@ export default class Ppu {
     // TODO Window
     this.renderSprites();
     // this.renderTile(0, 20, 0);
+    this.ctx.putImageData(this.imageData, 0, 0);
     this.ctx.restore();
 
     // this.ctx.fillRect(Math.random() * 160, Math.random() * 144, Math.random() * 160, Math.random() * 144);
@@ -75,7 +84,6 @@ export default class Ppu {
   }
 
   private renderBackground(address: number, tileDataLocationFlag: number) {
-    this.ctx.save();
     for (let i = 0; i < 1024; i++)  {
       const y = Math.floor(i / 32);
       const x = i - y * 32;
@@ -85,12 +93,9 @@ export default class Ppu {
         : this.memoryMap.read8(address + i);
       this.renderTile(x * 8, y * 8, tileNumber, tileDataLocationFlag);
     }
-
-    this.ctx.restore();
   }
 
   private renderSprites() {
-    this.ctx.save();
     for (let i = 0; i < 40; i++) {
       const y = this.memoryMap.read8(0xFE00 + i);
       const x = this.memoryMap.read8(0xFE00 + i + 1);
@@ -106,7 +111,6 @@ export default class Ppu {
 
       this.renderTile(x, y, tileNumber);
     }
-    this.ctx.restore();
   }
 
   private renderTile(x: number, y: number, tileNumber: number, tileDataLocationFlag: number = 0, size: number = 8) {
@@ -120,8 +124,14 @@ export default class Ppu {
         const bit2 = (byte2 >> (7 - column)) & 1;
         const colorValue = bit1 + (bit2 << 1);
 
-        this.ctx.fillStyle = colors[colorValue];
-        this.ctx.fillRect(x + column, y + row, 1, 1);
+        const color = colors[colorValue];
+
+        // Ignore transparent
+        if (color === 0) {
+          continue;
+        }
+        const offset = ((y + row) * screenWidth + x + column);
+        this.pixelArray[offset] = color;
       }
     }
   }
