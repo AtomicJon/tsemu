@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "declaration": true,
+    "outDir": "./dist/lib",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": "./src",
+    "sourceMap": true,
+    "inlineSources": true,
+    "sourceRoot": "/",
+    "lib": [
+      "DOM",
+      "es2020"
+    ]
+  },
+  "include": [
+    "src",
+  ]
+}
