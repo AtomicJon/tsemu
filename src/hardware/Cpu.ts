@@ -15,11 +15,24 @@ type OpCode = {
   action: (operand1?: any, operand2?: any) => void;
 }
 
+type OpHistory = {
+  step: number;
+  PC: number;
+  codeString: string;
+  mnemonic: string;
+  nextBytes: number[];
+  nextBytesSigned: number[];
+}
+
 
 export default class Cpu {
   private memoryMap: MemoryMap;
 
+  private step = 0;
   private stack: number[] = [];
+  private opHistory: OpHistory[] = [];
+
+  private gpuScanLine = 0;
 
   private registersBuffer: ArrayBuffer = new ArrayBuffer(12);
   private registers: Uint8Array = new Uint8Array(this.registersBuffer);
@@ -121,6 +134,18 @@ export default class Cpu {
       mnemonic: 'RLCA',
       bytes: 1,
       cycles: 4,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0x08: {
+      action: this.ld_a16_SP.bind(this),
+      mnemonic: 'LD (a16), SP',
+      bytes: 3,
+      cycles: 20,
       flags: {
         Z: null,
         N: null,
@@ -248,6 +273,18 @@ export default class Cpu {
         C: null,
       }
     },
+    0x15: {
+      action: this.dec_D.bind(this),
+      mnemonic: 'DEC D',
+      bytes: 1,
+      cycles: 4,
+      flags: {
+        Z: 'Z',
+        N: '1',
+        H: 'H',
+        C: null,
+      }
+    },
     0x16: {
       action: this.ld_D_d8.bind(this),
       mnemonic: 'LD D, d8',
@@ -261,15 +298,15 @@ export default class Cpu {
       }
     },
     0x17: {
-      action: this.rla.bind(this),
+      action: this.rlA.bind(this),
       mnemonic: 'RLA',
       bytes: 1,
       cycles: 4,
       flags: {
-        Z: null,
-        N: null,
-        H: null,
-        C: null,
+        Z: 'Z',
+        N: '0',
+        H: '0',
+        C: 'C',
       }
     },
     0x18: {
@@ -316,6 +353,18 @@ export default class Cpu {
       flags: {
         Z: 'Z',
         N: '0',
+        H: 'H',
+        C: null,
+      }
+    },
+    0x1D: {
+      action: this.dec_E.bind(this),
+      mnemonic: 'DEC E',
+      bytes: 1,
+      cycles: 4,
+      flags: {
+        Z: 'Z',
+        N: '1',
         H: 'H',
         C: null,
       }
@@ -392,6 +441,18 @@ export default class Cpu {
         C: null,
       }
     },
+    0x25: {
+      action: this.dec_H.bind(this),
+      mnemonic: 'DEC H',
+      bytes: 1,
+      cycles: 4,
+      flags: {
+        Z: 'Z',
+        N: '1',
+        H: 'H',
+        C: null,
+      }
+    },
     0x26: {
       action: this.ld_H_d8.bind(this),
       mnemonic: 'LD H, d8',
@@ -448,6 +509,18 @@ export default class Cpu {
       flags: {
         Z: 'Z',
         N: '0',
+        H: 'H',
+        C: null,
+      }
+    },
+    0x2D: {
+      action: this.dec_L.bind(this),
+      mnemonic: 'DEC L',
+      bytes: 1,
+      cycles: 4,
+      flags: {
+        Z: 'Z',
+        N: '1',
         H: 'H',
         C: null,
       }
@@ -536,6 +609,18 @@ export default class Cpu {
         C: null,
       }
     },
+    0x35: {
+      action: this.dec_HLa.bind(this),
+      mnemonic: 'DEC (HL)',
+      bytes: 1,
+      cycles: 12,
+      flags: {
+        Z: 'Z',
+        N: '1',
+        H: 'H',
+        C: null,
+      }
+    },
     0x36: {
       action: this.ld_HLa_d8.bind(this),
       mnemonic: 'LD (HL), d8',
@@ -580,6 +665,18 @@ export default class Cpu {
       flags: {
         Z: 'Z',
         N: '0',
+        H: 'H',
+        C: null,
+      }
+    },
+    0x3D: {
+      action: this.dec_A.bind(this),
+      mnemonic: 'DEC A',
+      bytes: 1,
+      cycles: 4,
+      flags: {
+        Z: 'Z',
+        N: '1',
         H: 'H',
         C: null,
       }
@@ -1448,6 +1545,102 @@ export default class Cpu {
         C: 'C',
       }
     },
+    0x90: {
+      action: this.sub_B.bind(this),
+      mnemonic: 'SUB B',
+      bytes: 1,
+      cycles: 4,
+      flags: {
+        Z: "Z",
+        N: "1",
+        H: "H",
+        C: "C",
+      }
+    },
+    0x91: {
+      action: this.sub_C.bind(this),
+      mnemonic: 'SUB C',
+      bytes: 1,
+      cycles: 4,
+      flags: {
+        Z: "Z",
+        N: "1",
+        H: "H",
+        C: "C",
+      }
+    },
+    0x92: {
+      action: this.sub_D.bind(this),
+      mnemonic: 'SUB D',
+      bytes: 1,
+      cycles: 4,
+      flags: {
+        Z: "Z",
+        N: "1",
+        H: "H",
+        C: "C",
+      }
+    },
+    0x93: {
+      action: this.sub_E.bind(this),
+      mnemonic: 'SUB E',
+      bytes: 1,
+      cycles: 4,
+      flags: {
+        Z: "Z",
+        N: "1",
+        H: "H",
+        C: "C",
+      }
+    },
+    0x94: {
+      action: this.sub_H.bind(this),
+      mnemonic: 'SUB H',
+      bytes: 1,
+      cycles: 4,
+      flags: {
+        Z: "Z",
+        N: "1",
+        H: "H",
+        C: "C",
+      }
+    },
+    0x95: {
+      action: this.sub_L.bind(this),
+      mnemonic: 'SUB L',
+      bytes: 1,
+      cycles: 4,
+      flags: {
+        Z: "Z",
+        N: "1",
+        H: "H",
+        C: "C",
+      }
+    },
+    0x96: {
+      action: this.sub_HLa.bind(this),
+      mnemonic: 'SUB (HL)',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: "Z",
+        N: "1",
+        H: "H",
+        C: "C",
+      }
+    },
+    0x97: {
+      action: this.sub_A.bind(this),
+      mnemonic: 'SUB A',
+      bytes: 1,
+      cycles: 4,
+      flags: {
+        Z: "Z",
+        N: "1",
+        H: "H",
+        C: "C",
+      }
+    },
     0xA0: {
       action: this.and_B.bind(this),
       mnemonic: 'AND B',
@@ -1724,6 +1917,102 @@ export default class Cpu {
         C: null,
       }
     },
+    0xB8: {
+      action: this.cp_B.bind(this),
+      mnemonic: 'CP B',
+      bytes: 1,
+      cycles: 4,
+      flags: {
+        Z: 'Z',
+        N: '1',
+        H: 'H',
+        C: 'C',
+      }
+    },
+    0xB9: {
+      action: this.cp_C.bind(this),
+      mnemonic: 'CP C',
+      bytes: 1,
+      cycles: 4,
+      flags: {
+        Z: 'Z',
+        N: '1',
+        H: 'H',
+        C: 'C',
+      }
+    },
+    0xBA: {
+      action: this.cp_D.bind(this),
+      mnemonic: 'CP D',
+      bytes: 1,
+      cycles: 4,
+      flags: {
+        Z: 'Z',
+        N: '1',
+        H: 'H',
+        C: 'C',
+      }
+    },
+    0xBB: {
+      action: this.cp_E.bind(this),
+      mnemonic: 'CP E',
+      bytes: 1,
+      cycles: 4,
+      flags: {
+        Z: 'Z',
+        N: '1',
+        H: 'H',
+        C: 'C',
+      }
+    },
+    0xBC: {
+      action: this.cp_H.bind(this),
+      mnemonic: 'CP H',
+      bytes: 1,
+      cycles: 4,
+      flags: {
+        Z: 'Z',
+        N: '1',
+        H: 'H',
+        C: 'C',
+      }
+    },
+    0xBD: {
+      action: this.cp_L.bind(this),
+      mnemonic: 'CP L',
+      bytes: 1,
+      cycles: 4,
+      flags: {
+        Z: 'Z',
+        N: '1',
+        H: 'H',
+        C: 'C',
+      }
+    },
+    0xBE: {
+      action: this.cp_HLa.bind(this),
+      mnemonic: 'CP (HL)',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: 'Z',
+        N: '1',
+        H: 'H',
+        C: 'C',
+      }
+    },
+    0xBF: {
+      action: this.cp_A.bind(this),
+      mnemonic: 'CP A',
+      bytes: 1,
+      cycles: 4,
+      flags: {
+        Z: 'Z',
+        N: '1',
+        H: 'H',
+        C: 'C',
+      }
+    },
     0xC0: {
       action: this.ret_nz.bind(this),
       mnemonic: 'RET NZ',
@@ -1739,6 +2028,18 @@ export default class Cpu {
     0xC1: {
       action: this.pop_BC.bind(this),
       mnemonic: 'POP BC',
+      bytes: 1,
+      cycles: 12,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xC2: {
+      action: this.jp_nz_a16.bind(this),
+      mnemonic: 'JP NZ a16',
       bytes: 1,
       cycles: 12,
       flags: {
@@ -1820,6 +2121,18 @@ export default class Cpu {
         C: null,
       }
     },
+    0xCA: {
+      action: this.jp_z_a16.bind(this),
+      mnemonic: 'JP Z a16',
+      bytes: 1,
+      cycles: 12,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
     0xCD: {
       action: this.call_a16.bind(this),
       mnemonic: 'CALL a16',
@@ -1868,6 +2181,18 @@ export default class Cpu {
         C: null,
       }
     },
+    0xD2: {
+      action: this.jp_nc_a16.bind(this),
+      mnemonic: 'JP NC a16',
+      bytes: 1,
+      cycles: 12,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
     0xD5: {
       action: this.push_DE.bind(this),
       mnemonic: 'PUSH DE',
@@ -1878,6 +2203,18 @@ export default class Cpu {
         N: null,
         H: null,
         C: null,
+      }
+    },
+    0xD6: {
+      action: this.sub_d8.bind(this),
+      mnemonic: 'SUB d8',
+      bytes: 2,
+      cycles: 8,
+      flags: {
+        Z: "Z",
+        N: "1",
+        H: "H",
+        C: "C",
       }
     },
     0xD7: {
@@ -1897,6 +2234,18 @@ export default class Cpu {
       mnemonic: 'RET C',
       bytes: 1,
       cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xDA: {
+      action: this.jp_nz_a16.bind(this),
+      mnemonic: 'JP C a16',
+      bytes: 1,
+      cycles: 12,
       flags: {
         Z: null,
         N: null,
@@ -2108,6 +2457,18 @@ export default class Cpu {
         C: null,
       }
     },
+    0xF9: {
+      action: this.ld_SP_HL.bind(this),
+      mnemonic: 'LD SP, HL',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
     0xFA: {
       action: this.ld_A_a16.bind(this),
       mnemonic: 'LD A, a16',
@@ -2160,6 +2521,102 @@ export default class Cpu {
 
   // Prefixed Op Codes
   private cbOpCodes: Record<number, OpCode> = {
+    0x10: {
+      action: this.rlB.bind(this),
+      mnemonic: 'RL B',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: 'Z',
+        N: '0',
+        H: '0',
+        C: 'C',
+      }
+    },
+    0x11: {
+      action: this.rlC.bind(this),
+      mnemonic: 'RL C',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: 'Z',
+        N: '0',
+        H: '0',
+        C: 'C',
+      }
+    },
+    0x12: {
+      action: this.rlD.bind(this),
+      mnemonic: 'RL D',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: 'Z',
+        N: '0',
+        H: '0',
+        C: 'C',
+      }
+    },
+    0x13: {
+      action: this.rlE.bind(this),
+      mnemonic: 'RL E',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: 'Z',
+        N: '0',
+        H: '0',
+        C: 'C',
+      }
+    },
+    0x14: {
+      action: this.rlH.bind(this),
+      mnemonic: 'RL H',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: 'Z',
+        N: '0',
+        H: '0',
+        C: 'C',
+      }
+    },
+    0x15: {
+      action: this.rlL.bind(this),
+      mnemonic: 'RL L',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: 'Z',
+        N: '0',
+        H: '0',
+        C: 'C',
+      }
+    },
+    0x16: {
+      action: this.rlHLa.bind(this),
+      mnemonic: 'RL (HL)',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: 'Z',
+        N: '0',
+        H: '0',
+        C: 'C',
+      }
+    },
+    0x17: {
+      action: this.rlA.bind(this),
+      mnemonic: 'RL A',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: 'Z',
+        N: '0',
+        H: '0',
+        C: 'C',
+      }
+    },
     0x30: {
       action: this.swp_B.bind(this),
       mnemonic: 'SWP B',
@@ -2255,7 +2712,115 @@ export default class Cpu {
         H: null,
         C: null,
       }
-    }
+    },
+    0x78: {
+      action: this.bit_7_B.bind(this),
+      mnemonic: 'BIT 7, B',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: 'Z',
+        N: '0',
+        H: '1',
+        C: null,
+      }
+    },
+    0x79: {
+      action: this.bit_7_C.bind(this),
+      mnemonic: 'BIT 7, C',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: 'Z',
+        N: '0',
+        H: '1',
+        C: null,
+      }
+    },
+    0x7A: {
+      action: this.bit_7_D.bind(this),
+      mnemonic: 'BIT 7, D',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: 'Z',
+        N: '0',
+        H: '1',
+        C: null,
+      }
+    },
+    0x7B: {
+      action: this.bit_7_E.bind(this),
+      mnemonic: 'BIT 7, E',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: 'Z',
+        N: '0',
+        H: '1',
+        C: null,
+      }
+    },
+    0x7C: {
+      action: this.bit_7_H.bind(this),
+      mnemonic: 'BIT 7, H',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: 'Z',
+        N: '0',
+        H: '1',
+        C: null,
+      }
+    },
+    0x7D: {
+      action: this.bit_7_L.bind(this),
+      mnemonic: 'BIT 7, L',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: 'Z',
+        N: '0',
+        H: '1',
+        C: null,
+      }
+    },
+    0x7E: {
+      action: this.bit_7_HLa.bind(this),
+      mnemonic: 'BIT 7, (HL)',
+      bytes: 1,
+      cycles: 16,
+      flags: {
+        Z: 'Z',
+        N: '0',
+        H: '1',
+        C: null,
+      }
+    },
+    0x7F: {
+      action: this.bit_7_A.bind(this),
+      mnemonic: 'BIT 7, A',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: 'Z',
+        N: '0',
+        H: '1',
+        C: null,
+      }
+    },
+    0xBE: {
+      action: this.res_7_HLi.bind(this),
+      mnemonic: 'RES 7, (HL)',
+      bytes: 1,
+      cycles: 16,
+      flags: {
+        Z: 'Z',
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
   }
 
   constructor(memoryMap: MemoryMap) {
@@ -2288,15 +2853,45 @@ export default class Cpu {
       // + DEBUG ---
       const codeString = opCode.toString(16)
       const paddedCodeString = `0x${'0'.repeat(2 - codeString.length)}${codeString}`
-      // console.log('Running', `(${isCbCode ? '0xCB ' : ''}${paddedCodeString}) ${operation.mnemonic}`);
-      // - DEBUG ---
+      // console.log(`[${this.PC}]`, `(${isCbCode ? '0xCB ' : ''}${paddedCodeString}) ${operation.mnemonic}`);
 
       // if (opCode === 0x18) {
       //   debugger;
       // }
+      this.opHistory.push({
+        step: this.step,
+        PC: this.PC,
+        codeString,
+        mnemonic: operation.mnemonic,
+        nextBytes: [
+          this.memoryMap.read8(this.PC),
+          this.memoryMap.read8(this.PC + 1),
+        ],
+        nextBytesSigned: [
+          this.memoryMap.read8Signed(this.PC),
+          this.memoryMap.read8Signed(this.PC + 1),
+        ],
+      });
+
+      if (this.opHistory.length > 100) {
+        this.opHistory.shift();
+      }
+      // - DEBUG ---
+
+      // TODO: Move to GPU emulation
+      this.memoryMap.write8(0xFF44, this.gpuScanLine);
+      this.gpuScanLine += 1;
+      if (this.gpuScanLine >= 144) {
+        this.memoryMap.write8(0xFF41, 0x01);
+      }
+      if (this.gpuScanLine > 153) {
+        this.memoryMap.write8(0xFF41, 0x00);
+        this.gpuScanLine = 0;
+      }
 
       operation.action();
       cycles += operation.cycles;
+      this.step++;
     }
 
     return true;
@@ -2311,11 +2906,6 @@ export default class Cpu {
     // Point the program counter at the entry point and stack pointer to the top of ram
     this.PC = 0x100;
     this.SP = 0xFFFE;
-  }
-
-
-  public loadRom() {
-    // TODO: Load rom
   }
 
   // Getters to access registers array buffer
@@ -2421,6 +3011,11 @@ export default class Cpu {
 
   ld_a16_A(): void {
     this.memoryMap.write8(this.read16(), this.A)
+    this.PC += 2;
+  }
+
+  ld_a16_SP(): void {
+    this.memoryMap.write8(this.read16(), this.SP)
     this.PC += 2;
   }
 
@@ -2722,6 +3317,10 @@ export default class Cpu {
     this.HL += 1;
   }
 
+  ld_SP_HL(): void {
+    this.SP = this.HL;
+  }
+
   // 16 bit Loads - LD n,nn
   ld_BC_d16(): void {
     this.BC = this.read16();
@@ -2796,6 +3395,38 @@ export default class Cpu {
 
   jp_HL(): void {
     this.PC = this.HL;
+  }
+
+  jp_nz_a16(): void {
+    if (!this.flagZ) {
+      this.PC = this.read16();
+    }
+
+    this.PC += 2;
+  }
+
+  jp_z_a16(): void {
+    if (this.flagZ) {
+      this.PC = this.read16();
+    }
+
+    this.PC += 2;
+  }
+
+  jp_nc_a16(): void {
+    if (!this.flagC) {
+      this.PC = this.read16();
+    }
+
+    this.PC += 2;
+  }
+
+  jp_c_a16(): void {
+    if (this.flagC) {
+      this.PC = this.read16();
+    }
+
+    this.PC += 2;
   }
 
   /**
@@ -2948,6 +3579,11 @@ export default class Cpu {
     // this.flagH = ?
   }
 
+  dec_A(): void {
+    this.B -= 1;
+    this.dec_common(this.B);
+  }
+
   dec_B(): void {
     this.B -= 1;
     this.dec_common(this.B);
@@ -2956,6 +3592,32 @@ export default class Cpu {
   dec_C(): void {
     this.C -= 1;
     this.dec_common(this.C);
+  }
+
+  dec_D(): void {
+    this.D -= 1;
+    this.dec_common(this.D);
+  }
+
+  dec_E(): void {
+    this.E -= 1;
+    this.dec_common(this.E);
+  }
+
+  dec_H(): void {
+    this.H -= 1;
+    this.dec_common(this.H);
+  }
+
+  dec_L(): void {
+    this.L -= 1;
+    this.dec_common(this.L);
+  }
+
+  dec_HLa(): void {
+    const result = this.memoryMap.read8(this.HL) - 1;
+    this.memoryMap.write8(this.HL, result);
+    this.dec_common(result);
   }
 
   // (DEC nn) - no flags affected
@@ -3123,9 +3785,65 @@ export default class Cpu {
   }
 
   /**
+   * Subtraction functions
+   */
+  sub_common(): void {
+    this.flagZ = this.A === 0;
+    this.flagN = true;
+    // TODO this.flagH if no borrow from bit 4
+    // TODO this.flagC if no borrow
+  }
+
+  sub_A(): void {
+    this.A = this.A - this.A;
+    this.sub_common();
+  }
+
+  sub_B(): void {
+    this.A = this.A - this.B;
+    this.sub_common();
+  }
+
+  sub_C(): void {
+    this.A = this.A - this.C;
+    this.sub_common();
+  }
+
+  sub_D(): void {
+    this.A = this.A - this.D;
+    this.sub_common();
+  }
+
+  sub_E(): void {
+    this.A = this.A - this.E;
+    this.sub_common();
+  }
+
+  sub_H(): void {
+    this.A = this.A - this.H;
+    this.sub_common();
+  }
+
+  sub_L(): void {
+    this.A = this.A - this.L;
+    this.sub_common();
+  }
+
+  sub_HLa(): void {
+    this.A = this.A - this.memoryMap.read8(this.HL);
+    this.sub_common();
+  }
+
+  sub_d8(): void {
+    this.A = this.A - this.read8();
+    this.sub_common();
+    this.PC += 1;
+  }
+
+  /**
    * AND Functions
    */
-  and_common() {
+  and_common(): void {
     this.flagZ = this.A === 0;
     // if (this.A === 0) {
     //   this.flagZ = true;
@@ -3250,7 +3968,8 @@ export default class Cpu {
   }
 
   xor_A(): void {
-    // Not sure - XOR A with A? Noop?
+    // this.A = 0 - xor number with itself should zero bits?
+    this.A = this.A ^ this.A;
     this.xor_common();
   }
 
@@ -3319,8 +4038,8 @@ export default class Cpu {
     this.A = result & 0xFF;
   }
 
-  rla(): void {
-    const rotatedValue = this.A << 1;
+  rl(value: number): number {
+    const rotatedValue = value << 1;
     let result = rotatedValue;
     // Shift the carry flag in
     if (this.flagC) {
@@ -3336,7 +4055,39 @@ export default class Cpu {
     this.flagN = false;
     this.flagH = false;
 
-    this.A = result & 0xFF;
+    return result & 0xFF;
+  }
+
+  rlA(): void {
+    this.A = this.rl(this.A);
+  }
+
+  rlB(): void {
+    this.B = this.rl(this.B);
+  }
+
+  rlC(): void {
+    this.C = this.rl(this.C);
+  }
+
+  rlD(): void {
+    this.D = this.rl(this.D);
+  }
+
+  rlE(): void {
+    this.E = this.rl(this.E);
+  }
+
+  rlH(): void {
+    this.H = this.rl(this.H);
+  }
+
+  rlL(): void {
+    this.L = this.rl(this.L);
+  }
+
+  rlHLa(): void {
+    this.memoryMap.write8(this.HL, this.rl(this.memoryMap.read8(this.HL)));
   }
 
   /**
@@ -3395,6 +4146,55 @@ export default class Cpu {
     this.swp_common(result);
   }
 
+  /**
+   * Bit Check Functions
+   */
+  bit_common(result: boolean): void {
+    this.flagZ = !result;
+    this.flagN = false;
+    this.flagH = true;
+  }
+
+  bit_7_A(): void {
+    this.bit_common((this.A & 0x80) > 0);
+  }
+
+  bit_7_B(): void {
+    this.bit_common((this.B & 0x80) > 0);
+  }
+
+  bit_7_C(): void {
+    this.bit_common((this.C & 0x80) > 0);
+  }
+
+  bit_7_D(): void {
+    this.bit_common((this.D & 0x80) > 0);
+  }
+
+  bit_7_E(): void {
+    this.bit_common((this.E & 0x80) > 0);
+  }
+
+  bit_7_H(): void {
+    this.bit_common((this.H & 0x80) > 0);
+  }
+
+  bit_7_L(): void {
+    this.bit_common((this.L & 0x80) > 0);
+  }
+
+  bit_7_HLa(): void {
+    this.bit_common((this.memoryMap.read8(this.HL) & 0x80) > 0);
+  }
+
+  /**
+   * Bit Reset Functions
+   */
+  res_7_HLi(): void {
+    const value = this.memoryMap.read8(this.HL);
+    this.memoryMap.write8(this.HL, value & 0x7F);
+  }
+
   ld_Ca_A(): void {
     this.memoryMap.write8(0xFF00 + this.C, this.A);
   }
@@ -3425,10 +4225,10 @@ export default class Cpu {
     this.flagH = true;
   }
 
-  cp_d8(): void {
-    const value = this.read8();
-    const diff = this.A - value;
-
+  /**
+   * Compare functions
+   */
+  cp_common(diff: number) {
     this.flagZ = diff === 0;
     // if (diff === 0) {
     //   this.flagZ = true;
@@ -3436,6 +4236,42 @@ export default class Cpu {
     this.flagN = true;
     this.flagH = false; // TODO: if no borrow from bit 4?
     this.flagC = diff > 0;
+  }
+
+  cp_A(): void {
+    this.cp_common(this.A - this.A);
+  }
+
+  cp_B(): void {
+    this.cp_common(this.A - this.B);
+  }
+
+  cp_C(): void {
+    this.cp_common(this.A - this.C);
+  }
+
+  cp_D(): void {
+    this.cp_common(this.A - this.D);
+  }
+
+  cp_E(): void {
+    this.cp_common(this.A - this.E);
+  }
+
+  cp_H(): void {
+    this.cp_common(this.A - this.H);
+  }
+
+  cp_L(): void {
+    this.cp_common(this.A - this.L);
+  }
+
+  cp_HLa(): void {
+    this.cp_common(this.A - this.memoryMap.read8(this.HL));
+  }
+
+  cp_d8(): void {
+    this.cp_common(this.A - this.read8());
 
     this.PC += 1;
   }
