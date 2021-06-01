@@ -2853,11 +2853,7 @@ export default class Cpu {
       // + DEBUG ---
       const codeString = opCode.toString(16)
       const paddedCodeString = `0x${'0'.repeat(2 - codeString.length)}${codeString}`
-      // console.log(`[${this.PC}]`, `(${isCbCode ? '0xCB ' : ''}${paddedCodeString}) ${operation.mnemonic}`);
 
-      // if (opCode === 0x18) {
-      //   debugger;
-      // }
       this.opHistory.push({
         step: this.step,
         PC: this.PC,
@@ -3571,9 +3567,6 @@ export default class Cpu {
    */
   dec_common(result: number): void {
     this.flagZ = result === 0;
-    // if (result === 0) {
-    //   this.flagZ = true;
-    // }
     this.flagN = true;
     // TODO: Set H if no borrow from bit 4
     // this.flagH = ?
@@ -3630,9 +3623,6 @@ export default class Cpu {
    */
   inc_common(result: number): void {
     this.flagZ = result === 0;
-    // if (result === 0) {
-    //   this.flagZ = true;
-    // }
     this.flagN = false;
     // TODO: this.flagH - set if carry from bit 3
   }
@@ -3699,9 +3689,6 @@ export default class Cpu {
    */
   add_common() {
     this.flagZ = this.A === 0;
-    // if (this.A === 0) {
-    //   this.flagZ = true;
-    // }
 
     this.flagN = false;
     // TODO: this.flagH = if carry from bit 3
@@ -3845,9 +3832,6 @@ export default class Cpu {
    */
   and_common(): void {
     this.flagZ = this.A === 0;
-    // if (this.A === 0) {
-    //   this.flagZ = true;
-    // }
     this.flagN = false;
     this.flagH = true;
     this.flagC = false;
@@ -3905,9 +3889,6 @@ export default class Cpu {
    */
   or_common(): void {
     this.flagZ = this.A === 0;
-    // if (this.A === 0) {
-    //   this.flagZ = true;
-    // }
     this.flagN = false;
     this.flagH = false;
     this.flagC = false;
@@ -3959,9 +3940,6 @@ export default class Cpu {
    */
   xor_common(): void {
     this.flagZ = this.A === 0;
-    // if (this.A === 0) {
-    //   this.flagZ = true;
-    // }
     this.flagN = false;
     this.flagH = false;
     this.flagC = false;
@@ -4023,9 +4001,6 @@ export default class Cpu {
     // Move carry to carry flag (existing flag discarded)
     this.flagC = (result & 256) === 256;
     this.flagZ = result === 0;
-    // if (result === 0) {
-    //   this.flagZ = true;
-    // }
 
     // Shift the carry flag in
     if (this.flagC) {
@@ -4048,9 +4023,6 @@ export default class Cpu {
     // Move carry to carry flag
     this.flagC = (result & 256) === 256;
     this.flagZ = result === 0;
-    // if (result === 0) {
-    //   this.flagZ = true;
-    // }
 
     this.flagN = false;
     this.flagH = false;
@@ -4099,9 +4071,6 @@ export default class Cpu {
 
   swp_common(result: number): void {
     this.flagZ = result === 0;
-    // if (result === 0) {
-    //   this.flagZ = true;
-    // }
   }
 
   swp_A(): void {
@@ -4230,9 +4199,6 @@ export default class Cpu {
    */
   cp_common(diff: number) {
     this.flagZ = diff === 0;
-    // if (diff === 0) {
-    //   this.flagZ = true;
-    // }
     this.flagN = true;
     this.flagH = false; // TODO: if no borrow from bit 4?
     this.flagC = diff > 0;
