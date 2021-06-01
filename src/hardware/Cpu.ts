@@ -2809,13 +2809,769 @@ export default class Cpu {
         C: null,
       }
     },
+    0x80: {
+      action: this.res_0_B.bind(this),
+      mnemonic: 'RES 0, B',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0x81: {
+      action: this.res_0_C.bind(this),
+      mnemonic: 'RES 0, C',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0x82: {
+      action: this.res_0_D.bind(this),
+      mnemonic: 'RES 0, D',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0x83: {
+      action: this.res_0_E.bind(this),
+      mnemonic: 'RES 0, E',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0x84: {
+      action: this.res_0_H.bind(this),
+      mnemonic: 'RES 0, H',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0x85: {
+      action: this.res_0_L.bind(this),
+      mnemonic: 'RES 0, L',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0x86: {
+      action: this.res_0_HLa.bind(this),
+      mnemonic: 'RES 0, (HL)',
+      bytes: 1,
+      cycles: 16,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0x87: {
+      action: this.res_0_A.bind(this),
+      mnemonic: 'RES 0, A',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0x88: {
+      action: this.res_1_B.bind(this),
+      mnemonic: 'RES 1, B',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0x89: {
+      action: this.res_1_C.bind(this),
+      mnemonic: 'RES 1, C',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0x8A: {
+      action: this.res_1_D.bind(this),
+      mnemonic: 'RES 1, D',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0x8B: {
+      action: this.res_1_E.bind(this),
+      mnemonic: 'RES 1, E',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0x8C: {
+      action: this.res_1_H.bind(this),
+      mnemonic: 'RES 1, H',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0x8D: {
+      action: this.res_1_L.bind(this),
+      mnemonic: 'RES 1, L',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0x8E: {
+      action: this.res_1_HLa.bind(this),
+      mnemonic: 'RES 1, (HL)',
+      bytes: 1,
+      cycles: 16,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0x8F: {
+      action: this.res_1_A.bind(this),
+      mnemonic: 'RES 1, A',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0x90: {
+      action: this.res_2_B.bind(this),
+      mnemonic: 'RES 2, B',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0x91: {
+      action: this.res_2_C.bind(this),
+      mnemonic: 'RES 2, C',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0x92: {
+      action: this.res_2_D.bind(this),
+      mnemonic: 'RES 2, D',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0x93: {
+      action: this.res_2_E.bind(this),
+      mnemonic: 'RES 2, E',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0x94: {
+      action: this.res_2_H.bind(this),
+      mnemonic: 'RES 2, H',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0x95: {
+      action: this.res_2_L.bind(this),
+      mnemonic: 'RES 2, L',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0x96: {
+      action: this.res_2_HLa.bind(this),
+      mnemonic: 'RES 2, (HL)',
+      bytes: 1,
+      cycles: 16,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0x97: {
+      action: this.res_2_A.bind(this),
+      mnemonic: 'RES 2, A',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0x98: {
+      action: this.res_3_B.bind(this),
+      mnemonic: 'RES 3, B',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0x99: {
+      action: this.res_3_C.bind(this),
+      mnemonic: 'RES 3, C',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0x9A: {
+      action: this.res_3_D.bind(this),
+      mnemonic: 'RES 3, D',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0x9B: {
+      action: this.res_3_E.bind(this),
+      mnemonic: 'RES 3, E',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0x9C: {
+      action: this.res_3_H.bind(this),
+      mnemonic: 'RES 3, H',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0x9D: {
+      action: this.res_3_L.bind(this),
+      mnemonic: 'RES 3, L',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0x9E: {
+      action: this.res_3_HLa.bind(this),
+      mnemonic: 'RES 3, (HL)',
+      bytes: 1,
+      cycles: 16,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0x9F: {
+      action: this.res_3_A.bind(this),
+      mnemonic: 'RES 3, A',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xA0: {
+      action: this.res_4_B.bind(this),
+      mnemonic: 'RES 4, B',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xA1: {
+      action: this.res_4_C.bind(this),
+      mnemonic: 'RES 4, C',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xA2: {
+      action: this.res_4_D.bind(this),
+      mnemonic: 'RES 4, D',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xA3: {
+      action: this.res_4_E.bind(this),
+      mnemonic: 'RES 4, E',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xA4: {
+      action: this.res_4_H.bind(this),
+      mnemonic: 'RES 4, H',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xA5: {
+      action: this.res_4_L.bind(this),
+      mnemonic: 'RES 4, L',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xA6: {
+      action: this.res_4_HLa.bind(this),
+      mnemonic: 'RES 4, (HL)',
+      bytes: 1,
+      cycles: 16,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xA7: {
+      action: this.res_4_A.bind(this),
+      mnemonic: 'RES 4, A',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xA8: {
+      action: this.res_5_B.bind(this),
+      mnemonic: 'RES 5, B',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xA9: {
+      action: this.res_5_C.bind(this),
+      mnemonic: 'RES 5, C',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xAA: {
+      action: this.res_5_D.bind(this),
+      mnemonic: 'RES 5, D',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xAB: {
+      action: this.res_5_E.bind(this),
+      mnemonic: 'RES 5, E',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xAC: {
+      action: this.res_5_H.bind(this),
+      mnemonic: 'RES 5, H',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xAD: {
+      action: this.res_5_L.bind(this),
+      mnemonic: 'RES 5, L',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xAE: {
+      action: this.res_5_HLa.bind(this),
+      mnemonic: 'RES 5, (HL)',
+      bytes: 1,
+      cycles: 16,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xAF: {
+      action: this.res_5_A.bind(this),
+      mnemonic: 'RES 5, A',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xB0: {
+      action: this.res_6_B.bind(this),
+      mnemonic: 'RES 6, B',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xB1: {
+      action: this.res_6_C.bind(this),
+      mnemonic: 'RES 6, C',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xB2: {
+      action: this.res_6_D.bind(this),
+      mnemonic: 'RES 6, D',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xB3: {
+      action: this.res_6_E.bind(this),
+      mnemonic: 'RES 6, E',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xB4: {
+      action: this.res_6_H.bind(this),
+      mnemonic: 'RES 6, H',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xB5: {
+      action: this.res_6_L.bind(this),
+      mnemonic: 'RES 6, L',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xB6: {
+      action: this.res_6_HLa.bind(this),
+      mnemonic: 'RES 6, (HL)',
+      bytes: 1,
+      cycles: 16,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xB7: {
+      action: this.res_6_A.bind(this),
+      mnemonic: 'RES 6, A',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xB8: {
+      action: this.res_7_B.bind(this),
+      mnemonic: 'RES 7, B',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xB9: {
+      action: this.res_7_C.bind(this),
+      mnemonic: 'RES 7, C',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xBA: {
+      action: this.res_7_D.bind(this),
+      mnemonic: 'RES 7, D',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xBB: {
+      action: this.res_7_E.bind(this),
+      mnemonic: 'RES 7, E',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xBC: {
+      action: this.res_7_H.bind(this),
+      mnemonic: 'RES 7, H',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xBD: {
+      action: this.res_7_L.bind(this),
+      mnemonic: 'RES 7, L',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
     0xBE: {
-      action: this.res_7_HLi.bind(this),
+      action: this.res_7_HLa.bind(this),
       mnemonic: 'RES 7, (HL)',
       bytes: 1,
       cycles: 16,
       flags: {
-        Z: 'Z',
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xBF: {
+      action: this.res_7_A.bind(this),
+      mnemonic: 'RES 7, A',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
         N: null,
         H: null,
         C: null,
@@ -4159,7 +4915,266 @@ export default class Cpu {
   /**
    * Bit Reset Functions
    */
-  res_7_HLi(): void {
+  res_0_A(): void {
+    this.A = this.A & 0xFE;
+  }
+
+  res_0_B(): void {
+    this.B = this.B & 0xFE;
+  }
+
+  res_0_C(): void {
+    this.C = this.C & 0xFE;
+  }
+
+  res_0_D(): void {
+    this.D = this.D & 0xFE;
+  }
+
+  res_0_E(): void {
+    this.E = this.E & 0xFE;
+  }
+
+  res_0_H(): void {
+    this.H = this.H & 0xFE;
+  }
+
+  res_0_L(): void {
+    this.L = this.L & 0xFE;
+  }
+
+  res_0_HLa(): void {
+    const value = this.memoryMap.read8(this.HL);
+    this.memoryMap.write8(this.HL, value & 0xFE);
+  }
+
+  res_1_A(): void {
+    this.A = this.A & 0xFD;
+  }
+
+  res_1_B(): void {
+    this.B = this.B & 0xFD;
+  }
+
+  res_1_C(): void {
+    this.C = this.C & 0xFD;
+  }
+
+  res_1_D(): void {
+    this.D = this.D & 0xFD;
+  }
+
+  res_1_E(): void {
+    this.E = this.E & 0xFD;
+  }
+
+  res_1_H(): void {
+    this.H = this.H & 0xFD;
+  }
+
+  res_1_L(): void {
+    this.L = this.L & 0xFD;
+  }
+
+  res_1_HLa(): void {
+    const value = this.memoryMap.read8(this.HL);
+    this.memoryMap.write8(this.HL, value & 0xFD);
+  }
+
+  res_2_A(): void {
+    this.A = this.A & 0xFB;
+  }
+
+  res_2_B(): void {
+    this.B = this.B & 0xFB;
+  }
+
+  res_2_C(): void {
+    this.C = this.C & 0xFB;
+  }
+
+  res_2_D(): void {
+    this.D = this.D & 0xFB;
+  }
+
+  res_2_E(): void {
+    this.E = this.E & 0xFB;
+  }
+
+  res_2_H(): void {
+    this.H = this.H & 0xFB;
+  }
+
+  res_2_L(): void {
+    this.L = this.L & 0xFB;
+  }
+
+  res_2_HLa(): void {
+    const value = this.memoryMap.read8(this.HL);
+    this.memoryMap.write8(this.HL, value & 0xFB);
+  }
+
+  res_3_A(): void {
+    this.A = this.A & 0xF7;
+  }
+
+  res_3_B(): void {
+    this.B = this.B & 0xF7;
+  }
+
+  res_3_C(): void {
+    this.C = this.C & 0xF7;
+  }
+
+  res_3_D(): void {
+    this.D = this.D & 0xF7;
+  }
+
+  res_3_E(): void {
+    this.E = this.E & 0xF7;
+  }
+
+  res_3_H(): void {
+    this.H = this.H & 0xF7;
+  }
+
+  res_3_L(): void {
+    this.L = this.L & 0xF7;
+  }
+
+  res_3_HLa(): void {
+    const value = this.memoryMap.read8(this.HL);
+    this.memoryMap.write8(this.HL, value & 0xF7);
+  }
+
+  res_4_A(): void {
+    this.A = this.A & 0xEF;
+  }
+
+  res_4_B(): void {
+    this.B = this.B & 0xEF;
+  }
+
+  res_4_C(): void {
+    this.C = this.C & 0xEF;
+  }
+
+  res_4_D(): void {
+    this.D = this.D & 0xEF;
+  }
+
+  res_4_E(): void {
+    this.E = this.E & 0xEF;
+  }
+
+  res_4_H(): void {
+    this.H = this.H & 0xEF;
+  }
+
+  res_4_L(): void {
+    this.L = this.L & 0xEF;
+  }
+
+  res_4_HLa(): void {
+    const value = this.memoryMap.read8(this.HL);
+    this.memoryMap.write8(this.HL, value & 0xEF);
+  }
+
+  res_5_A(): void {
+    this.A = this.A & 0xDF;
+  }
+
+  res_5_B(): void {
+    this.B = this.B & 0xDF;
+  }
+
+  res_5_C(): void {
+    this.C = this.C & 0xDF;
+  }
+
+  res_5_D(): void {
+    this.D = this.D & 0xDF;
+  }
+
+  res_5_E(): void {
+    this.E = this.E & 0xDF;
+  }
+
+  res_5_H(): void {
+    this.H = this.H & 0xDF;
+  }
+
+  res_5_L(): void {
+    this.L = this.L & 0xDF;
+  }
+
+  res_5_HLa(): void {
+    const value = this.memoryMap.read8(this.HL);
+    this.memoryMap.write8(this.HL, value & 0xDF);
+  }
+
+  res_6_A(): void {
+    this.A = this.A & 0xBF;
+  }
+
+  res_6_B(): void {
+    this.B = this.B & 0xBF;
+  }
+
+  res_6_C(): void {
+    this.C = this.C & 0xBF;
+  }
+
+  res_6_D(): void {
+    this.D = this.D & 0xBF;
+  }
+
+  res_6_E(): void {
+    this.E = this.E & 0xBF;
+  }
+
+  res_6_H(): void {
+    this.H = this.H & 0xBF;
+  }
+
+  res_6_L(): void {
+    this.L = this.L & 0xBF;
+  }
+
+  res_6_HLa(): void {
+    const value = this.memoryMap.read8(this.HL);
+    this.memoryMap.write8(this.HL, value & 0xBF);
+  }
+
+  res_7_A(): void {
+    this.A = this.A & 0x7F;
+  }
+
+  res_7_B(): void {
+    this.B = this.B & 0x7F;
+  }
+
+  res_7_C(): void {
+    this.C = this.C & 0x7F;
+  }
+
+  res_7_D(): void {
+    this.D = this.D & 0x7F;
+  }
+
+  res_7_E(): void {
+    this.E = this.E & 0x7F;
+  }
+
+  res_7_H(): void {
+    this.H = this.H & 0x7F;
+  }
+
+  res_7_L(): void {
+    this.L = this.L & 0x7F;
+  }
+
+  res_7_HLa(): void {
     const value = this.memoryMap.read8(this.HL);
     this.memoryMap.write8(this.HL, value & 0x7F);
   }
