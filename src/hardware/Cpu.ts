@@ -407,7 +407,7 @@ export default class Cpu {
     },
     0x22: {
       action: this.ld_HLi_A.bind(this),
-      mnemonic: 'LD HLi, A',
+      mnemonic: 'LD (HL)+, A',
       bytes: 1,
       cycles: 8,
       flags: {
@@ -2910,14 +2910,14 @@ export default class Cpu {
 
   // Getters to access registers array buffer
   // 8 bit
-  private get A() { return this.registers[0]; }
-  private get F() { return this.registers[1]; }
-  private get B() { return this.registers[2]; }
-  private get C() { return this.registers[3]; }
-  private get D() { return this.registers[4]; }
-  private get E() { return this.registers[5]; }
-  private get H() { return this.registers[6]; }
-  private get L() { return this.registers[7]; }
+  private get A() { return this.registers[1]; }
+  private get F() { return this.registers[0]; }
+  private get B() { return this.registers[3]; }
+  private get C() { return this.registers[2]; }
+  private get D() { return this.registers[5]; }
+  private get E() { return this.registers[4]; }
+  private get H() { return this.registers[7]; }
+  private get L() { return this.registers[6]; }
   // 16 bit
   private get AF() { return this.registers16[0]; }
   private get BC() { return this.registers16[1]; }
@@ -2928,14 +2928,14 @@ export default class Cpu {
 
   // Setters to access registers array buffer
   // 8 bit
-  private set A(value: number) { this.registers[0] = value; }
-  private set F(value: number) { this.registers[1] = value; }
-  private set B(value: number) { this.registers[2] = value; }
-  private set C(value: number) { this.registers[3] = value; }
-  private set D(value: number) { this.registers[4] = value; }
-  private set E(value: number) { this.registers[5] = value; }
-  private set H(value: number) { this.registers[6] = value; }
-  private set L(value: number) { this.registers[7] = value; }
+  private set A(value: number) { this.registers[1] = value; }
+  private set F(value: number) { this.registers[0] = value; }
+  private set B(value: number) { this.registers[3] = value; }
+  private set C(value: number) { this.registers[2] = value; }
+  private set D(value: number) { this.registers[5] = value; }
+  private set E(value: number) { this.registers[4] = value; }
+  private set H(value: number) { this.registers[7] = value; }
+  private set L(value: number) { this.registers[6] = value; }
 
   // 16 bit
   private set AF(value: number) { this.registers16[0] = value; }
@@ -3292,7 +3292,7 @@ export default class Cpu {
   }
 
   ld_L_d8(): void {
-    this.C = this.read8();
+    this.L = this.read8();
     this.PC += 1;
   }
 
@@ -3580,8 +3580,8 @@ export default class Cpu {
   }
 
   dec_A(): void {
-    this.B -= 1;
-    this.dec_common(this.B);
+    this.A -= 1;
+    this.dec_common(this.A);
   }
 
   dec_B(): void {
