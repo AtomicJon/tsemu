@@ -1917,6 +1917,18 @@ export default class Cpu {
         C: null,
       }
     },
+    0xB7: {
+      action: this.or_A.bind(this),
+      mnemonic: 'OR A',
+      bytes: 1,
+      cycles: 4,
+      flags: {
+        Z: "Z",
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
     0xB8: {
       action: this.cp_B.bind(this),
       mnemonic: 'CP B',
@@ -2061,6 +2073,18 @@ export default class Cpu {
         C: null,
       }
     },
+    0xC4: {
+      action: this.call_nz_a16.bind(this),
+      mnemonic: 'CALL NZ, a16',
+      bytes: 3,
+      cycles: 12,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
     0xC5: {
       action: this.push_BC.bind(this),
       mnemonic: 'PUSH BC',
@@ -2133,6 +2157,18 @@ export default class Cpu {
         C: null,
       }
     },
+    0xCC: {
+      action: this.call_z_a16.bind(this),
+      mnemonic: 'CALL Z, a16',
+      bytes: 3,
+      cycles: 12,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
     0xCD: {
       action: this.call_a16.bind(this),
       mnemonic: 'CALL a16',
@@ -2193,6 +2229,18 @@ export default class Cpu {
         C: null,
       }
     },
+    0xD4: {
+      action: this.call_nc_a16.bind(this),
+      mnemonic: 'CALL NC, a16',
+      bytes: 3,
+      cycles: 12,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
     0xD5: {
       action: this.push_DE.bind(this),
       mnemonic: 'PUSH DE',
@@ -2241,10 +2289,34 @@ export default class Cpu {
         C: null,
       }
     },
+    0xD9: {
+      action: this.reti.bind(this),
+      mnemonic: 'RETI',
+      bytes: 1,
+      cycles: 8,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
     0xDA: {
       action: this.jp_nz_a16.bind(this),
       mnemonic: 'JP C a16',
       bytes: 1,
+      cycles: 12,
+      flags: {
+        Z: null,
+        N: null,
+        H: null,
+        C: null,
+      }
+    },
+    0xDC: {
+      action: this.call_c_a16.bind(this),
+      mnemonic: 'CALL C, a16',
+      bytes: 3,
       cycles: 12,
       flags: {
         Z: null,
@@ -3632,7 +3704,7 @@ export default class Cpu {
 
       // TODO: Move to GPU emulation
       this.memoryMap.write8(0xFF44, this.gpuScanLine);
-      this.gpuScanLine += 1;
+      if (this.step % 64 == 0) this.gpuScanLine += 1;
       if (this.gpuScanLine >= 144) {
         this.memoryMap.write8(0xFF41, 0x01);
       }
@@ -4191,12 +4263,54 @@ export default class Cpu {
     this.PC = toAddress;
   }
 
+  call_nz_a16(): void {
+    const toAddress = this.read16();
+    this.PC += 2;
+    if (!this.flagZ) {
+      this.stack.push(this.PC)
+      this.PC = toAddress;
+    }
+  }
+
+  call_z_a16(): void {
+    const toAddress = this.read16();
+    this.PC += 2;
+    if (this.flagZ) {
+      this.stack.push(this.PC)
+      this.PC = toAddress;
+    }
+  }
+
+  call_nc_a16(): void {
+    const toAddress = this.read16();
+    this.PC += 2;
+    if (!this.flagC) {
+      this.stack.push(this.PC)
+      this.PC = toAddress;
+    }
+  }
+
+  call_c_a16(): void {
+    const toAddress = this.read16();
+    this.PC += 2;
+    if (this.flagC) {
+      this.stack.push(this.PC)
+      this.PC = toAddress;
+    }
+  }
+
+
   /**
    * Returns
    */
   ret(): void {
     const address = this.pop();
     this.PC = address;
+  }
+
+  reti(): void {
+    this.ret();
+    this.ei();
   }
 
   ret_nz(): void {
@@ -4641,13 +4755,18 @@ export default class Cpu {
 
 
   /**
-   * OR  Functions
+   * OR Functions
    */
   or_common(): void {
     this.flagZ = this.A === 0;
     this.flagN = false;
     this.flagH = false;
     this.flagC = false;
+  }
+
+  or_A(): void {
+    this.A = this.A | this.A;
+    this.or_common();
   }
 
   or_B(): void {
@@ -4692,7 +4811,7 @@ export default class Cpu {
   }
 
   /**
-   * XOR  Functions
+   * XOR Functions
    */
   xor_common(): void {
     this.flagZ = this.A === 0;
