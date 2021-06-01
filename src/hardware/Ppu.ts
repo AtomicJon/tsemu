@@ -151,9 +151,11 @@ export default class Ppu {
     const fpsString = this.updateAverage ? Math.round(1000 / this.updateAverage) : '-';
     const updateString = this.updateAverage ? Math.round(this.updateAverage * 1000) / 1000 : '-';
     this.ctx.save();
-    this.ctx.fillStyle = 'red';
-    this.ctx.textBaseline = 'top';
-    this.ctx.fillText(`FPS: ${fpsString} (${updateString}ms)`, 0, 0);
+    this.ctx.fillStyle = 'black';
+    this.ctx.fillRect(0, 144, 160, 16);
+    this.ctx.fillStyle = 'white';
+    this.ctx.textBaseline = 'bottom';
+    this.ctx.fillText(`FPS: ${fpsString} (${updateString}ms)`, 4, 158);
     this.ctx.restore();
   }
 }
