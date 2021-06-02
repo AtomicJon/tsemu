@@ -38,11 +38,76 @@ export default class Cpu {
   private registers: Uint8Array = new Uint8Array(this.registersBuffer);
   private registers16: Uint16Array = new Uint16Array(this.registersBuffer);
 
-  private flags: Uint8Array = new Uint8Array([0]);
-  private flagZ = false;
-  private flagN = false;
-  private flagH = false;
-  private flagC = false;
+  // Getters to access registers array buffer
+  // 8 bit
+  private get A(): number { return this.registers[1]; }
+  private get F(): number { return this.registers[0]; }
+  private get B(): number { return this.registers[3]; }
+  private get C(): number { return this.registers[2]; }
+  private get D(): number { return this.registers[5]; }
+  private get E(): number { return this.registers[4]; }
+  private get H(): number { return this.registers[7]; }
+  private get L(): number { return this.registers[6]; }
+  // 16 bit
+  private get AF(): number { return this.registers16[0]; }
+  private get BC(): number { return this.registers16[1]; }
+  private get DE(): number { return this.registers16[2]; }
+  private get HL(): number { return this.registers16[3]; }
+  private get SP(): number { return this.registers16[4]; }
+  private get PC(): number { return this.registers16[5]; }
+  // Flag boolean get helpers
+  private get flagZ(): boolean { return (this.F & 0x80) === 0x80; }
+  private get flagN(): boolean { return (this.F & 0x40) === 0x40; }
+  private get flagH(): boolean { return (this.F & 0x20) === 0x20; }
+  private get flagC(): boolean { return (this.F & 0x10) === 0x10; }
+
+  // Setters to access registers array buffer
+  // 8 bit
+  private set A(value: number) { this.registers[1] = value; }
+  private set F(value: number) { this.registers[0] = value & 0xF0; }
+  private set B(value: number) { this.registers[3] = value; }
+  private set C(value: number) { this.registers[2] = value; }
+  private set D(value: number) { this.registers[5] = value; }
+  private set E(value: number) { this.registers[4] = value; }
+  private set H(value: number) { this.registers[7] = value; }
+  private set L(value: number) { this.registers[6] = value; }
+  // 16 bit
+  private set AF(value: number) { this.registers16[0] = value; }
+  private set BC(value: number) { this.registers16[1] = value; }
+  private set DE(value: number) { this.registers16[2] = value; }
+  private set HL(value: number) { this.registers16[3] = value; }
+  private set SP(value: number) { this.registers16[4] = value; }
+  private set PC(value: number) { this.registers16[5] = value; }
+  // Flag boolean set helpers
+  private set flagZ(value: boolean) {
+    if (value) {
+      this.F = this.F | 0x80;
+    } else {
+      this.F = this.F & 0x7F;
+    }
+  }
+  private set flagN(value: boolean) {
+    if (value) {
+      this.F = this.F | 0x40;
+    } else {
+      this.F = this.F & 0xBF;
+    }
+  }
+  private set flagH(value: boolean) {
+    if (value) {
+      this.F = this.F | 0x20;
+    } else {
+      this.F = this.F & 0xDF;
+    }
+  }
+  private set flagC(value: boolean) {
+    if (value) {
+      this.F = this.F | 0x10;
+    } else {
+      this.F = this.F & 0xEF;
+    }
+  }
+
 
   private opCodes: Record<number, OpCode> = {
     0x00: {
@@ -3732,43 +3797,6 @@ export default class Cpu {
     this.SP = 0xFFFE;
   }
 
-  // Getters to access registers array buffer
-  // 8 bit
-  private get A() { return this.registers[1]; }
-  private get F() { return this.registers[0]; }
-  private get B() { return this.registers[3]; }
-  private get C() { return this.registers[2]; }
-  private get D() { return this.registers[5]; }
-  private get E() { return this.registers[4]; }
-  private get H() { return this.registers[7]; }
-  private get L() { return this.registers[6]; }
-  // 16 bit
-  private get AF() { return this.registers16[0]; }
-  private get BC() { return this.registers16[1]; }
-  private get DE() { return this.registers16[2]; }
-  private get HL() { return this.registers16[3]; }
-  private get SP() { return this.registers16[4]; }
-  private get PC() { return this.registers16[5]; }
-
-  // Setters to access registers array buffer
-  // 8 bit
-  private set A(value: number) { this.registers[1] = value; }
-  private set F(value: number) { this.registers[0] = value; }
-  private set B(value: number) { this.registers[3] = value; }
-  private set C(value: number) { this.registers[2] = value; }
-  private set D(value: number) { this.registers[5] = value; }
-  private set E(value: number) { this.registers[4] = value; }
-  private set H(value: number) { this.registers[7] = value; }
-  private set L(value: number) { this.registers[6] = value; }
-
-  // 16 bit
-  private set AF(value: number) { this.registers16[0] = value; }
-  private set BC(value: number) { this.registers16[1] = value; }
-  private set DE(value: number) { this.registers16[2] = value; }
-  private set HL(value: number) { this.registers16[3] = value; }
-  private set SP(value: number) { this.registers16[4] = value; }
-  private set PC(value: number) { this.registers16[5] = value; }
-
   // Memory access
   // Reading
   private read8(): number {
@@ -4438,8 +4466,7 @@ export default class Cpu {
   dec_common(result: number): void {
     this.flagZ = result === 0;
     this.flagN = true;
-    // TODO: Set H if no borrow from bit 4
-    // this.flagH = ?
+    this.flagH = (((result + 1) & 0x10) === 0x10) && ((result & 0x10) !== 0x10);
   }
 
   dec_A(): void {
@@ -4491,51 +4518,46 @@ export default class Cpu {
   /**
    * Increment Functions
    */
-  inc_common(result: number): void {
+  inc_common(value: number): number {
+    const result = value + 1;
     this.flagZ = result === 0;
     this.flagN = false;
-    // TODO: this.flagH - set if carry from bit 3
+    this.flagH = ((value & 0x10) !== 0x10) && ((result & 0x10) === 0x10);
+
+    return result & 0xFF;
   }
 
   inc_A(): void {
-    this.A += 1;
-    this.inc_common(this.A);
+    this.A += this.inc_common(this.A);
   }
 
   inc_B(): void {
-    this.B += 1;
-    this.inc_common(this.B);
+    this.B += this.inc_common(this.B);
   }
 
   inc_C(): void {
-    this.C += 1;
-    this.inc_common(this.C);
+    this.C += this.inc_common(this.C);
   }
 
   inc_D(): void {
-    this.D += 1;
-    this.inc_common(this.D);
+    this.D += this.inc_common(this.D);
   }
 
   inc_E(): void {
-    this.E += 1;
-    this.inc_common(this.E);
+    this.E += this.inc_common(this.E);
   }
 
   inc_H(): void {
-    this.H += 1;
-    this.inc_common(this.H);
+    this.H += this.inc_common(this.H);
   }
 
   inc_L(): void {
-    this.L += 1;
-    this.inc_common(this.L);
+    this.L += this.inc_common(this.L);
   }
 
   inc_HLa(): void {
     const value = this.memoryMap.read8(this.HL) + 1;
-    this.memoryMap.write8(this.HL, value);
-    this.inc_common(value);
+    this.memoryMap.write8(this.HL, this.inc_common(value));
   }
 
   inc_BC(): void {
@@ -4561,8 +4583,10 @@ export default class Cpu {
     this.flagZ = this.A === 0;
 
     this.flagN = false;
-    // TODO: this.flagH = if carry from bit 3
-    // TODO: this.flagC = if carry from bit 7
+    this.flagH = (((this.A - 1) & 0x10) !== 0x10) && ((this.A & 0x10) === 0x10);
+    this.flagC = (this.A & 0x100) === 0x100;
+
+    this.A = this.A & 0xFF;
   }
 
   add_A_A(): void {
@@ -4617,8 +4641,12 @@ export default class Cpu {
    */
   add_16_common() {
     this.flagN = false;
-    // TODO: this.flagH = if carry from bit 11
-    // TODO: this.flagC = if carry from bit 15
+    // If carry to bit 11
+    this.flagH = (((this.HL - 1) & 0x1000) !== 0x1000) && ((this.HL & 0x1000) === 0x1000);
+    // If carry to bit 15
+    this.flagC = (this.HL & 0x10000) === 0x10000;
+
+    this.HL = this.HL & 0xFFFF;
   }
 
   add_HL_BC(): void {
@@ -4647,8 +4675,10 @@ export default class Cpu {
   sub_common(): void {
     this.flagZ = this.A === 0;
     this.flagN = true;
-    // TODO this.flagH if no borrow from bit 4
-    // TODO this.flagC if no borrow
+
+    this.flagH = (((this.A + 1) & 0x10) === 0x10) && ((this.A & 0x10) !== 0x10);
+    this.flagC = this.A < 0;
+    this.A = this.A & 0xFF;
   }
 
   sub_A(): void {
