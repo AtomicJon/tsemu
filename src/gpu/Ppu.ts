@@ -1,4 +1,4 @@
-import MemoryMap from './MemoryMap';
+import MemoryMap from '../memory/MemoryMap';
 
 const colors = [
   0x00000000,

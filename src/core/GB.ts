@@ -1,6 +1,6 @@
-import Cpu from './Cpu';
-import Ppu from './Ppu';
-import MemoryMap from './MemoryMap';
+import Cpu from '../cpu/Cpu';
+import Ppu from '../gpu/Ppu';
+import MemoryMap from '../memory/MemoryMap';
 
 export default class GB {
   private cpu: Cpu;
@@ -15,29 +15,6 @@ export default class GB {
     this.memoryMap = new MemoryMap();
     this.cpu = new Cpu(this.memoryMap);
     this.gpu = new Ppu(this.memoryMap, canvas);
-
-    // Test data
-    const testData = [
-      0x7C,
-      0x7C,
-      0x00,
-      0xC6,
-      0xC6,
-      0x00,
-      0x00,
-      0xFE,
-      0xC6,
-      0xC6,
-      0x00,
-      0xC6,
-      0xC6,
-      0x00,
-      0x00,
-      0x00,
-    ];
-    // for (let i = 0; i < testData.length; i++) {
-    //   this.memoryMap.write8(0x8000 + i, testData[i]);
-    // }
     this.gpu.tick();
   }
 

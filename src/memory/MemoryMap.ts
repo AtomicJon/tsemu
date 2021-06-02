@@ -111,6 +111,9 @@ export default class MemoryMap {
   }
 
   public write8(address: number, value: number): void {
+    if (address == 0xFF46) {
+      debugger;
+    }
     if (address < 0x4000) {
       this.cartRomBank0[address] = value;
     } else if (address < 0x8000) {
