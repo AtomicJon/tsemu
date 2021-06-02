@@ -10,11 +10,32 @@ const colors = [
 const screenWidth = 160;
 const screenHeight = 144;
 
+const bufferWidth = 256;
+const bufferHeight = 256;
+
+class ImageLayer {
+  public imageData: ImageData;
+  public pixelArray: Uint32Array;
+
+  constructor(imageData: ImageData) {
+    this.imageData = imageData;
+    this.imageData.data.fill(0x00);
+    this.pixelArray = new Uint32Array(this.imageData.data.buffer);
+  }
+}
+
 export default class Ppu {
   private memoryMap: MemoryMap;
   private ctx: CanvasRenderingContext2D;
-  private imageData: ImageData;
-  private pixelArray: Uint32Array;
+
+  private bufferCanvas: HTMLCanvasElement;
+  private bufferCtx: CanvasRenderingContext2D;
+
+  private backgroundLayer: ImageLayer;
+  private windowLayer: ImageLayer;
+  private spriteLayer: ImageLayer;
+
+  private bufferLayer: ImageLayer;
 
   private lastUpdate: number = 0;
   private updateSamples: number[] = [];
@@ -29,9 +50,14 @@ export default class Ppu {
       throw new Error('Failed to get canvas 2D Context.');
     }
 
-    this.imageData = ctx.createImageData(screenWidth, screenHeight);
-    this.imageData.data.fill(0x00);
-    this.pixelArray = new Uint32Array(this.imageData.data.buffer);
+    this.backgroundLayer = new ImageLayer(ctx.createImageData(bufferWidth, bufferHeight));
+    this.windowLayer = new ImageLayer(ctx.createImageData(bufferWidth, bufferHeight));
+    this.spriteLayer = new ImageLayer(ctx.createImageData(bufferWidth, bufferHeight));
+    this.bufferLayer = new ImageLayer(ctx.createImageData(bufferWidth, bufferHeight));
+
+    this.bufferCanvas = document.createElement('canvas');
+    this.bufferCtx = this.bufferCanvas.getContext('2d')!;
+
     this.ctx = ctx;
   }
 
@@ -40,10 +66,10 @@ export default class Ppu {
     const bgWindowEnable =  (lcdc & 1);
     const objEnable =       (lcdc & 2) >> 1;
     const objSize =         (lcdc & 4) >> 2;
-    const bgTileArea =      (lcdc & 8) >> 3;
-    const bgTileData =      (lcdc & 16) >> 4;
+    const bgTileMap =       (lcdc & 8) >> 3;
+    const tileSource =      (lcdc & 16) >> 4;
     const windowEnable =    (lcdc & 32) >> 5;
-    const windowTileArea =  (lcdc & 64) >> 6;
+    const windowTileMap =   (lcdc & 64) >> 6;
     const lcdPpuEnable =    (lcdc & 128) >> 7;
 
     const stat = this.memoryMap.read8(0xFF41);
@@ -65,17 +91,39 @@ export default class Ppu {
 
     this.ctx.clearRect(0, 0, screenWidth, screenHeight);
 
+    if (bgWindowEnable) {
+      // Draw the background onto the buffer so that it can be transferred
+      // to the appropriate offset for scroll X/Y
+      if (bgTileMap === 0) {
+        this.renderTileMap(0x9800, tileSource, this.bufferLayer);
+      } else {
+        this.renderTileMap(0x9C00, tileSource, this.bufferLayer);
+      }
+      const startOffset = (scrollY * 256) + scrollX;
+      for (let i = 0; i < this.bufferLayer.pixelArray.length; i++) {
+        let offset = i + startOffset;
+        if (offset >= 65536) {
+          offset -= 65536;
+        }
+        this.backgroundLayer.pixelArray[i] = this.bufferLayer.pixelArray[offset];
+      }
 
-    // Test rendering the first sprite
-    this.ctx.save();
-    this.ctx.scale(2, 2);
-    this.renderBackground(0x9800, bgTileData);
-    this.renderBackground(0x9C00, bgTileData);
-    // TODO Window
-    this.renderSprites();
-    // this.renderTile(0, 20, 0);
-    this.ctx.putImageData(this.imageData, 0, 0);
-    this.ctx.restore();
+      this.renderLayer(this.backgroundLayer, 0, 0);
+    }
+
+    if (objEnable) {
+      this.renderSprites();
+      this.renderLayer(this.spriteLayer, 0, 0);
+    }
+
+    if (windowEnable) {
+      if (windowTileMap === 0) {
+        this.renderTileMap(0x9800, tileSource, this.windowLayer);
+      } else {
+        this.renderTileMap(0x9C00, tileSource, this.windowLayer);
+      }
+      this.renderLayer(this.windowLayer, windowX, windowY);
+    }
 
     // this.ctx.fillRect(Math.random() * 160, Math.random() * 144, Math.random() * 160, Math.random() * 144);
 
@@ -83,7 +131,12 @@ export default class Ppu {
     this.renderFps();
   }
 
-  private renderBackground(address: number, tileDataLocationFlag: number) {
+  private renderLayer(layer: ImageLayer, x: number, y: number) {
+    this.bufferCtx.putImageData(layer.imageData, 0, 0);
+    this.ctx.drawImage(this.bufferCanvas, 0, 0);
+  }
+
+  private renderTileMap(address: number, tileDataLocationFlag: number, target: ImageLayer) {
     for (let i = 0; i < 1024; i++)  {
       const y = Math.floor(i / 32);
       const x = i - y * 32;
@@ -91,7 +144,7 @@ export default class Ppu {
       const tileNumber = (tileDataLocationFlag === 0)
         ? this.memoryMap.read8Signed(address + i)
         : this.memoryMap.read8(address + i);
-      this.renderTile(x * 8, y * 8, tileNumber, tileDataLocationFlag);
+      this.renderTile(x * 8, y * 8, tileNumber, tileDataLocationFlag, target);
     }
   }
 
@@ -109,11 +162,18 @@ export default class Ppu {
       // bit 6 y flip (1 = flip)
       // bit 7 obj-bg priority (0 obj above, 1 obj behind)
 
-      this.renderTile(x, y, tileNumber);
+      this.renderTile(x, y, tileNumber, 0, this.spriteLayer);
     }
   }
 
-  private renderTile(x: number, y: number, tileNumber: number, tileDataLocationFlag: number = 0, size: number = 8) {
+  private renderTile(
+    x: number,
+    y: number,
+    tileNumber: number,
+    tileDataLocationFlag: number,
+    target: ImageLayer,
+    size: number = 8
+  ) {
     const address = (tileDataLocationFlag === 0 ? 0x9000 : 0x8000) + (tileNumber * 16);
     for (let row = 0; row < size; row++) {
       const byte1 = this.memoryMap.read8(address + row * 2)
@@ -130,8 +190,8 @@ export default class Ppu {
         if (color === 0) {
           continue;
         }
-        const offset = ((y + row) * screenWidth + x + column);
-        this.pixelArray[offset] = color;
+        const offset = ((y + row) * bufferWidth + x + column);
+        target.pixelArray[offset] = color;
       }
     }
   }
