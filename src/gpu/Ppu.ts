@@ -42,6 +42,9 @@ export default class Ppu {
   private updateAverage: number | null = null;
   private fpsSampleRate = 50;
 
+  private currentScanline = 0;
+  private currentScanlineOffset = 0;
+
   constructor(memoryMap: MemoryMap, canvas: HTMLCanvasElement) {
     this.memoryMap = memoryMap;
 
@@ -62,6 +65,31 @@ export default class Ppu {
   }
 
   public tick() {
+    this.currentScanlineOffset += 1;
+    if (this.currentScanlineOffset === 456) {
+      this.currentScanlineOffset = 0;
+      this.currentScanline = this.currentScanline === 153 ? 0 : this.currentScanline + 1;
+    }
+    this.memoryMap.write8(0xFF44, this.currentScanline);
+
+    if (this.currentScanline < 143) {
+      if (this.currentScanlineOffset < 80) {
+        this.memoryMap.write8(0xFF41, 2);
+      } else if (this.currentScanlineOffset < 252) {
+        this.memoryMap.write8(0xFF41, 3);
+      } else if (this.currentScanlineOffset === 252) {
+        this.memoryMap.write8(0xFF41, 0x08);
+      }
+    } else if (this.currentScanline === 144 && this.currentScanlineOffset === 0) {
+      this.memoryMap.write8(0xFF41, 0x11);
+      this.memoryMap.write8(0xFF0F, 0x01);
+    } else {
+      this.memoryMap.write8(0xFF41, 0x01);
+    }
+    // TODO: Move pixel manipulation to tick, keep drawing in update
+  }
+
+  public update() {
     const lcdc = this.memoryMap.read8(0xFF40);
     const bgWindowEnable =  (lcdc & 1);
     const objEnable =       (lcdc & 2) >> 1;
@@ -125,8 +153,6 @@ export default class Ppu {
       this.renderLayer(this.windowLayer, windowX, windowY);
     }
 
-    // this.ctx.fillRect(Math.random() * 160, Math.random() * 144, Math.random() * 160, Math.random() * 144);
-
     // FPS Helper
     this.renderFps();
   }
@@ -162,7 +188,7 @@ export default class Ppu {
       // bit 6 y flip (1 = flip)
       // bit 7 obj-bg priority (0 obj above, 1 obj behind)
 
-      this.renderTile(x, y, tileNumber, 0, this.spriteLayer);
+      this.renderTile(x, y, tileNumber, 1, this.spriteLayer);
     }
   }
 

@@ -1523,11 +1523,23 @@ export function ldh_A_a8(cpu: Cpu): void {
 }
 
 export function di(cpu: Cpu): void {
-  // TODO: Disable interrupts
+  cpu.interruptsEnabled = false;
 }
 
 export function ei(cpu: Cpu): void {
-  // TODO: Enable interrupts
+  cpu.interruptsEnabled = true;
+}
+
+export function scf(cpu: Cpu): void {
+  cpu.flagN = false;
+  cpu.flagH = false;
+  cpu.flagC = true;
+}
+
+export function ccf(cpu: Cpu): void {
+  cpu.flagN = false;
+  cpu.flagH = false;
+  cpu.flagC = !cpu.flagC;
 }
 
 export function cpl(cpu: Cpu): void {

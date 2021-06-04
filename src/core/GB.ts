@@ -32,10 +32,10 @@ export default class GB {
     if (this.animationFrameRequest) {
       window.cancelAnimationFrame(this.animationFrameRequest);
     }
-    this.animationFrameRequest = requestAnimationFrame(this.tick);
+    this.animationFrameRequest = requestAnimationFrame(this.update);
   }
 
-  private tick = (): void => {
+  private update = (): void => {
     if (!this.isRunning) {
       this.animationFrameRequest = null;
       return;
@@ -43,17 +43,28 @@ export default class GB {
 
     // Pause loop
     if (this.isPaused) {
-      this.animationFrameRequest = requestAnimationFrame(this.tick);
+      this.animationFrameRequest = requestAnimationFrame(this.update);
       return;
     }
 
-    const cpuSuccess = this.cpu.tick();
-    this.gpu.tick();
+    let cycles = 0;
+    // TODO: Adjust cycles based on framerate
+    while (cycles < 66667) {
+      // TODO: Move to input when ready
+      this.memoryMap.write8(0xFF00, 0x07); // Clear inputs
 
-    if (!cpuSuccess) {
-      return;
+      let cpuSuccess = this.cpu.tick();
+      this.gpu.tick();
+
+      // 0 cycles indicates failure
+      if (!cpuSuccess) {
+        return;
+      }
+      cycles++;
     }
 
-    this.animationFrameRequest = requestAnimationFrame(this.tick);
+    this.gpu.update();
+
+    this.animationFrameRequest = requestAnimationFrame(this.update);
   }
 }

@@ -1,4 +1,4 @@
-import MemoryMap from 'memory/MemoryMap';
+import MemoryMap from '../memory/MemoryMap';
 import cbOpCodes from './cbOpCodes';
 import opCodes from './opCodes';
 
@@ -15,14 +15,16 @@ export default class Cpu {
   public memoryMap: MemoryMap;
 
   private step = 0;
+  private cycleOffset = 0;
   private stack: number[] = [];
   private opHistory: OpHistory[] = [];
-
-  private gpuScanLine = 0;
 
   private registersBuffer: ArrayBuffer = new ArrayBuffer(12);
   private registers: Uint8Array = new Uint8Array(this.registersBuffer);
   private registers16: Uint16Array = new Uint16Array(this.registersBuffer);
+
+  // Interrupts
+  public interruptsEnabled: boolean = false;
 
   // Getters to access registers array buffer
   // 8 bit
@@ -138,68 +140,60 @@ export default class Cpu {
   }
 
   public tick(): boolean {
-    let cycles = 0;
-
-    while (cycles < 66667) {
-      let opCode = this.memoryMap.read8(this.PC);
-      this.PC += 1;
-
-      let opCodeTable = opCodes;
-      let isCbCode = false;
-      // Prefixed op code
-      if (opCode === 0xCB) {
-        isCbCode = true;
-        opCode = this.memoryMap.read8(this.PC);
-        this.PC += 1
-        opCodeTable = cbOpCodes;
-      }
-
-      if (!opCodeTable[opCode]) {
-        console.log('Unknown opcode: ', `${isCbCode ? '0xCB ' : ''}${opCode.toString(16)}`);
-        return false;
-      }
-      const operation = opCodeTable[opCode];
-
-      // + DEBUG ---
-      const codeString = opCode.toString(16)
-      const paddedCodeString = `0x${'0'.repeat(2 - codeString.length)}${codeString}`
-
-      this.opHistory.push({
-        step: this.step,
-        PC: this.PC,
-        codeString,
-        mnemonic: operation.mnemonic,
-        nextBytes: [
-          this.memoryMap.read8(this.PC),
-          this.memoryMap.read8(this.PC + 1),
-        ],
-        nextBytesSigned: [
-          this.memoryMap.read8Signed(this.PC),
-          this.memoryMap.read8Signed(this.PC + 1),
-        ],
-      });
-
-      if (this.opHistory.length > 100) {
-        this.opHistory.shift();
-      }
-      // - DEBUG ---
-
-      // TODO: Move to GPU emulation
-      this.memoryMap.write8(0xFF44, this.gpuScanLine);
-      if (this.step % 64 == 0) this.gpuScanLine += 1;
-      if (this.gpuScanLine >= 144) {
-        this.memoryMap.write8(0xFF41, 0x01);
-      }
-      if (this.gpuScanLine > 153) {
-        this.memoryMap.write8(0xFF41, 0x00);
-        this.gpuScanLine = 0;
-      }
-
-      operation.action(this);
-      cycles += operation.cycles;
-      this.step++;
+    // Wait for main clock to catch up
+    this.cycleOffset -= 1;
+    if (this.cycleOffset > 0) {
+      return true;
     }
 
+    let opCode = this.memoryMap.read8(this.PC);
+    this.PC += 1;
+
+    let opCodeTable = opCodes;
+    let isCbCode = false;
+    // Prefixed op code
+    if (opCode === 0xCB) {
+      isCbCode = true;
+      opCode = this.memoryMap.read8(this.PC);
+      this.PC += 1
+      opCodeTable = cbOpCodes;
+    }
+
+    if (!opCodeTable[opCode]) {
+      console.log('Unknown opcode: ', `${isCbCode ? '0xCB ' : ''}${opCode.toString(16)}`);
+      return false;
+    }
+    const operation = opCodeTable[opCode];
+
+    // + DEBUG ---
+    const codeString = opCode.toString(16)
+    const paddedCodeString = `0x${'0'.repeat(2 - codeString.length)}${codeString}`
+
+    this.opHistory.push({
+      step: this.step,
+      PC: this.PC,
+      codeString,
+      mnemonic: operation.mnemonic,
+      nextBytes: [
+        this.memoryMap.read8(this.PC),
+        this.memoryMap.read8(this.PC + 1),
+      ],
+      nextBytesSigned: [
+        this.memoryMap.read8Signed(this.PC),
+        this.memoryMap.read8Signed(this.PC + 1),
+      ],
+    });
+
+    if (this.opHistory.length > 100) {
+      this.opHistory.shift();
+    }
+    // - DEBUG ---
+
+    operation.action(this);
+    this.step++;
+
+    // Set how many cycles to wait before next operation
+    this.cycleOffset = operation.cycles - 1;
     return true;
   }
 }

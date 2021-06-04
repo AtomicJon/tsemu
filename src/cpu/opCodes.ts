@@ -589,6 +589,18 @@ const opCodes: Record<number, OpCode> = {
       C: null,
     }
   },
+  0x37: {
+    action: operations.scf,
+    mnemonic: 'LD A, d8',
+    bytes: 1,
+    cycles: 4,
+    flags: {
+      Z: null,
+      N: '0',
+      H: '0',
+      C: '1',
+    }
+  },
   0x38: {
     action: operations.jr_c_r8,
     mnemonic: 'JR C, R8',
@@ -647,6 +659,18 @@ const opCodes: Record<number, OpCode> = {
       N: null,
       H: null,
       C: null,
+    }
+  },
+  0x3F: {
+    action: operations.ccf,
+    mnemonic: 'CCF',
+    bytes: 1,
+    cycles: 4,
+    flags: {
+      Z: null,
+      N: '0',
+      H: '0',
+      C: '!C',
     }
   },
   0x40: {
