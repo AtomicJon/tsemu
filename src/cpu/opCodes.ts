@@ -219,7 +219,7 @@ const opCodes: Record<number, OpCode> = {
   },
   0x14: {
     action: operations.inc_D,
-    mnemonic: 'INC A',
+    mnemonic: 'INC D',
     bytes: 1,
     cycles: 8,
     flags: {
@@ -303,7 +303,7 @@ const opCodes: Record<number, OpCode> = {
   },
   0x1C: {
     action: operations.inc_E,
-    mnemonic: 'INC A',
+    mnemonic: 'INC E',
     bytes: 1,
     cycles: 8,
     flags: {
@@ -591,7 +591,7 @@ const opCodes: Record<number, OpCode> = {
   },
   0x37: {
     action: operations.scf,
-    mnemonic: 'LD A, d8',
+    mnemonic: 'SCF',
     bytes: 1,
     cycles: 4,
     flags: {
