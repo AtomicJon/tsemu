@@ -472,7 +472,7 @@ export function jp_c_a16(cpu: Cpu): void {
 export function call_a16(cpu: Cpu): void {
   const toAddress = cpu.read16();
   cpu.PC += 2;
-  cpu.push(cpu.PC)
+  push_common(cpu, cpu.PC);
   cpu.PC = toAddress;
 }
 
@@ -480,7 +480,7 @@ export function call_nz_a16(cpu: Cpu): void {
   const toAddress = cpu.read16();
   cpu.PC += 2;
   if (!cpu.flagZ) {
-    cpu.push(cpu.PC)
+    push_common(cpu, cpu.PC);
     cpu.PC = toAddress;
   }
 }
@@ -489,7 +489,7 @@ export function call_z_a16(cpu: Cpu): void {
   const toAddress = cpu.read16();
   cpu.PC += 2;
   if (cpu.flagZ) {
-    cpu.push(cpu.PC)
+    push_common(cpu, cpu.PC);
     cpu.PC = toAddress;
   }
 }
@@ -498,7 +498,7 @@ export function call_nc_a16(cpu: Cpu): void {
   const toAddress = cpu.read16();
   cpu.PC += 2;
   if (!cpu.flagC) {
-    cpu.push(cpu.PC)
+    push_common(cpu, cpu.PC);
     cpu.PC = toAddress;
   }
 }
@@ -507,7 +507,7 @@ export function call_c_a16(cpu: Cpu): void {
   const toAddress = cpu.read16();
   cpu.PC += 2;
   if (cpu.flagC) {
-    cpu.push(cpu.PC)
+    push_common(cpu, cpu.PC);
     cpu.PC = toAddress;
   }
 }
@@ -517,7 +517,7 @@ export function call_c_a16(cpu: Cpu): void {
  * Returns
  */
 export function ret(cpu: Cpu): void {
-  const address = cpu.pop();
+  const address = pop_common(cpu);
   cpu.PC = address;
 }
 
@@ -554,8 +554,8 @@ export function ret_c(cpu: Cpu): void {
  * Push functions
  */
 function push_common(cpu: Cpu, value: number): void {
-  cpu.push(value);
   cpu.SP -= 2;
+  cpu.memoryMap.write16(cpu.SP, value);
 }
 
 export function push_AF(cpu: Cpu): void {
@@ -578,8 +578,9 @@ export function push_HL(cpu: Cpu): void {
  * Pop functions
  */
 function pop_common(cpu: Cpu): number {
+  const value = cpu.memoryMap.read16(cpu.SP);
   cpu.SP += 2;
-  return cpu.pop();
+  return value;
 }
 
 export function pop_AF(cpu: Cpu): void {
@@ -602,7 +603,7 @@ export function pop_HL(cpu: Cpu): void {
  * Restart functions
  */
 function rst(cpu: Cpu, value: number): void {
-  cpu.push(cpu.PC);
+  push_common(cpu, cpu.PC);
   cpu.PC = value;
 }
 

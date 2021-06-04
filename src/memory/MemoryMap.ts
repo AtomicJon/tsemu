@@ -138,4 +138,9 @@ export default class MemoryMap {
       this.interrupt = value;
     }
   }
+
+  public write16(address: number, value: number): void {
+    this.write8(address, value & 0xFF);
+    this.write8(address + 1, value >> 8);
+  }
 }

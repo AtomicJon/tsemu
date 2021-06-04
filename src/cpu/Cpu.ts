@@ -16,7 +16,6 @@ export default class Cpu {
 
   private step = 0;
   private cycleOffset = 0;
-  private stack: number[] = [];
   private opHistory: OpHistory[] = [];
 
   private registersBuffer: ArrayBuffer = new ArrayBuffer(12);
@@ -115,17 +114,6 @@ export default class Cpu {
   public read16(): number {
     // TODO:
     return this.memoryMap.read16(this.PC);
-  }
-
-  public push(value: number): void {
-    this.stack.push(value);
-  }
-
-  public pop(): number {
-    if (this.stack.length < 1) {
-      throw new Error('Attempting to pop value with empty stack')
-    }
-    return this.stack.pop()!;
   }
 
   public reset() {
