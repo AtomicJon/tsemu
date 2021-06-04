@@ -11,11 +11,42 @@ export default class GB {
   private isPaused: boolean = false;
   private animationFrameRequest: number | null = null;
 
+  private dbgA: HTMLElement;
+  private dbgF: HTMLElement;
+  private dbgAF: HTMLElement;
+  private dbgB: HTMLElement;
+  private dbgC: HTMLElement;
+  private dbgBC: HTMLElement;
+  private dbgD: HTMLElement;
+  private dbgE: HTMLElement;
+  private dbgDE: HTMLElement;
+  private dbgH: HTMLElement;
+  private dbgL: HTMLElement;
+  private dbgHL: HTMLElement;
+  private dbgPC: HTMLElement;
+  private dbgSP: HTMLElement;
+
   constructor(canvas: HTMLCanvasElement) {
     this.memoryMap = new MemoryMap();
     this.cpu = new Cpu(this.memoryMap);
     this.gpu = new Ppu(this.memoryMap, canvas);
     this.gpu.tick();
+
+    // Debug references
+    this.dbgA = document.getElementById('dbg_a')!;
+    this.dbgF = document.getElementById('dbg_f')!;
+    this.dbgAF = document.getElementById('dbg_af')!;
+    this.dbgB = document.getElementById('dbg_b')!;
+    this.dbgC = document.getElementById('dbg_c')!;
+    this.dbgBC = document.getElementById('dbg_bc')!;
+    this.dbgD = document.getElementById('dbg_d')!;
+    this.dbgE = document.getElementById('dbg_e')!;
+    this.dbgDE = document.getElementById('dbg_de')!;
+    this.dbgH = document.getElementById('dbg_h')!;
+    this.dbgL = document.getElementById('dbg_l')!;
+    this.dbgHL = document.getElementById('dbg_hl')!;
+    this.dbgPC = document.getElementById('dbg_pc')!;
+    this.dbgSP = document.getElementById('dbg_sp')!;
   }
 
   public togglePause(): boolean {
@@ -64,7 +95,24 @@ export default class GB {
     }
 
     this.gpu.update();
-
+    this.updateDebug();
     this.animationFrameRequest = requestAnimationFrame(this.update);
+  }
+
+  private updateDebug = (): void => {
+    this.dbgA.innerHTML = this.cpu.A.toString(16);
+    this.dbgF.innerHTML = this.cpu.F.toString(16);
+    this.dbgAF.innerHTML = this.cpu.F.toString(16);
+    this.dbgB.innerHTML = this.cpu.B.toString(16);
+    this.dbgC.innerHTML = this.cpu.C.toString(16);
+    this.dbgBC.innerHTML = this.cpu.C.toString(16);
+    this.dbgD.innerHTML = this.cpu.D.toString(16);
+    this.dbgE.innerHTML = this.cpu.E.toString(16);
+    this.dbgDE.innerHTML = this.cpu.E.toString(16);
+    this.dbgH.innerHTML = this.cpu.H.toString(16);
+    this.dbgL.innerHTML = this.cpu.L.toString(16);
+    this.dbgHL.innerHTML = this.cpu.L.toString(16);
+    this.dbgPC.innerHTML = this.cpu.PC.toString(16);
+    this.dbgSP.innerHTML = this.cpu.SP.toString(16);
   }
 }

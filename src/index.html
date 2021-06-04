@@ -3,8 +3,24 @@
   <head>
     <title>TSEMU</title>
     <style>
+      body {
+        font-family: sans-serif;
+      }
+      #content {
+        display: flex;
+      }
       #screen {
         border: 1px solid #ccc;
+      }
+      #debug_table {
+        border-collapse: collapse;
+        border-spacing: 0;
+        font-family: monospace;
+      }
+      #debug_table th,
+      #debug_table td {
+        padding: 5px;
+        border: 1px solid;
       }
     </style>
   </head>
@@ -15,6 +31,51 @@
     </div>
     <div id="content">
       <canvas id="screen" width="160" height="160"></canvas>
+      <div id="debug">
+        <table id="debug_table">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th colspan="24">Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td rowspan="2">Registers</td>
+              <td>A</td>
+              <td>F</td>
+              <td>AF</td>
+              <td>B</td>
+              <td>C</td>
+              <td>BC</td>
+              <td>D</td>
+              <td>E</td>
+              <td>DE</td>
+              <td>H</td>
+              <td>L</td>
+              <td>HL</td>
+              <td>PC</td>
+              <td>SP</td>
+            </tr>
+            <tr>
+              <td id="dbg_a"></td>
+              <td id="dbg_f"></td>
+              <td id="dbg_af"></td>
+              <td id="dbg_b"></td>
+              <td id="dbg_c"></td>
+              <td id="dbg_bc"></td>
+              <td id="dbg_d"></td>
+              <td id="dbg_e"></td>
+              <td id="dbg_de"></td>
+              <td id="dbg_h"></td>
+              <td id="dbg_l"></td>
+              <td id="dbg_hl"></td>
+              <td id="dbg_pc"></td>
+              <td id="dbg_sp"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </body>
   <script src="./index.ts"></script>
