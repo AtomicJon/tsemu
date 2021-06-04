@@ -707,31 +707,31 @@ function inc_common(cpu: Cpu, value: number): number {
 }
 
 export function inc_A(cpu: Cpu): void {
-  cpu.A += inc_common(cpu, cpu.A);
+  cpu.A = inc_common(cpu, cpu.A);
 }
 
 export function inc_B(cpu: Cpu): void {
-  cpu.B += inc_common(cpu, cpu.B);
+  cpu.B = inc_common(cpu, cpu.B);
 }
 
 export function inc_C(cpu: Cpu): void {
-  cpu.C += inc_common(cpu, cpu.C);
+  cpu.C = inc_common(cpu, cpu.C);
 }
 
 export function inc_D(cpu: Cpu): void {
-  cpu.D += inc_common(cpu, cpu.D);
+  cpu.D = inc_common(cpu, cpu.D);
 }
 
 export function inc_E(cpu: Cpu): void {
-  cpu.E += inc_common(cpu, cpu.E);
+  cpu.E = inc_common(cpu, cpu.E);
 }
 
 export function inc_H(cpu: Cpu): void {
-  cpu.H += inc_common(cpu, cpu.H);
+  cpu.H = inc_common(cpu, cpu.H);
 }
 
 export function inc_L(cpu: Cpu): void {
-  cpu.L += inc_common(cpu, cpu.L);
+  cpu.L = inc_common(cpu, cpu.L);
 }
 
 export function inc_HLa(cpu: Cpu): void {
