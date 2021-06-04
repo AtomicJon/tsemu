@@ -338,6 +338,11 @@ export function ld_A_HLi(cpu: Cpu): void {
   cpu.HL += 1;
 }
 
+export function ld_A_HLd(cpu: Cpu): void {
+  cpu.A = cpu.memoryMap.read16(cpu.HL);
+  cpu.HL -= 1;
+}
+
 export function ld_HLDa_A(cpu: Cpu): void {
   cpu.memoryMap.write8(cpu.HL, cpu.A);
   cpu.HL -= 1;
@@ -1208,6 +1213,139 @@ function bit_common(cpu: Cpu, result: boolean): void {
   cpu.flagH = true;
 }
 
+// BIT 2
+export function bit_2_A(cpu: Cpu): void {
+  bit_common(cpu, (cpu.A & 0x02) > 0);
+}
+
+export function bit_2_B(cpu: Cpu): void {
+  bit_common(cpu, (cpu.B & 0x02) > 0);
+}
+
+export function bit_2_C(cpu: Cpu): void {
+  bit_common(cpu, (cpu.C & 0x02) > 0);
+}
+
+export function bit_2_D(cpu: Cpu): void {
+  bit_common(cpu, (cpu.D & 0x02) > 0);
+}
+
+export function bit_2_E(cpu: Cpu): void {
+  bit_common(cpu, (cpu.E & 0x02) > 0);
+}
+
+export function bit_2_H(cpu: Cpu): void {
+  bit_common(cpu, (cpu.H & 0x02) > 0);
+}
+
+export function bit_2_L(cpu: Cpu): void {
+  bit_common(cpu, (cpu.L & 0x02) > 0);
+}
+
+export function bit_2_HLa(cpu: Cpu): void {
+  bit_common(cpu, (cpu.memoryMap.read8(cpu.HL) & 0x02) > 0);
+}
+
+// BIT 3
+export function bit_3_A(cpu: Cpu): void {
+  bit_common(cpu, (cpu.A & 0x04) > 0);
+}
+
+export function bit_3_B(cpu: Cpu): void {
+  bit_common(cpu, (cpu.B & 0x04) > 0);
+}
+
+export function bit_3_C(cpu: Cpu): void {
+  bit_common(cpu, (cpu.C & 0x04) > 0);
+}
+
+export function bit_3_D(cpu: Cpu): void {
+  bit_common(cpu, (cpu.D & 0x04) > 0);
+}
+
+export function bit_3_E(cpu: Cpu): void {
+  bit_common(cpu, (cpu.E & 0x04) > 0);
+}
+
+export function bit_3_H(cpu: Cpu): void {
+  bit_common(cpu, (cpu.H & 0x04) > 0);
+}
+
+export function bit_3_L(cpu: Cpu): void {
+  bit_common(cpu, (cpu.L & 0x04) > 0);
+}
+
+export function bit_3_HLa(cpu: Cpu): void {
+  bit_common(cpu, (cpu.memoryMap.read8(cpu.HL) & 0x04) > 0);
+}
+
+// BIT 4
+export function bit_4_A(cpu: Cpu): void {
+  bit_common(cpu, (cpu.A & 0x08) > 0);
+}
+
+export function bit_4_B(cpu: Cpu): void {
+  bit_common(cpu, (cpu.B & 0x08) > 0);
+}
+
+export function bit_4_C(cpu: Cpu): void {
+  bit_common(cpu, (cpu.C & 0x08) > 0);
+}
+
+export function bit_4_D(cpu: Cpu): void {
+  bit_common(cpu, (cpu.D & 0x08) > 0);
+}
+
+export function bit_4_E(cpu: Cpu): void {
+  bit_common(cpu, (cpu.E & 0x08) > 0);
+}
+
+export function bit_4_H(cpu: Cpu): void {
+  bit_common(cpu, (cpu.H & 0x08) > 0);
+}
+
+export function bit_4_L(cpu: Cpu): void {
+  bit_common(cpu, (cpu.L & 0x08) > 0);
+}
+
+export function bit_4_HLa(cpu: Cpu): void {
+  bit_common(cpu, (cpu.memoryMap.read8(cpu.HL) & 0x08) > 0);
+}
+
+// BIT 5
+export function bit_5_A(cpu: Cpu): void {
+  bit_common(cpu, (cpu.A & 0x10) > 0);
+}
+
+export function bit_5_B(cpu: Cpu): void {
+  bit_common(cpu, (cpu.B & 0x10) > 0);
+}
+
+export function bit_5_C(cpu: Cpu): void {
+  bit_common(cpu, (cpu.C & 0x10) > 0);
+}
+
+export function bit_5_D(cpu: Cpu): void {
+  bit_common(cpu, (cpu.D & 0x10) > 0);
+}
+
+export function bit_5_E(cpu: Cpu): void {
+  bit_common(cpu, (cpu.E & 0x10) > 0);
+}
+
+export function bit_5_H(cpu: Cpu): void {
+  bit_common(cpu, (cpu.H & 0x10) > 0);
+}
+
+export function bit_5_L(cpu: Cpu): void {
+  bit_common(cpu, (cpu.L & 0x10) > 0);
+}
+
+export function bit_5_HLa(cpu: Cpu): void {
+  bit_common(cpu, (cpu.memoryMap.read8(cpu.HL) & 0x10) > 0);
+}
+
+// BIT 7
 export function bit_7_A(cpu: Cpu): void {
   bit_common(cpu, (cpu.A & 0x80) > 0);
 }
@@ -1595,4 +1733,49 @@ export function cp_d8(cpu: Cpu): void {
   cp_common(cpu, cpu.A - cpu.read8());
 
   cpu.PC += 1;
+}
+
+/**
+ * Shift Left to Carry functions
+ */
+function sla_common(cpu: Cpu, value: number): number {
+  const shiftedLeft = value << 1;
+  cpu.flagC = (shiftedLeft & 0x100) === 0x100;
+  cpu.flagZ = (shiftedLeft & 0xFF) === 0;
+  cpu.flagN = false;
+  cpu.flagH = false;
+  return shiftedLeft & 0xFF;
+}
+
+export function sla_A(cpu: Cpu): void {
+  cpu.A = sla_common(cpu, cpu.A);
+}
+
+export function sla_B(cpu: Cpu): void {
+  cpu.B = sla_common(cpu, cpu.B);
+}
+
+export function sla_C(cpu: Cpu): void {
+  cpu.C = sla_common(cpu, cpu.C);
+}
+
+export function sla_D(cpu: Cpu): void {
+  cpu.D = sla_common(cpu, cpu.D);
+}
+
+export function sla_E(cpu: Cpu): void {
+  cpu.E = sla_common(cpu, cpu.E);
+}
+
+export function sla_H(cpu: Cpu): void {
+  cpu.H = sla_common(cpu, cpu.H);
+}
+
+export function sla_L(cpu: Cpu): void {
+  cpu.L = sla_common(cpu, cpu.L);
+}
+
+export function sla_HLa(cpu: Cpu): void {
+  const result = sla_common(cpu, cpu.memoryMap.read8(cpu.HL));
+  cpu.memoryMap.write8(cpu.HL, result);
 }

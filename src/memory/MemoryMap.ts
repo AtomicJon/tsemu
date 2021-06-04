@@ -111,10 +111,15 @@ export default class MemoryMap {
   }
 
   public write8(address: number, value: number): void {
+    // DMA Transfer
     if (address == 0xFF46) {
-      debugger;
+      const fromAddress = value << 8;
+      for (let i = 0; i < 0x9F; i++) {
+        this.sprites[i] = this.read8(fromAddress + i);
+      }
     }
-    if (address < 0x4000) {
+    // General writes
+    else if (address < 0x4000) {
       this.cartRomBank0[address] = value;
     } else if (address < 0x8000) {
       this.cartRomBank1[address - 0x4000] = value;

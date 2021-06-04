@@ -134,6 +134,18 @@ export default class Cpu {
       return true;
     }
 
+    // TODO: Proper IRQ handling
+    const irq = this.memoryMap.read8(0xFF0F);
+    const irqe = this.memoryMap.read8(0xFFFF);
+    if (this.interruptsEnabled && irq & irqe & 0x01) {
+      this.memoryMap.write8(0xFF0F, irq & 0x0e);
+      this.SP -= 2;
+      this.memoryMap.write16(this.SP, this.PC);
+      this.PC = 0x0040;
+      this.cycleOffset = 5;
+      return true;
+    }
+
     let opCode = this.memoryMap.read8(this.PC);
     this.PC += 1;
 

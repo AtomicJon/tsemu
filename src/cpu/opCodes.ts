@@ -625,6 +625,18 @@ const opCodes: Record<number, OpCode> = {
       C: null,
     }
   },
+  0x3A: {
+    action: operations.ld_A_HLd,
+    mnemonic: 'LD A,(HL-)',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
   0x3C: {
     action: operations.inc_A,
     mnemonic: 'INC A',
