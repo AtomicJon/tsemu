@@ -128,19 +128,19 @@ export default class Cpu {
       // Prioritized from bit 0 - 4
       let interruptVector = 0;
       let bitMask = 0x1F; // Default to no clearing
-      if (irq && irqe && 0x01) { // VSync
+      if ((irq && irqe && 0x01) === 0x01) { // VSync
         bitMask = 0x1E;
         interruptVector = 0x0040;
-      } else if (irq && irqe && 0x02) { // LCD STAT
+      } else if ((irq && irqe && 0x02) === 0x02) { // LCD STAT
         bitMask = 0x1D;
         interruptVector = 0x0048;
-      } else if (irq && irqe && 0x04) { // Timer
+      } else if ((irq && irqe && 0x04) === 0x04) { // Timer
         bitMask = 0x1B;
         interruptVector = 0x0050;
-      } else if (irq && irqe && 0x08) { // Serial
+      } else if ((irq && irqe && 0x08) === 0x08) { // Serial
         bitMask = 0x17;
         interruptVector = 0x0058;
-      } else if (irq && irqe && 0x10) { // Joypad
+      } else if ((irq && irqe && 0x10) === 0x10) { // Joypad
         bitMask = 0x0F;
         interruptVector = 0x0060;
       }
