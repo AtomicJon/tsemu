@@ -1058,6 +1058,102 @@ const cbOpCodes: Record<number, OpCode> = {
       C: null,
     }
   },
+  0x70: {
+    action: operations.bit_6_B,
+    mnemonic: 'BIT 6, B',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '1',
+      C: null,
+    }
+  },
+  0x71: {
+    action: operations.bit_6_C,
+    mnemonic: 'BIT 6, C',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '1',
+      C: null,
+    }
+  },
+  0x72: {
+    action: operations.bit_6_D,
+    mnemonic: 'BIT 6, D',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '1',
+      C: null,
+    }
+  },
+  0x73: {
+    action: operations.bit_6_E,
+    mnemonic: 'BIT 6, E',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '1',
+      C: null,
+    }
+  },
+  0x74: {
+    action: operations.bit_6_H,
+    mnemonic: 'BIT 6, H',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '1',
+      C: null,
+    }
+  },
+  0x75: {
+    action: operations.bit_6_L,
+    mnemonic: 'BIT 6, L',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '1',
+      C: null,
+    }
+  },
+  0x76: {
+    action: operations.bit_6_HLa,
+    mnemonic: 'BIT 6, (HL)',
+    bytes: 1,
+    cycles: 16,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '1',
+      C: null,
+    }
+  },
+  0x77: {
+    action: operations.bit_6_A,
+    mnemonic: 'BIT 6, A',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '1',
+      C: null,
+    }
+  },
   0x78: {
     action: operations.bit_7_B,
     mnemonic: 'BIT 7, B',
