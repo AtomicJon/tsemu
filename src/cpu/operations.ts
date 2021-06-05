@@ -1880,6 +1880,54 @@ export function sla_HLa(cpu: Cpu): void {
 }
 
 /**
+ * SRA Shift right into carry - leave 7th bit
+ */
+function sra_common(cpu: Cpu, value: number): number {
+  const shiftedRight = (value >> 1) & (value & 0x80);
+
+  cpu.flagC = (value & 0x01) === 0x01;
+  cpu.flagZ = shiftedRight === 0;
+  cpu.flagN = false;
+  cpu.flagH = false;
+
+  return shiftedRight;
+}
+
+export function sra_A(cpu: Cpu): void {
+  cpu.A = sra_common(cpu, cpu.A);
+}
+
+export function sra_B(cpu: Cpu): void {
+  cpu.B = sra_common(cpu, cpu.B);
+}
+
+export function sra_C(cpu: Cpu): void {
+  cpu.C = sra_common(cpu, cpu.C);
+}
+
+export function sra_D(cpu: Cpu): void {
+  cpu.D = sra_common(cpu, cpu.D);
+}
+
+export function sra_E(cpu: Cpu): void {
+  cpu.E = sra_common(cpu, cpu.E);
+}
+
+export function sra_H(cpu: Cpu): void {
+  cpu.H = sra_common(cpu, cpu.H);
+}
+
+export function sra_L(cpu: Cpu): void {
+  cpu.L = sra_common(cpu, cpu.L);
+}
+
+export function sra_HLa(cpu: Cpu): void {
+  const result = sra_common(cpu, cpu.memoryMap.read8(cpu.HL));
+  cpu.memoryMap.write8(cpu.HL, result);
+}
+
+
+/**
  * SRL Shift right into carry
  */
 function srl_common(cpu: Cpu, value: number): number {

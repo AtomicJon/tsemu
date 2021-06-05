@@ -194,6 +194,102 @@ const cbOpCodes: Record<number, OpCode> = {
       C: 'C',
     }
   },
+  0x28: {
+    action: operations.sra_B,
+    mnemonic: 'SRA B',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x29: {
+    action: operations.sra_C,
+    mnemonic: 'SRA C',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x2A: {
+    action: operations.sra_D,
+    mnemonic: 'SRA D',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x2B: {
+    action: operations.sra_E,
+    mnemonic: 'SRA E',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x2C: {
+    action: operations.sra_H,
+    mnemonic: 'SRA H',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x2D: {
+    action: operations.sra_L,
+    mnemonic: 'SRA L',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x2E: {
+    action: operations.sra_HLa,
+    mnemonic: 'SRA (HL)',
+    bytes: 1,
+    cycles: 16,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x2F: {
+    action: operations.sra_A,
+    mnemonic: 'SRA A',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
   0x30: {
     action: operations.swp_B,
     mnemonic: 'SWP B',
