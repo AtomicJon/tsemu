@@ -290,6 +290,198 @@ const cbOpCodes: Record<number, OpCode> = {
       C: null,
     }
   },
+  0x40: {
+    action: operations.bit_0_B,
+    mnemonic: 'BIT 0, B',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '1',
+      C: null,
+    }
+  },
+  0x41: {
+    action: operations.bit_0_C,
+    mnemonic: 'BIT 0, C',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '1',
+      C: null,
+    }
+  },
+  0x42: {
+    action: operations.bit_0_D,
+    mnemonic: 'BIT 0, D',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '1',
+      C: null,
+    }
+  },
+  0x43: {
+    action: operations.bit_0_E,
+    mnemonic: 'BIT 0, E',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '1',
+      C: null,
+    }
+  },
+  0x44: {
+    action: operations.bit_0_H,
+    mnemonic: 'BIT 0, H',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '1',
+      C: null,
+    }
+  },
+  0x45: {
+    action: operations.bit_0_L,
+    mnemonic: 'BIT 0, L',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '1',
+      C: null,
+    }
+  },
+  0x46: {
+    action: operations.bit_0_HLa,
+    mnemonic: 'BIT 0, (HL)',
+    bytes: 1,
+    cycles: 16,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '1',
+      C: null,
+    }
+  },
+  0x47: {
+    action: operations.bit_0_A,
+    mnemonic: 'BIT 0, A',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '1',
+      C: null,
+    }
+  },
+  0x48: {
+    action: operations.bit_1_B,
+    mnemonic: 'BIT 1, B',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '1',
+      C: null,
+    }
+  },
+  0x49: {
+    action: operations.bit_1_C,
+    mnemonic: 'BIT 1, C',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '1',
+      C: null,
+    }
+  },
+  0x4A: {
+    action: operations.bit_1_D,
+    mnemonic: 'BIT 1, D',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '1',
+      C: null,
+    }
+  },
+  0x4B: {
+    action: operations.bit_1_E,
+    mnemonic: 'BIT 1, E',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '1',
+      C: null,
+    }
+  },
+  0x4C: {
+    action: operations.bit_1_H,
+    mnemonic: 'BIT 1, H',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '1',
+      C: null,
+    }
+  },
+  0x4D: {
+    action: operations.bit_1_L,
+    mnemonic: 'BIT 1, L',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '1',
+      C: null,
+    }
+  },
+  0x4E: {
+    action: operations.bit_1_HLa,
+    mnemonic: 'BIT 1, (HL)',
+    bytes: 1,
+    cycles: 16,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '1',
+      C: null,
+    }
+  },
+  0x4F: {
+    action: operations.bit_1_A,
+    mnemonic: 'BIT 1, A',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '1',
+      C: null,
+    }
+  },
   0x50: {
     action: operations.bit_2_B,
     mnemonic: 'BIT 2, B',
