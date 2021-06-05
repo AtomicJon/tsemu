@@ -1,10 +1,14 @@
 import Cpu from '../cpu/Cpu';
 import Ppu from '../gpu/Ppu';
+import Joypad from '../io/Joypad';
 import MemoryMap from '../memory/MemoryMap';
+import getHexString from '../util/getHexString';
+import getBinaryString from '../util/getBinaryString';
 
 export default class GB {
   private cpu: Cpu;
   private gpu: Ppu;
+  private joypad: Joypad;
   private memoryMap: MemoryMap;
 
   private isRunning: boolean = false;
@@ -26,10 +30,15 @@ export default class GB {
   private dbgPC: HTMLElement;
   private dbgSP: HTMLElement;
 
+  private dbgJoypad: HTMLElement;
+
   constructor(canvas: HTMLCanvasElement) {
     this.memoryMap = new MemoryMap();
     this.cpu = new Cpu(this.memoryMap);
     this.gpu = new Ppu(this.memoryMap, canvas);
+    this.joypad = new Joypad(this.memoryMap);
+
+    this.joypad.init();
     this.gpu.tick();
 
     // Debug references
@@ -47,6 +56,8 @@ export default class GB {
     this.dbgHL = document.getElementById('dbg_hl')!;
     this.dbgPC = document.getElementById('dbg_pc')!;
     this.dbgSP = document.getElementById('dbg_sp')!;
+
+    this.dbgJoypad = document.getElementById('dbg_joypad')!;
   }
 
   public togglePause(): boolean {
@@ -81,8 +92,7 @@ export default class GB {
     let cycles = 0;
     // TODO: Adjust cycles based on framerate
     while (cycles < 66667) {
-      // TODO: Move to input when ready
-      this.memoryMap.write8(0xFF00, 0x07); // Clear inputs
+      this.joypad.tick();
 
       let cpuSuccess = this.cpu.tick();
       this.gpu.tick();
@@ -114,5 +124,8 @@ export default class GB {
     this.dbgHL.innerHTML = this.cpu.L.toString(16);
     this.dbgPC.innerHTML = this.cpu.PC.toString(16);
     this.dbgSP.innerHTML = this.cpu.SP.toString(16);
+
+    const joypadValue = this.memoryMap.read8(0xFF00);
+    this.dbgJoypad.innerHTML = `${getBinaryString(joypadValue)} (${getHexString(joypadValue)})`;
   }
 }

@@ -251,12 +251,28 @@ export default class Cpu {
 
   // Writing
   public write8(address: number, value: number): void {
-    // TODO: Masked/blocked writes, etc.
+    if (this.writeMasking(address, value)) {
+      return;
+    }
+
     this.memoryMap.write8(address, value);
   }
 
   public write16(address: number, value: number): void {
-    // TODO: Masked/blocked writes, etc.
+    if (this.writeMasking(address, value)) {
+      return;
+    }
+
     this.memoryMap.write16(address, value);
+  }
+
+  private writeMasking(address: number, value: number): boolean {
+    if (address === 0xFF04) {
+      // Divider register - reset to 0 when any value is written to it
+      this.memoryMap.write8(address, 0);
+      return true;
+    }
+
+    return false;
   }
 }
