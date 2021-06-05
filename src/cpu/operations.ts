@@ -832,6 +832,49 @@ export function add_A_d8(cpu: Cpu): void {
   cpu.PC += 1;
 }
 
+// ADC
+function adc_common(cpu: Cpu, value: number) {
+  const result = cpu.A + value + (cpu.flagC ? 1 : 0);
+
+  cpu.flagN = false;
+  cpu.flagH = (((cpu.A) & 0x10) !== 0x10) && ((result & 0x10) === 0x10);
+  cpu.flagC = (result & 0x100) === 0x100;
+
+  cpu.A = result & 0xFF;
+}
+
+export function adc_A_A(cpu: Cpu): void {
+  adc_common(cpu, cpu.A);
+}
+
+export function adc_A_B(cpu: Cpu): void {
+  adc_common(cpu, cpu.B);
+}
+
+export function adc_A_C(cpu: Cpu): void {
+  adc_common(cpu, cpu.C);
+}
+
+export function adc_A_D(cpu: Cpu): void {
+  adc_common(cpu, cpu.D);
+}
+
+export function adc_A_E(cpu: Cpu): void {
+  adc_common(cpu, cpu.E);
+}
+
+export function adc_A_H(cpu: Cpu): void {
+  adc_common(cpu, cpu.H);
+}
+
+export function adc_A_L(cpu: Cpu): void {
+  adc_common(cpu, cpu.L);
+}
+
+export function adc_A_HLa(cpu: Cpu): void {
+  adc_common(cpu, cpu.memoryMap.read8(cpu.HL));
+}
+
 /**
  * 16 bit Add Functions
  */

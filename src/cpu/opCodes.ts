@@ -1633,6 +1633,102 @@ const opCodes: Record<number, OpCode> = {
       C: 'C',
     }
   },
+  0x88: {
+    action: operations.adc_A_B,
+    mnemonic: 'ADC A, B',
+    bytes: 1,
+    cycles: 4,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: 'H',
+      C: 'C',
+    }
+  },
+  0x89: {
+    action: operations.adc_A_C,
+    mnemonic: 'ADC A, C',
+    bytes: 1,
+    cycles: 4,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: 'H',
+      C: 'C',
+    }
+  },
+  0x8A: {
+    action: operations.adc_A_D,
+    mnemonic: 'ADC A, D',
+    bytes: 1,
+    cycles: 4,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: 'H',
+      C: 'C',
+    }
+  },
+  0x8B: {
+    action: operations.adc_A_E,
+    mnemonic: 'ADC A, E',
+    bytes: 1,
+    cycles: 4,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: 'H',
+      C: 'C',
+    }
+  },
+  0x8C: {
+    action: operations.adc_A_H,
+    mnemonic: 'ADC A, H',
+    bytes: 1,
+    cycles: 4,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: 'H',
+      C: 'C',
+    }
+  },
+  0x8D: {
+    action: operations.adc_A_L,
+    mnemonic: 'ADC A, L',
+    bytes: 1,
+    cycles: 4,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: 'H',
+      C: 'C',
+    }
+  },
+  0x8E: {
+    action: operations.adc_A_HLa,
+    mnemonic: 'ADC A, (HL)',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: 'H',
+      C: 'C',
+    }
+  },
+  0x8F: {
+    action: operations.adc_A_A,
+    mnemonic: 'ADC A, A',
+    bytes: 1,
+    cycles: 4,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: 'H',
+      C: 'C',
+    }
+  },
   0x90: {
     action: operations.sub_B,
     mnemonic: 'SUB B',
