@@ -1,4 +1,8 @@
-export default function getHexString(value: number): string {
+export default function getHexString(value: number, width: number = 2): string {
   const hex = value.toString(16);
-  return `0x${'0'.repeat(2 - hex.length)}${hex}`;
+  if (hex.length < width) {
+    return `${'0'.repeat(width - hex.length)}${hex}`;
+  } else {
+    return `${hex}`;
+  }
 }

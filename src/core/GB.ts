@@ -116,20 +116,20 @@ export default class GB {
   }
 
   private updateDebug = (): void => {
-    this.dbgA.innerHTML = this.cpu.A.toString(16);
-    this.dbgF.innerHTML = this.cpu.F.toString(16);
-    this.dbgAF.innerHTML = this.cpu.F.toString(16);
-    this.dbgB.innerHTML = this.cpu.B.toString(16);
-    this.dbgC.innerHTML = this.cpu.C.toString(16);
-    this.dbgBC.innerHTML = this.cpu.C.toString(16);
-    this.dbgD.innerHTML = this.cpu.D.toString(16);
-    this.dbgE.innerHTML = this.cpu.E.toString(16);
-    this.dbgDE.innerHTML = this.cpu.E.toString(16);
-    this.dbgH.innerHTML = this.cpu.H.toString(16);
-    this.dbgL.innerHTML = this.cpu.L.toString(16);
-    this.dbgHL.innerHTML = this.cpu.L.toString(16);
-    this.dbgPC.innerHTML = this.cpu.PC.toString(16);
-    this.dbgSP.innerHTML = this.cpu.SP.toString(16);
+    this.dbgA.innerHTML = getHexString(this.cpu.A);
+    this.dbgF.innerHTML = getHexString(this.cpu.F);
+    this.dbgB.innerHTML = getHexString(this.cpu.B);
+    this.dbgC.innerHTML = getHexString(this.cpu.C);
+    this.dbgD.innerHTML = getHexString(this.cpu.D);
+    this.dbgE.innerHTML = getHexString(this.cpu.E);
+    this.dbgH.innerHTML = getHexString(this.cpu.H);
+    this.dbgL.innerHTML = getHexString(this.cpu.L);
+    this.dbgAF.innerHTML = getHexString(this.cpu.AF, 4);
+    this.dbgBC.innerHTML = getHexString(this.cpu.BC, 4);
+    this.dbgDE.innerHTML = getHexString(this.cpu.DE, 4);
+    this.dbgHL.innerHTML = getHexString(this.cpu.HL, 4);
+    this.dbgPC.innerHTML = getHexString(this.cpu.PC);
+    this.dbgSP.innerHTML = getHexString(this.cpu.SP);
 
     const joypadValue = this.memoryMap.read8(0xFF00);
     this.dbgJoypad.innerHTML = `${getBinaryString(joypadValue)} (${getHexString(joypadValue)})`;
