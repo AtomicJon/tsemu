@@ -1084,25 +1084,53 @@ export function xor_d8(cpu: Cpu): void {
 /**
  * Rotate  Functions
  */
-export function rlca(cpu: Cpu): void {
-  const rotatedValue = cpu.A << 1;
+function rlc_common(cpu: Cpu, value: number): number {
+  const rotatedValue = value << 1;
   let result = rotatedValue;
   // Move carry to carry flag (existing flag discarded)
   cpu.flagC = (result & 256) === 256;
   cpu.flagZ = result === 0;
 
-  // Shift the carry flag in
-  if (cpu.flagC) {
-    result = result | 0x01;
-  }
-
   cpu.flagN = false;
   cpu.flagH = false;
 
-  cpu.A = result & 0xFF;
+  return result & 0xFF;
 }
 
-function rl(cpu: Cpu, value: number): number {
+export function rlc_A(cpu: Cpu): void {
+  cpu.A = rlc_common(cpu, cpu.A);
+}
+
+export function rlc_B(cpu: Cpu): void {
+  cpu.B = rlc_common(cpu, cpu.B);
+}
+
+export function rlc_C(cpu: Cpu): void {
+  cpu.C = rlc_common(cpu, cpu.C);
+}
+
+export function rlc_D(cpu: Cpu): void {
+  cpu.D = rlc_common(cpu, cpu.D);
+}
+
+export function rlc_E(cpu: Cpu): void {
+  cpu.E = rlc_common(cpu, cpu.E);
+}
+
+export function rlc_H(cpu: Cpu): void {
+  cpu.H = rlc_common(cpu, cpu.H);
+}
+
+export function rlc_L(cpu: Cpu): void {
+  cpu.L = rlc_common(cpu, cpu.L);
+}
+
+export function rlc_HLa(cpu: Cpu): void {
+  cpu.memoryMap.write8(cpu.HL, rlc_common(cpu, cpu.memoryMap.read8(cpu.HL)));
+}
+
+
+function rl_common(cpu: Cpu, value: number): number {
   const rotatedValue = value << 1;
   let result = rotatedValue;
   // Shift the carry flag in
@@ -1120,35 +1148,35 @@ function rl(cpu: Cpu, value: number): number {
 }
 
 export function rl_A(cpu: Cpu): void {
-  cpu.A = rl(cpu, cpu.A);
+  cpu.A = rl_common(cpu, cpu.A);
 }
 
 export function rl_B(cpu: Cpu): void {
-  cpu.B = rl(cpu, cpu.B);
+  cpu.B = rl_common(cpu, cpu.B);
 }
 
 export function rl_C(cpu: Cpu): void {
-  cpu.C = rl(cpu, cpu.C);
+  cpu.C = rl_common(cpu, cpu.C);
 }
 
 export function rl_D(cpu: Cpu): void {
-  cpu.D = rl(cpu, cpu.D);
+  cpu.D = rl_common(cpu, cpu.D);
 }
 
 export function rl_E(cpu: Cpu): void {
-  cpu.E = rl(cpu, cpu.E);
+  cpu.E = rl_common(cpu, cpu.E);
 }
 
 export function rl_H(cpu: Cpu): void {
-  cpu.H = rl(cpu, cpu.H);
+  cpu.H = rl_common(cpu, cpu.H);
 }
 
 export function rl_L(cpu: Cpu): void {
-  cpu.L = rl(cpu, cpu.L);
+  cpu.L = rl_common(cpu, cpu.L);
 }
 
 export function rl_HLa(cpu: Cpu): void {
-  cpu.memoryMap.write8(cpu.HL, rl(cpu, cpu.memoryMap.read8(cpu.HL)));
+  cpu.memoryMap.write8(cpu.HL, rl_common(cpu, cpu.memoryMap.read8(cpu.HL)));
 }
 
 // RR
@@ -1198,6 +1226,53 @@ export function rr_L(cpu: Cpu): void {
 }
 
 export function rr_HLa(cpu: Cpu): void {
+  cpu.memoryMap.write8(cpu.HL, rr_common(cpu, cpu.memoryMap.read8(cpu.HL)));
+}
+
+// RRC
+function rrc_common(cpu: Cpu, value: number): number {
+  const rotatedValue = value >> 1;
+  let result = rotatedValue;
+
+  // Move carry to carry flag
+  cpu.flagC = (value & 0x01) === 0x01;
+  cpu.flagZ = result === 0;
+
+  cpu.flagN = false;
+  cpu.flagH = false;
+
+  return result;
+}
+
+export function rrc_A(cpu: Cpu): void {
+  cpu.A = rrc_common(cpu, cpu.A);
+}
+
+export function rrc_B(cpu: Cpu): void {
+  cpu.B = rrc_common(cpu, cpu.B);
+}
+
+export function rrc_C(cpu: Cpu): void {
+  cpu.C = rrc_common(cpu, cpu.C);
+}
+
+export function rrc_D(cpu: Cpu): void {
+  cpu.D = rrc_common(cpu, cpu.D);
+}
+
+export function rrc_E(cpu: Cpu): void {
+  cpu.E = rrc_common(cpu, cpu.E);
+}
+
+export function rrc_H(cpu: Cpu): void {
+  cpu.H = rrc_common(cpu, cpu.H);
+}
+
+export function rrc_L(cpu: Cpu): void {
+  cpu.L = rrc_common(cpu, cpu.L);
+}
+
+export function rrc_HLa(cpu: Cpu): void {
   cpu.memoryMap.write8(cpu.HL, rr_common(cpu, cpu.memoryMap.read8(cpu.HL)));
 }
 
@@ -1793,6 +1868,276 @@ export function res_7_HLa(cpu: Cpu): void {
   const value = cpu.memoryMap.read8(cpu.HL);
   cpu.memoryMap.write8(cpu.HL, value & 0x7F);
 }
+
+/**
+ * Bit Set Functions
+ */
+export function set_0_A(cpu: Cpu): void {
+  cpu.A = cpu.A | 0x01;
+}
+
+export function set_0_B(cpu: Cpu): void {
+  cpu.B = cpu.B | 0x01;
+}
+
+export function set_0_C(cpu: Cpu): void {
+  cpu.C = cpu.C | 0x01;
+}
+
+export function set_0_D(cpu: Cpu): void {
+  cpu.D = cpu.D | 0x01;
+}
+
+export function set_0_E(cpu: Cpu): void {
+  cpu.E = cpu.E | 0x01;
+}
+
+export function set_0_H(cpu: Cpu): void {
+  cpu.H = cpu.H | 0x01;
+}
+
+export function set_0_L(cpu: Cpu): void {
+  cpu.L = cpu.L | 0x01;
+}
+
+export function set_0_HLa(cpu: Cpu): void {
+  const value = cpu.memoryMap.read8(cpu.HL);
+  cpu.memoryMap.write8(cpu.HL, value | 0x01);
+}
+
+export function set_1_A(cpu: Cpu): void {
+  cpu.A = cpu.A | 0x02;
+}
+
+export function set_1_B(cpu: Cpu): void {
+  cpu.B = cpu.B | 0x02;
+}
+
+export function set_1_C(cpu: Cpu): void {
+  cpu.C = cpu.C | 0x02;
+}
+
+export function set_1_D(cpu: Cpu): void {
+  cpu.D = cpu.D | 0x02;
+}
+
+export function set_1_E(cpu: Cpu): void {
+  cpu.E = cpu.E | 0x02;
+}
+
+export function set_1_H(cpu: Cpu): void {
+  cpu.H = cpu.H | 0x02;
+}
+
+export function set_1_L(cpu: Cpu): void {
+  cpu.L = cpu.L | 0x02;
+}
+
+export function set_1_HLa(cpu: Cpu): void {
+  const value = cpu.memoryMap.read8(cpu.HL);
+  cpu.memoryMap.write8(cpu.HL, value | 0x02);
+}
+
+export function set_2_A(cpu: Cpu): void {
+  cpu.A = cpu.A | 0x04;
+}
+
+export function set_2_B(cpu: Cpu): void {
+  cpu.B = cpu.B | 0x04;
+}
+
+export function set_2_C(cpu: Cpu): void {
+  cpu.C = cpu.C | 0x04;
+}
+
+export function set_2_D(cpu: Cpu): void {
+  cpu.D = cpu.D | 0x04;
+}
+
+export function set_2_E(cpu: Cpu): void {
+  cpu.E = cpu.E | 0x04;
+}
+
+export function set_2_H(cpu: Cpu): void {
+  cpu.H = cpu.H | 0x04;
+}
+
+export function set_2_L(cpu: Cpu): void {
+  cpu.L = cpu.L | 0x04;
+}
+
+export function set_2_HLa(cpu: Cpu): void {
+  const value = cpu.memoryMap.read8(cpu.HL);
+  cpu.memoryMap.write8(cpu.HL, value | 0x04);
+}
+
+export function set_3_A(cpu: Cpu): void {
+  cpu.A = cpu.A | 0x08;
+}
+
+export function set_3_B(cpu: Cpu): void {
+  cpu.B = cpu.B | 0x08;
+}
+
+export function set_3_C(cpu: Cpu): void {
+  cpu.C = cpu.C | 0x08;
+}
+
+export function set_3_D(cpu: Cpu): void {
+  cpu.D = cpu.D | 0x08;
+}
+
+export function set_3_E(cpu: Cpu): void {
+  cpu.E = cpu.E | 0x08;
+}
+
+export function set_3_H(cpu: Cpu): void {
+  cpu.H = cpu.H | 0x08;
+}
+
+export function set_3_L(cpu: Cpu): void {
+  cpu.L = cpu.L | 0x08;
+}
+
+export function set_3_HLa(cpu: Cpu): void {
+  const value = cpu.memoryMap.read8(cpu.HL);
+  cpu.memoryMap.write8(cpu.HL, value | 0x08);
+}
+
+export function set_4_A(cpu: Cpu): void {
+  cpu.A = cpu.A | 0x10;
+}
+
+export function set_4_B(cpu: Cpu): void {
+  cpu.B = cpu.B | 0x10;
+}
+
+export function set_4_C(cpu: Cpu): void {
+  cpu.C = cpu.C | 0x10;
+}
+
+export function set_4_D(cpu: Cpu): void {
+  cpu.D = cpu.D | 0x10;
+}
+
+export function set_4_E(cpu: Cpu): void {
+  cpu.E = cpu.E | 0x10;
+}
+
+export function set_4_H(cpu: Cpu): void {
+  cpu.H = cpu.H | 0x10;
+}
+
+export function set_4_L(cpu: Cpu): void {
+  cpu.L = cpu.L | 0x10;
+}
+
+export function set_4_HLa(cpu: Cpu): void {
+  const value = cpu.memoryMap.read8(cpu.HL);
+  cpu.memoryMap.write8(cpu.HL, value | 0x10);
+}
+
+export function set_5_A(cpu: Cpu): void {
+  cpu.A = cpu.A | 0x20;
+}
+
+export function set_5_B(cpu: Cpu): void {
+  cpu.B = cpu.B | 0x20;
+}
+
+export function set_5_C(cpu: Cpu): void {
+  cpu.C = cpu.C | 0x20;
+}
+
+export function set_5_D(cpu: Cpu): void {
+  cpu.D = cpu.D | 0x20;
+}
+
+export function set_5_E(cpu: Cpu): void {
+  cpu.E = cpu.E | 0x20;
+}
+
+export function set_5_H(cpu: Cpu): void {
+  cpu.H = cpu.H | 0x20;
+}
+
+export function set_5_L(cpu: Cpu): void {
+  cpu.L = cpu.L | 0x20;
+}
+
+export function set_5_HLa(cpu: Cpu): void {
+  const value = cpu.memoryMap.read8(cpu.HL);
+  cpu.memoryMap.write8(cpu.HL, value | 0x20);
+}
+
+export function set_6_A(cpu: Cpu): void {
+  cpu.A = cpu.A | 0x04;
+}
+
+export function set_6_B(cpu: Cpu): void {
+  cpu.B = cpu.B | 0x04;
+}
+
+export function set_6_C(cpu: Cpu): void {
+  cpu.C = cpu.C | 0x04;
+}
+
+export function set_6_D(cpu: Cpu): void {
+  cpu.D = cpu.D | 0x04;
+}
+
+export function set_6_E(cpu: Cpu): void {
+  cpu.E = cpu.E | 0x04;
+}
+
+export function set_6_H(cpu: Cpu): void {
+  cpu.H = cpu.H | 0x04;
+}
+
+export function set_6_L(cpu: Cpu): void {
+  cpu.L = cpu.L | 0x04;
+}
+
+export function set_6_HLa(cpu: Cpu): void {
+  const value = cpu.memoryMap.read8(cpu.HL);
+  cpu.memoryMap.write8(cpu.HL, value | 0x04);
+}
+
+export function set_7_A(cpu: Cpu): void {
+  cpu.A = cpu.A | 0x80;
+}
+
+export function set_7_B(cpu: Cpu): void {
+  cpu.B = cpu.B | 0x80;
+}
+
+export function set_7_C(cpu: Cpu): void {
+  cpu.C = cpu.C | 0x80;
+}
+
+export function set_7_D(cpu: Cpu): void {
+  cpu.D = cpu.D | 0x80;
+}
+
+export function set_7_E(cpu: Cpu): void {
+  cpu.E = cpu.E | 0x80;
+}
+
+export function set_7_H(cpu: Cpu): void {
+  cpu.H = cpu.H | 0x80;
+}
+
+export function set_7_L(cpu: Cpu): void {
+  cpu.L = cpu.L | 0x80;
+}
+
+export function set_7_HLa(cpu: Cpu): void {
+  const value = cpu.memoryMap.read8(cpu.HL);
+  cpu.memoryMap.write8(cpu.HL, value | 0x80);
+}
+
+
+// TODO: Organize below
 
 export function ld_Ca_A(cpu: Cpu): void {
   cpu.memoryMap.write8(0xFF00 + cpu.C, cpu.A);

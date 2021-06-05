@@ -86,7 +86,7 @@ const opCodes: Record<number, OpCode> = {
     }
   },
   0x07: {
-    action: operations.rlca,
+    action: operations.rlc_A,
     mnemonic: 'RLCA',
     bytes: 1,
     cycles: 4,

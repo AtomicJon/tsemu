@@ -2,6 +2,198 @@ import * as operations from './operations';
 
 // Prefixed Op Codes
 const cbOpCodes: Record<number, OpCode> = {
+  0x00: {
+    action: operations.rlc_B,
+    mnemonic: 'RLC B',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x01: {
+    action: operations.rlc_C,
+    mnemonic: 'RLC C',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x02: {
+    action: operations.rlc_D,
+    mnemonic: 'RLC D',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x03: {
+    action: operations.rlc_E,
+    mnemonic: 'RLC E',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x04: {
+    action: operations.rlc_H,
+    mnemonic: 'RLC H',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x05: {
+    action: operations.rlc_L,
+    mnemonic: 'RLC L',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x06: {
+    action: operations.rlc_HLa,
+    mnemonic: 'RLC (HL)',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x07: {
+    action: operations.rlc_A,
+    mnemonic: 'RLC A',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x08: {
+    action: operations.rrc_B,
+    mnemonic: 'RRC B',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x09: {
+    action: operations.rrc_C,
+    mnemonic: 'RRC C',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x0A: {
+    action: operations.rrc_D,
+    mnemonic: 'RRC D',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x0B: {
+    action: operations.rrc_E,
+    mnemonic: 'RRC E',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x0C: {
+    action: operations.rrc_H,
+    mnemonic: 'RRC H',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x0D: {
+    action: operations.rrc_L,
+    mnemonic: 'RRC L',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x0E: {
+    action: operations.rrc_HLa,
+    mnemonic: 'RRC (HL)',
+    bytes: 1,
+    cycles: 16,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x0F: {
+    action: operations.rrc_A,
+    mnemonic: 'RRC A',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
   0x10: {
     action: operations.rl_B,
     mnemonic: 'RL B',
@@ -2114,6 +2306,774 @@ const cbOpCodes: Record<number, OpCode> = {
       C: null,
     }
   },
+  0xC0: {
+    action: operations.set_0_B,
+    mnemonic: 'SET 0, B',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xC1: {
+    action: operations.set_0_C,
+    mnemonic: 'SET 0, C',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xC2: {
+    action: operations.set_0_D,
+    mnemonic: 'SET 0, D',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xC3: {
+    action: operations.set_0_E,
+    mnemonic: 'SET 0, E',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xC4: {
+    action: operations.set_0_H,
+    mnemonic: 'SET 0, H',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xC5: {
+    action: operations.set_0_L,
+    mnemonic: 'SET 0, L',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xC6: {
+    action: operations.set_0_HLa,
+    mnemonic: 'SET 0, (HL)',
+    bytes: 1,
+    cycles: 16,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xC7: {
+    action: operations.set_0_A,
+    mnemonic: 'SET 0, A',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xC8: {
+    action: operations.set_1_B,
+    mnemonic: 'SET 1, B',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xC9: {
+    action: operations.set_1_C,
+    mnemonic: 'SET 1, C',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xCA: {
+    action: operations.set_1_D,
+    mnemonic: 'SET 1, D',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xCB: {
+    action: operations.set_1_E,
+    mnemonic: 'SET 1, E',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xCC: {
+    action: operations.set_1_H,
+    mnemonic: 'SET 1, H',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xCD: {
+    action: operations.set_1_L,
+    mnemonic: 'SET 1, L',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xCE: {
+    action: operations.set_1_HLa,
+    mnemonic: 'SET 1, (HL)',
+    bytes: 1,
+    cycles: 16,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xCF: {
+    action: operations.set_1_A,
+    mnemonic: 'SET 1, A',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xD0: {
+    action: operations.set_2_B,
+    mnemonic: 'SET 2, B',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xD1: {
+    action: operations.set_2_C,
+    mnemonic: 'SET 2, C',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xD2: {
+    action: operations.set_2_D,
+    mnemonic: 'SET 2, D',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xD3: {
+    action: operations.set_2_E,
+    mnemonic: 'SET 2, E',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xD4: {
+    action: operations.set_2_H,
+    mnemonic: 'SET 2, H',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xD5: {
+    action: operations.set_2_L,
+    mnemonic: 'SET 2, L',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xD6: {
+    action: operations.set_2_HLa,
+    mnemonic: 'SET 2, (HL)',
+    bytes: 1,
+    cycles: 16,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xD7: {
+    action: operations.set_2_A,
+    mnemonic: 'SET 2, A',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xD8: {
+    action: operations.set_3_B,
+    mnemonic: 'SET 3, B',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xD9: {
+    action: operations.set_3_C,
+    mnemonic: 'SET 3, C',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xDA: {
+    action: operations.set_3_D,
+    mnemonic: 'SET 3, D',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xDB: {
+    action: operations.set_3_E,
+    mnemonic: 'SET 3, E',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xDC: {
+    action: operations.set_3_H,
+    mnemonic: 'SET 3, H',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xDD: {
+    action: operations.set_3_L,
+    mnemonic: 'SET 3, L',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xDE: {
+    action: operations.set_3_HLa,
+    mnemonic: 'SET 3, (HL)',
+    bytes: 1,
+    cycles: 16,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xDF: {
+    action: operations.set_3_A,
+    mnemonic: 'SET 3, A',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xE0: {
+    action: operations.set_4_B,
+    mnemonic: 'SET 4, B',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xE1: {
+    action: operations.set_4_C,
+    mnemonic: 'SET 4, C',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xE2: {
+    action: operations.set_4_D,
+    mnemonic: 'SET 4, D',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xE3: {
+    action: operations.set_4_E,
+    mnemonic: 'SET 4, E',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xE4: {
+    action: operations.set_4_H,
+    mnemonic: 'SET 4, H',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xE5: {
+    action: operations.set_4_L,
+    mnemonic: 'SET 4, L',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xE6: {
+    action: operations.set_4_HLa,
+    mnemonic: 'SET 4, (HL)',
+    bytes: 1,
+    cycles: 16,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xE7: {
+    action: operations.set_4_A,
+    mnemonic: 'SET 4, A',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xE8: {
+    action: operations.set_5_B,
+    mnemonic: 'SET 5, B',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xE9: {
+    action: operations.set_5_C,
+    mnemonic: 'SET 5, C',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xEA: {
+    action: operations.set_5_D,
+    mnemonic: 'SET 5, D',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xEB: {
+    action: operations.set_5_E,
+    mnemonic: 'SET 5, E',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xEC: {
+    action: operations.set_5_H,
+    mnemonic: 'SET 5, H',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xED: {
+    action: operations.set_5_L,
+    mnemonic: 'SET 5, L',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xEE: {
+    action: operations.set_5_HLa,
+    mnemonic: 'SET 5, (HL)',
+    bytes: 1,
+    cycles: 16,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xEF: {
+    action: operations.set_5_A,
+    mnemonic: 'SET 5, A',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xF0: {
+    action: operations.set_6_B,
+    mnemonic: 'SET 6, B',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xF1: {
+    action: operations.set_6_C,
+    mnemonic: 'SET 6, C',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xF2: {
+    action: operations.set_6_D,
+    mnemonic: 'SET 6, D',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xF3: {
+    action: operations.set_6_E,
+    mnemonic: 'SET 6, E',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xF4: {
+    action: operations.set_6_H,
+    mnemonic: 'SET 6, H',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xF5: {
+    action: operations.set_6_L,
+    mnemonic: 'SET 6, L',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xF6: {
+    action: operations.set_6_HLa,
+    mnemonic: 'SET 6, (HL)',
+    bytes: 1,
+    cycles: 16,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xF7: {
+    action: operations.set_6_A,
+    mnemonic: 'SET 6, A',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xF8: {
+    action: operations.set_7_B,
+    mnemonic: 'SET 7, B',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xF9: {
+    action: operations.set_7_C,
+    mnemonic: 'SET 7, C',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xFA: {
+    action: operations.set_7_D,
+    mnemonic: 'SET 7, D',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xFB: {
+    action: operations.set_7_E,
+    mnemonic: 'SET 7, E',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xFC: {
+    action: operations.set_7_H,
+    mnemonic: 'SET 7, H',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xFD: {
+    action: operations.set_7_L,
+    mnemonic: 'SET 7, L',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xFE: {
+    action: operations.set_7_HLa,
+    mnemonic: 'SET 7, (HL)',
+    bytes: 1,
+    cycles: 16,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0xFF: {
+    action: operations.set_7_A,
+    mnemonic: 'SET 7, A',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  }
 }
 
 export default cbOpCodes;
