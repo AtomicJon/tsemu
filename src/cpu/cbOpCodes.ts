@@ -3,7 +3,7 @@ import * as operations from './operations';
 // Prefixed Op Codes
 const cbOpCodes: Record<number, OpCode> = {
   0x10: {
-    action: operations.rlB,
+    action: operations.rl_B,
     mnemonic: 'RL B',
     bytes: 1,
     cycles: 8,
@@ -15,7 +15,7 @@ const cbOpCodes: Record<number, OpCode> = {
     }
   },
   0x11: {
-    action: operations.rlC,
+    action: operations.rl_C,
     mnemonic: 'RL C',
     bytes: 1,
     cycles: 8,
@@ -27,7 +27,7 @@ const cbOpCodes: Record<number, OpCode> = {
     }
   },
   0x12: {
-    action: operations.rlD,
+    action: operations.rl_D,
     mnemonic: 'RL D',
     bytes: 1,
     cycles: 8,
@@ -39,7 +39,7 @@ const cbOpCodes: Record<number, OpCode> = {
     }
   },
   0x13: {
-    action: operations.rlE,
+    action: operations.rl_E,
     mnemonic: 'RL E',
     bytes: 1,
     cycles: 8,
@@ -51,7 +51,7 @@ const cbOpCodes: Record<number, OpCode> = {
     }
   },
   0x14: {
-    action: operations.rlH,
+    action: operations.rl_H,
     mnemonic: 'RL H',
     bytes: 1,
     cycles: 8,
@@ -63,7 +63,7 @@ const cbOpCodes: Record<number, OpCode> = {
     }
   },
   0x15: {
-    action: operations.rlL,
+    action: operations.rl_L,
     mnemonic: 'RL L',
     bytes: 1,
     cycles: 8,
@@ -75,7 +75,7 @@ const cbOpCodes: Record<number, OpCode> = {
     }
   },
   0x16: {
-    action: operations.rlHLa,
+    action: operations.rl_HLa,
     mnemonic: 'RL (HL)',
     bytes: 1,
     cycles: 8,
@@ -87,8 +87,104 @@ const cbOpCodes: Record<number, OpCode> = {
     }
   },
   0x17: {
-    action: operations.rlA,
+    action: operations.rl_A,
     mnemonic: 'RL A',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x18: {
+    action: operations.rr_B,
+    mnemonic: 'RR B',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x19: {
+    action: operations.rr_C,
+    mnemonic: 'RR C',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x1A: {
+    action: operations.rr_D,
+    mnemonic: 'RR D',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x1B: {
+    action: operations.rr_E,
+    mnemonic: 'RR E',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x1C: {
+    action: operations.rr_H,
+    mnemonic: 'RR H',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x1D: {
+    action: operations.rr_L,
+    mnemonic: 'RR L',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x1E: {
+    action: operations.rr_HLa,
+    mnemonic: 'RR (HL)',
+    bytes: 1,
+    cycles: 16,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x1F: {
+    action: operations.rr_A,
+    mnemonic: 'RR A',
     bytes: 1,
     cycles: 8,
     flags: {

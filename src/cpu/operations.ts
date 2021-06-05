@@ -1119,36 +1119,86 @@ function rl(cpu: Cpu, value: number): number {
   return result & 0xFF;
 }
 
-export function rlA(cpu: Cpu): void {
+export function rl_A(cpu: Cpu): void {
   cpu.A = rl(cpu, cpu.A);
 }
 
-export function rlB(cpu: Cpu): void {
+export function rl_B(cpu: Cpu): void {
   cpu.B = rl(cpu, cpu.B);
 }
 
-export function rlC(cpu: Cpu): void {
+export function rl_C(cpu: Cpu): void {
   cpu.C = rl(cpu, cpu.C);
 }
 
-export function rlD(cpu: Cpu): void {
+export function rl_D(cpu: Cpu): void {
   cpu.D = rl(cpu, cpu.D);
 }
 
-export function rlE(cpu: Cpu): void {
+export function rl_E(cpu: Cpu): void {
   cpu.E = rl(cpu, cpu.E);
 }
 
-export function rlH(cpu: Cpu): void {
+export function rl_H(cpu: Cpu): void {
   cpu.H = rl(cpu, cpu.H);
 }
 
-export function rlL(cpu: Cpu): void {
+export function rl_L(cpu: Cpu): void {
   cpu.L = rl(cpu, cpu.L);
 }
 
-export function rlHLa(cpu: Cpu): void {
+export function rl_HLa(cpu: Cpu): void {
   cpu.memoryMap.write8(cpu.HL, rl(cpu, cpu.memoryMap.read8(cpu.HL)));
+}
+
+// RR
+function rr_common(cpu: Cpu, value: number): number {
+  const rotatedValue = value >> 1;
+  let result = rotatedValue;
+  // Shift the carry flag in
+  if (cpu.flagC) {
+    result = result | 0x80;
+  }
+  // Move carry to carry flag
+  cpu.flagC = (value & 0x01) === 0x01;
+  cpu.flagZ = result === 0;
+
+  cpu.flagN = false;
+  cpu.flagH = false;
+
+  return result;
+}
+
+export function rr_A(cpu: Cpu): void {
+  cpu.A = rr_common(cpu, cpu.A);
+}
+
+export function rr_B(cpu: Cpu): void {
+  cpu.B = rr_common(cpu, cpu.B);
+}
+
+export function rr_C(cpu: Cpu): void {
+  cpu.C = rr_common(cpu, cpu.C);
+}
+
+export function rr_D(cpu: Cpu): void {
+  cpu.D = rr_common(cpu, cpu.D);
+}
+
+export function rr_E(cpu: Cpu): void {
+  cpu.E = rr_common(cpu, cpu.E);
+}
+
+export function rr_H(cpu: Cpu): void {
+  cpu.H = rr_common(cpu, cpu.H);
+}
+
+export function rr_L(cpu: Cpu): void {
+  cpu.L = rr_common(cpu, cpu.L);
+}
+
+export function rr_HLa(cpu: Cpu): void {
+  cpu.memoryMap.write8(cpu.HL, rr_common(cpu, cpu.memoryMap.read8(cpu.HL)));
 }
 
 /**

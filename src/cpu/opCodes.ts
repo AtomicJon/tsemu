@@ -254,7 +254,7 @@ const opCodes: Record<number, OpCode> = {
     }
   },
   0x17: {
-    action: operations.rlA,
+    action: operations.rl_A,
     mnemonic: 'RLA',
     bytes: 1,
     cycles: 4,
