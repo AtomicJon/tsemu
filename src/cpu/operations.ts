@@ -442,33 +442,33 @@ export function jp_HL(cpu: Cpu): void {
 export function jp_nz_a16(cpu: Cpu): void {
   if (!cpu.flagZ) {
     cpu.PC = cpu.read16();
+  } else {
+    cpu.PC += 2;
   }
-
-  cpu.PC += 2;
 }
 
 export function jp_z_a16(cpu: Cpu): void {
   if (cpu.flagZ) {
     cpu.PC = cpu.read16();
+  } else {
+    cpu.PC += 2;
   }
-
-  cpu.PC += 2;
 }
 
 export function jp_nc_a16(cpu: Cpu): void {
   if (!cpu.flagC) {
     cpu.PC = cpu.read16();
+  } else {
+    cpu.PC += 2;
   }
-
-  cpu.PC += 2;
 }
 
 export function jp_c_a16(cpu: Cpu): void {
   if (cpu.flagC) {
     cpu.PC = cpu.read16();
+  } else {
+    cpu.PC += 2;
   }
-
-  cpu.PC += 2;
 }
 
 /**
