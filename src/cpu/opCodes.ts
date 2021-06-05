@@ -181,6 +181,18 @@ const opCodes: Record<number, OpCode> = {
       C: null,
     }
   },
+  0x0F: {
+    action: operations.rrc_A,
+    mnemonic: 'RRCA',
+    bytes: 1,
+    cycles: 4,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
   0x11: {
     action: operations.ld_DE_d16,
     mnemonic: 'LD DE, d16',
