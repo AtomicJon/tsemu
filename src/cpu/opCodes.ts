@@ -469,6 +469,18 @@ const opCodes: Record<number, OpCode> = {
       C: null,
     }
   },
+  0x27: {
+    action: operations.daa,
+    mnemonic: 'DAA',
+    bytes: 1,
+    cycles: 4,
+    flags: {
+      Z: 'Z',
+      N: null,
+      H: '0',
+      C: 'C',
+    }
+  },
   0x28: {
     action: operations.jr_z_r8,
     mnemonic: 'JR Z, R8',

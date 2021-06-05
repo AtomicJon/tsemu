@@ -2380,3 +2380,38 @@ export function srl_HLa(cpu: Cpu): void {
   const result = srl_common(cpu, cpu.memoryMap.read8(cpu.HL));
   cpu.memoryMap.write8(cpu.HL, result);
 }
+
+/**
+ * DAA
+ */
+export function daa(cpu: Cpu): void {
+  let result = cpu.A;
+  let adjust = 0;
+
+  // Addition - flagN = if previous op was subtraction
+  if (!cpu.flagN) {
+    if (cpu.flagH || (cpu.A & 0x0F) > 0x09) {
+      adjust = 0x06;
+    }
+
+    if (cpu.flagC || (cpu.A & 0xF0) > 0x90) {
+      adjust |= 0x60;
+      cpu.flagC = true;
+    }
+    result += adjust;
+  } else if (cpu.flagH) {
+    // Subtraction
+    if (cpu.flagH) {
+      adjust = 0x06;
+    }
+
+    if (cpu.flagC) {
+      adjust |= 0x60;
+      cpu.flagC = true;
+    }
+    result -= adjust;
+  }
+
+  cpu.flagZ = result === 0;
+  cpu.flagH = false;
+}

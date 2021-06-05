@@ -171,7 +171,7 @@ export default class Cpu {
 
     this.opHistory.push({
       step: this.step,
-      PC: this.PC,
+      PC: this.PC - 1,
       codeString,
       mnemonic: operation.mnemonic,
       nextBytes: [
