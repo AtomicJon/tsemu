@@ -117,43 +117,7 @@ export default class Cpu {
       return true;
     }
 
-    // TODO: Proper IRQ handling
-    const irq = this.memoryMap.read8(0xFF0F); // Interrupt Request Flag
-    const irqe = this.memoryMap.read8(0xFFFF); // Interrupt Request Enable
-    if (this.interruptsEnabled && irq & irqe & 0x01) {
-      // Disable any further interrupts until re-enabled
-      this.interruptsEnabled = false;
-
-      // Determine the vector based on which bit is set
-      // Prioritized from bit 0 - 4
-      let interruptVector = 0;
-      let bitMask = 0x1F; // Default to no clearing
-      if ((irq && irqe && 0x01) === 0x01) { // VSync
-        bitMask = 0x1E;
-        interruptVector = 0x0040;
-      } else if ((irq && irqe && 0x02) === 0x02) { // LCD STAT
-        bitMask = 0x1D;
-        interruptVector = 0x0048;
-      } else if ((irq && irqe && 0x04) === 0x04) { // Timer
-        bitMask = 0x1B;
-        interruptVector = 0x0050;
-      } else if ((irq && irqe && 0x08) === 0x08) { // Serial
-        bitMask = 0x17;
-        interruptVector = 0x0058;
-      } else if ((irq && irqe && 0x10) === 0x10) { // Joypad
-        bitMask = 0x0F;
-        interruptVector = 0x0060;
-      }
-
-      // Clear the flag for the interrupt being processed
-      this.memoryMap.write8(0xFF0F, irq & bitMask);
-      // Push the current PC onto the stack
-      this.SP -= 2;
-      this.memoryMap.write16(this.SP, this.PC);
-
-      // Jump to the VSync Interrupt Vector
-      this.PC = interruptVector;
-      this.cycleOffset = 5;
+    if (this.handleInterrupt()) {
       return true;
     }
 
@@ -270,6 +234,49 @@ export default class Cpu {
     if (address === 0xFF04) {
       // Divider register - reset to 0 when any value is written to it
       this.memoryMap.write8(address, 0);
+      return true;
+    }
+
+    return false;
+  }
+
+  private handleInterrupt(): boolean {
+    const irq = this.memoryMap.read8(0xFF0F); // Interrupt Request Flag
+    const irqe = this.memoryMap.read8(0xFFFF); // Interrupt Request Enable
+    if (this.interruptsEnabled && irq & irqe & 0x01) {
+      // Disable any further interrupts until re-enabled
+      this.interruptsEnabled = false;
+
+      // Determine the vector based on which bit is set
+      // Prioritized from bit 0 - 4
+      let interruptVector = 0;
+      let bitMask = 0x1F; // Default to no clearing
+      if ((irq && irqe && 0x01) === 0x01) { // VSync
+        bitMask = 0x1E;
+        interruptVector = 0x0040;
+      } else if ((irq && irqe && 0x02) === 0x02) { // LCD STAT
+        bitMask = 0x1D;
+        interruptVector = 0x0048;
+      } else if ((irq && irqe && 0x04) === 0x04) { // Timer
+        bitMask = 0x1B;
+        interruptVector = 0x0050;
+      } else if ((irq && irqe && 0x08) === 0x08) { // Serial
+        bitMask = 0x17;
+        interruptVector = 0x0058;
+      } else if ((irq && irqe && 0x10) === 0x10) { // Joypad
+        bitMask = 0x0F;
+        interruptVector = 0x0060;
+      }
+
+      // Clear the flag for the interrupt being processed
+      this.memoryMap.write8(0xFF0F, irq & bitMask);
+      // Push the current PC onto the stack
+      this.SP -= 2;
+      this.memoryMap.write16(this.SP, this.PC);
+
+      // Jump to the VSync Interrupt Vector
+      this.PC = interruptVector;
+      this.cycleOffset = 5;
       return true;
     }
 
