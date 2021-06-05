@@ -1878,3 +1878,50 @@ export function sla_HLa(cpu: Cpu): void {
   const result = sla_common(cpu, cpu.memoryMap.read8(cpu.HL));
   cpu.memoryMap.write8(cpu.HL, result);
 }
+
+/**
+ * SRL Shift right into carry
+ */
+function srl_common(cpu: Cpu, value: number): number {
+  const shiftedRight = value >> 1;
+
+  cpu.flagC = (value & 0x01) === 0x01;
+  cpu.flagZ = shiftedRight === 0;
+  cpu.flagN = false;
+  cpu.flagH = false;
+
+  return shiftedRight;
+}
+
+export function srl_A(cpu: Cpu): void {
+  cpu.A = srl_common(cpu, cpu.A);
+}
+
+export function srl_B(cpu: Cpu): void {
+  cpu.B = srl_common(cpu, cpu.B);
+}
+
+export function srl_C(cpu: Cpu): void {
+  cpu.C = srl_common(cpu, cpu.C);
+}
+
+export function srl_D(cpu: Cpu): void {
+  cpu.D = srl_common(cpu, cpu.D);
+}
+
+export function srl_E(cpu: Cpu): void {
+  cpu.E = srl_common(cpu, cpu.E);
+}
+
+export function srl_H(cpu: Cpu): void {
+  cpu.H = srl_common(cpu, cpu.H);
+}
+
+export function srl_L(cpu: Cpu): void {
+  cpu.L = srl_common(cpu, cpu.L);
+}
+
+export function srl_HLa(cpu: Cpu): void {
+  const result = srl_common(cpu, cpu.memoryMap.read8(cpu.HL));
+  cpu.memoryMap.write8(cpu.HL, result);
+}

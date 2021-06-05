@@ -290,6 +290,102 @@ const cbOpCodes: Record<number, OpCode> = {
       C: null,
     }
   },
+  0x38: {
+    action: operations.srl_B,
+    mnemonic: 'SRL B',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x39: {
+    action: operations.srl_C,
+    mnemonic: 'SRL C',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x3A: {
+    action: operations.srl_D,
+    mnemonic: 'SRL D',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x3B: {
+    action: operations.srl_E,
+    mnemonic: 'SRL E',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x3C: {
+    action: operations.srl_H,
+    mnemonic: 'SRL H',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x3D: {
+    action: operations.srl_L,
+    mnemonic: 'SRL L',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x3E: {
+    action: operations.srl_HLa,
+    mnemonic: 'SRL (HL)',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
+  0x3F: {
+    action: operations.srl_A,
+    mnemonic: 'SRL A',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
+    }
+  },
   0x40: {
     action: operations.bit_0_B,
     mnemonic: 'BIT 0, B',
