@@ -13,6 +13,8 @@ const screenHeight = 144;
 const bufferWidth = 256;
 const bufferHeight = 256;
 
+const statsBarHeight = 16;
+
 class ImageLayer {
   public imageData: ImageData;
   public pixelArray: Uint32Array;
@@ -26,6 +28,7 @@ class ImageLayer {
 
 export default class Ppu {
   private memoryMap: MemoryMap;
+  private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
 
   private bufferCanvas: HTMLCanvasElement;
@@ -47,6 +50,12 @@ export default class Ppu {
 
   constructor(memoryMap: MemoryMap, canvas: HTMLCanvasElement) {
     this.memoryMap = memoryMap;
+    this.canvas = canvas;
+
+    // TODO: Make scale configurable
+    const scale = 2;
+    this.canvas.width = 160 * scale;
+    this.canvas.height = 144 * scale + statsBarHeight;
 
     const ctx = canvas.getContext('2d');
     if (ctx === null) {
@@ -59,6 +68,8 @@ export default class Ppu {
     this.bufferLayer = new ImageLayer(ctx.createImageData(bufferWidth, bufferHeight));
 
     this.bufferCanvas = document.createElement('canvas');
+    this.bufferCanvas.width = screenWidth;
+    this.bufferCanvas.height = screenHeight;
     this.bufferCtx = this.bufferCanvas.getContext('2d')!;
 
     this.ctx = ctx;
@@ -117,7 +128,7 @@ export default class Ppu {
     const windowY = this.memoryMap.read8(0xFF4A);
     const windowX = this.memoryMap.read8(0xFF4B);
 
-    this.ctx.clearRect(0, 0, screenWidth, screenHeight);
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     if (bgWindowEnable) {
       // Draw the background onto the buffer so that it can be transferred
@@ -159,7 +170,7 @@ export default class Ppu {
 
   private renderLayer(layer: ImageLayer, x: number, y: number) {
     this.bufferCtx.putImageData(layer.imageData, 0, 0);
-    this.ctx.drawImage(this.bufferCanvas, 0, 0);
+    this.ctx.drawImage(this.bufferCanvas, 0, 0, this.canvas.width, this.canvas.height - statsBarHeight);
   }
 
   private renderTileMap(address: number, tileDataLocationFlag: number, target: ImageLayer) {
@@ -175,6 +186,9 @@ export default class Ppu {
   }
 
   private renderSprites() {
+    // Clear current sprite data
+    this.spriteLayer.pixelArray.fill(0x000000);
+
     for (let i = 0; i < 40; i++) {
       const y = this.memoryMap.read8(0xFE00 + i);
       const x = this.memoryMap.read8(0xFE00 + i + 1);
@@ -233,10 +247,10 @@ export default class Ppu {
     const updateString = this.updateAverage ? Math.round(this.updateAverage * 1000) / 1000 : '-';
     this.ctx.save();
     this.ctx.fillStyle = 'black';
-    this.ctx.fillRect(0, 144, 160, 16);
+    this.ctx.fillRect(0, this.canvas.height - statsBarHeight, this.canvas.width, statsBarHeight);
     this.ctx.fillStyle = 'white';
     this.ctx.textBaseline = 'bottom';
-    this.ctx.fillText(`FPS: ${fpsString} (${updateString}ms)`, 4, 158);
+    this.ctx.fillText(`FPS: ${fpsString} (${updateString}ms)`, 4, this.canvas.height - 2);
     this.ctx.restore();
   }
 }
