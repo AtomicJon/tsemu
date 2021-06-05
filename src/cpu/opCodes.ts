@@ -193,6 +193,18 @@ const opCodes: Record<number, OpCode> = {
       C: 'C',
     }
   },
+  // 0x10: {
+  //   action: operations.nop, // TODO: Handle low power mode
+  //   mnemonic: 'STOP d8',
+  //   bytes: 2,
+  //   cycles: 4,
+  //   flags: {
+  //     Z: null,
+  //     N: null,
+  //     H: null,
+  //     C: null,
+  //   }
+  // },
   0x11: {
     action: operations.ld_DE_d16,
     mnemonic: 'LD DE, d16',
@@ -313,6 +325,18 @@ const opCodes: Record<number, OpCode> = {
       C: null,
     }
   },
+  0x1B: {
+    action: operations.dec_DE,
+    mnemonic: 'DEC DE',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
   0x1C: {
     action: operations.inc_E,
     mnemonic: 'INC E',
@@ -347,6 +371,18 @@ const opCodes: Record<number, OpCode> = {
       N: null,
       H: null,
       C: null,
+    }
+  },
+  0x1F: {
+    action: operations.rr_A,
+    mnemonic: 'RRA',
+    bytes: 1,
+    cycles: 4,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: '0',
+      C: 'C',
     }
   },
   0x20: {
@@ -460,6 +496,18 @@ const opCodes: Record<number, OpCode> = {
   0x2A: {
     action: operations.ld_A_HLi,
     mnemonic: 'LD A, HL+',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0x2B: {
+    action: operations.dec_HL,
+    mnemonic: 'DEC HL',
     bytes: 1,
     cycles: 8,
     flags: {
@@ -640,6 +688,18 @@ const opCodes: Record<number, OpCode> = {
   0x3A: {
     action: operations.ld_A_HLd,
     mnemonic: 'LD A,(HL-)',
+    bytes: 1,
+    cycles: 8,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
+  0x3B: {
+    action: operations.dec_SP,
+    mnemonic: 'DEC SP',
     bytes: 1,
     cycles: 8,
     flags: {
@@ -1345,6 +1405,18 @@ const opCodes: Record<number, OpCode> = {
       C: null,
     }
   },
+  // 0x76: {
+  //   action: operations.halt, // TODO: Handle low power mode
+  //   mnemonic: 'HALT',
+  //   bytes: 1,
+  //   cycles: 4,
+  //   flags: {
+  //     Z: null,
+  //     N: null,
+  //     H: null,
+  //     C: null,
+  //   }
+  // },
   0x77: {
     action: operations.ld_HLa_A,
     mnemonic: 'LD (HL), A',

@@ -699,6 +699,18 @@ export function dec_BC(cpu: Cpu): void {
   cpu.BC -= 1;
 }
 
+export function dec_DE(cpu: Cpu): void {
+  cpu.DE -= 1;
+}
+
+export function dec_HL(cpu: Cpu): void {
+  cpu.HL -= 1;
+}
+
+export function dec_SP(cpu: Cpu): void {
+  cpu.SP -= 1;
+}
+
 /**
  * Increment Functions
  */
