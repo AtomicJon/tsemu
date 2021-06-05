@@ -12,7 +12,7 @@ type OpHistory = {
 }
 
 export default class Cpu {
-  public memoryMap: MemoryMap;
+  private memoryMap: MemoryMap;
 
   private step = 0;
   private cycleOffset = 0;
@@ -99,23 +99,6 @@ export default class Cpu {
     this.memoryMap = memoryMap;
   }
 
-  // Memory access helpers
-  // Reading
-  public read8(): number {
-    // TODO:
-    return this.memoryMap.read8(this.PC);
-  }
-
-  public read8Signed(): number {
-    // TODO:
-    return this.memoryMap.read8Signed(this.PC);
-  }
-
-  public read16(): number {
-    // TODO:
-    return this.memoryMap.read16(this.PC);
-  }
-
   public reset() {
     // Clear registers
     for (let i = 0; i < this.registers.length; i++) {
@@ -195,5 +178,57 @@ export default class Cpu {
     // Set how many cycles to wait before next operation
     this.cycleOffset = operation.cycles - 1;
     return true;
+  }
+
+  // Memory access helpers
+  // Reading
+  public read8(address: number | null = null): number {
+    const targetAddress = address ?? this.PC;
+
+    // TODO: Masked/blocked reads, etc.
+    const value = this.memoryMap.read8(targetAddress);
+
+    // Advance the program counter if read is immediate
+    if (address === null) {
+      this.PC += 1;
+    }
+    return value;
+  }
+
+  public read8Signed(address: number | null = null): number {
+    const targetAddress = address ?? this.PC;
+
+    // TODO: Masked/blocked reads, etc.
+    const value = this.memoryMap.read8Signed(targetAddress);
+
+    // Advance the program counter if read is immediate
+    if (address === null) {
+      this.PC += 1;
+    }
+    return value;
+  }
+
+  public read16(address: number | null = null): number {
+    const targetAddress = address ?? this.PC;
+
+    // TODO: Masked/blocked reads, etc.
+    const value = this.memoryMap.read16(targetAddress);
+
+    // Advance the program counter if read is immediate
+    if (address === null) {
+      this.PC +=2;
+    }
+    return value;
+  }
+
+  // Writing
+  public write8(address: number, value: number): void {
+    // TODO: Masked/blocked writes, etc.
+    this.memoryMap.write8(address, value);
+  }
+
+  public write16(address: number, value: number): void {
+    // TODO: Masked/blocked writes, etc.
+    this.memoryMap.write16(address, value);
   }
 }
