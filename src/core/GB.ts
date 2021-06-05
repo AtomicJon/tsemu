@@ -32,6 +32,9 @@ export default class GB {
 
   private dbgJoypad: HTMLElement;
 
+  private dbgTilesCanvas: HTMLCanvasElement;
+  private dbgTilesCtx: CanvasRenderingContext2D;
+
   constructor(canvas: HTMLCanvasElement) {
     this.memoryMap = new MemoryMap();
     this.cpu = new Cpu(this.memoryMap);
@@ -58,6 +61,9 @@ export default class GB {
     this.dbgSP = document.getElementById('dbg_sp')!;
 
     this.dbgJoypad = document.getElementById('dbg_joypad')!;
+
+    this.dbgTilesCanvas = document.getElementById('dbg_tiles')! as HTMLCanvasElement;
+    this.dbgTilesCtx = this.dbgTilesCanvas.getContext('2d')!;
   }
 
   public togglePause(): boolean {
@@ -127,5 +133,45 @@ export default class GB {
 
     const joypadValue = this.memoryMap.read8(0xFF00);
     this.dbgJoypad.innerHTML = `${getBinaryString(joypadValue)} (${getHexString(joypadValue)})`;
+
+
+    const colors = [
+      0x00000000,
+      0xffAAAAAA,
+      0xff555555,
+      0xff000000
+    ];
+    const canvasWidth = this.dbgTilesCanvas.width;
+    const canvasHeight = this.dbgTilesCanvas.height;
+
+    const tileData = this.dbgTilesCtx.createImageData(canvasWidth, canvasHeight);
+    const pixelArray = new Uint32Array(tileData.data.buffer);
+    for (let i = 0; i < 384; i++) {
+      const address = 0x8000 + (i * 16);
+      const x = (i * 8) % canvasWidth;
+      const y = Math.floor(i / (canvasWidth / 8)) * 8;
+
+      for (let row = 0; row < 8; row++) {
+        const byte1 = this.memoryMap.read8(address + row * 2)
+        const byte2 = this.memoryMap.read8(address + row * 2 + 1)
+        for (let column = 0; column < 8; column++) {
+          const bit1 = (byte1 >> (7 - column)) & 1;
+          const bit2 = (byte2 >> (7 - column)) & 1;
+          const colorValue = bit1 + (bit2 << 1);
+
+          const color = colors[colorValue];
+          const offset = ((y + row) * canvasWidth + x + column);
+          pixelArray[offset] = color;
+        }
+      }
+    }
+    this.dbgTilesCtx.putImageData(tileData, 0, 0);
+
+    // Highlight sections if needed
+    // this.dbgTilesCtx.strokeStyle = '#00cefe';
+    // this.dbgTilesCtx.lineWidth = 0.5;
+    // this.dbgTilesCtx.strokeRect(0, 0, canvasWidth, canvasHeight / 3);
+    // this.dbgTilesCtx.strokeRect(0, canvasHeight / 3, canvasWidth, canvasHeight / 3);
+    // this.dbgTilesCtx.strokeRect(0, (canvasHeight / 3) * 2, canvasWidth, canvasHeight / 3);
   }
 }

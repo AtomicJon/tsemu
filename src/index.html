@@ -10,6 +10,9 @@
         display: flex;
       }
       #screen {
+        flex: 0 0 auto;
+        width: 160px;
+        height: 144px;
         border: 1px solid #ccc;
       }
       #debug_table {
@@ -76,6 +79,13 @@
             <tr>
               <td>Joypad</td>
               <td id="dbg_joypad" colspan="24"></td>
+            </tr>
+            <tr>
+              <td>VRAM Tiles</td>
+              <td colspan="24">
+                <canvas id="dbg_tiles" width="256" height="96"></canvas>
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
