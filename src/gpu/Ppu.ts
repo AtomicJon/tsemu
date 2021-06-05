@@ -211,11 +211,6 @@ export default class Ppu {
         const colorValue = bit1 + (bit2 << 1);
 
         const color = colors[colorValue];
-
-        // Ignore transparent
-        if (color === 0) {
-          continue;
-        }
         const offset = ((y + row) * bufferWidth + x + column);
         target.pixelArray[offset] = color;
       }
