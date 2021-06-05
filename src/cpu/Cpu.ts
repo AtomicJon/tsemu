@@ -146,7 +146,7 @@ export default class Cpu {
       }
 
       // Clear the flag for the interrupt being processed
-      this.memoryMap.write8(0xFF0F, irq & 0x1E);
+      this.memoryMap.write8(0xFF0F, irq & bitMask);
       // Push the current PC onto the stack
       this.SP -= 2;
       this.memoryMap.write16(this.SP, this.PC);
