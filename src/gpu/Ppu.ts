@@ -188,7 +188,7 @@ export default class Ppu {
       // bit 6 y flip (1 = flip)
       // bit 7 obj-bg priority (0 obj above, 1 obj behind)
 
-      this.renderTile(x, y, tileNumber, 1, this.spriteLayer);
+      this.renderTile(x - 8, y - 16, tileNumber, 1, this.spriteLayer);
     }
   }
 
