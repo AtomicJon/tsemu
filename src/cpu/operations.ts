@@ -1213,136 +1213,235 @@ function bit_common(cpu: Cpu, result: boolean): void {
   cpu.flagH = true;
 }
 
-// BIT 2
-export function bit_2_A(cpu: Cpu): void {
+// BIT 0
+export function bit_0_A(cpu: Cpu): void {
+  bit_common(cpu, (cpu.A & 0x01) > 0);
+}
+
+export function bit_0_B(cpu: Cpu): void {
+  bit_common(cpu, (cpu.B & 0x01) > 0);
+}
+
+export function bit_0_C(cpu: Cpu): void {
+  bit_common(cpu, (cpu.C & 0x01) > 0);
+}
+
+export function bit_0_D(cpu: Cpu): void {
+  bit_common(cpu, (cpu.D & 0x01) > 0);
+}
+
+export function bit_0_E(cpu: Cpu): void {
+  bit_common(cpu, (cpu.E & 0x01) > 0);
+}
+
+export function bit_0_H(cpu: Cpu): void {
+  bit_common(cpu, (cpu.H & 0x01) > 0);
+}
+
+export function bit_0_L(cpu: Cpu): void {
+  bit_common(cpu, (cpu.L & 0x01) > 0);
+}
+
+export function bit_0_HLa(cpu: Cpu): void {
+  bit_common(cpu, (cpu.memoryMap.read8(cpu.HL) & 0x01) > 0);
+}
+
+// BIT 1
+export function bit_1_A(cpu: Cpu): void {
   bit_common(cpu, (cpu.A & 0x02) > 0);
 }
 
-export function bit_2_B(cpu: Cpu): void {
+export function bit_1_B(cpu: Cpu): void {
   bit_common(cpu, (cpu.B & 0x02) > 0);
 }
 
-export function bit_2_C(cpu: Cpu): void {
+export function bit_1_C(cpu: Cpu): void {
   bit_common(cpu, (cpu.C & 0x02) > 0);
 }
 
-export function bit_2_D(cpu: Cpu): void {
+export function bit_1_D(cpu: Cpu): void {
   bit_common(cpu, (cpu.D & 0x02) > 0);
 }
 
-export function bit_2_E(cpu: Cpu): void {
+export function bit_1_E(cpu: Cpu): void {
   bit_common(cpu, (cpu.E & 0x02) > 0);
 }
 
-export function bit_2_H(cpu: Cpu): void {
+export function bit_1_H(cpu: Cpu): void {
   bit_common(cpu, (cpu.H & 0x02) > 0);
 }
 
-export function bit_2_L(cpu: Cpu): void {
+export function bit_1_L(cpu: Cpu): void {
   bit_common(cpu, (cpu.L & 0x02) > 0);
 }
 
-export function bit_2_HLa(cpu: Cpu): void {
+export function bit_1_HLa(cpu: Cpu): void {
   bit_common(cpu, (cpu.memoryMap.read8(cpu.HL) & 0x02) > 0);
+}
+
+// BIT 2
+export function bit_2_A(cpu: Cpu): void {
+  bit_common(cpu, (cpu.A & 0x04) > 0);
+}
+
+export function bit_2_B(cpu: Cpu): void {
+  bit_common(cpu, (cpu.B & 0x04) > 0);
+}
+
+export function bit_2_C(cpu: Cpu): void {
+  bit_common(cpu, (cpu.C & 0x04) > 0);
+}
+
+export function bit_2_D(cpu: Cpu): void {
+  bit_common(cpu, (cpu.D & 0x04) > 0);
+}
+
+export function bit_2_E(cpu: Cpu): void {
+  bit_common(cpu, (cpu.E & 0x04) > 0);
+}
+
+export function bit_2_H(cpu: Cpu): void {
+  bit_common(cpu, (cpu.H & 0x04) > 0);
+}
+
+export function bit_2_L(cpu: Cpu): void {
+  bit_common(cpu, (cpu.L & 0x04) > 0);
+}
+
+export function bit_2_HLa(cpu: Cpu): void {
+  bit_common(cpu, (cpu.memoryMap.read8(cpu.HL) & 0x04) > 0);
 }
 
 // BIT 3
 export function bit_3_A(cpu: Cpu): void {
-  bit_common(cpu, (cpu.A & 0x04) > 0);
+  bit_common(cpu, (cpu.A & 0x08) > 0);
 }
 
 export function bit_3_B(cpu: Cpu): void {
-  bit_common(cpu, (cpu.B & 0x04) > 0);
+  bit_common(cpu, (cpu.B & 0x08) > 0);
 }
 
 export function bit_3_C(cpu: Cpu): void {
-  bit_common(cpu, (cpu.C & 0x04) > 0);
+  bit_common(cpu, (cpu.C & 0x08) > 0);
 }
 
 export function bit_3_D(cpu: Cpu): void {
-  bit_common(cpu, (cpu.D & 0x04) > 0);
+  bit_common(cpu, (cpu.D & 0x08) > 0);
 }
 
 export function bit_3_E(cpu: Cpu): void {
-  bit_common(cpu, (cpu.E & 0x04) > 0);
+  bit_common(cpu, (cpu.E & 0x08) > 0);
 }
 
 export function bit_3_H(cpu: Cpu): void {
-  bit_common(cpu, (cpu.H & 0x04) > 0);
+  bit_common(cpu, (cpu.H & 0x08) > 0);
 }
 
 export function bit_3_L(cpu: Cpu): void {
-  bit_common(cpu, (cpu.L & 0x04) > 0);
+  bit_common(cpu, (cpu.L & 0x08) > 0);
 }
 
 export function bit_3_HLa(cpu: Cpu): void {
-  bit_common(cpu, (cpu.memoryMap.read8(cpu.HL) & 0x04) > 0);
+  bit_common(cpu, (cpu.memoryMap.read8(cpu.HL) & 0x08) > 0);
 }
 
 // BIT 4
 export function bit_4_A(cpu: Cpu): void {
-  bit_common(cpu, (cpu.A & 0x08) > 0);
+  bit_common(cpu, (cpu.A & 0x10) > 0);
 }
 
 export function bit_4_B(cpu: Cpu): void {
-  bit_common(cpu, (cpu.B & 0x08) > 0);
+  bit_common(cpu, (cpu.B & 0x10) > 0);
 }
 
 export function bit_4_C(cpu: Cpu): void {
-  bit_common(cpu, (cpu.C & 0x08) > 0);
+  bit_common(cpu, (cpu.C & 0x10) > 0);
 }
 
 export function bit_4_D(cpu: Cpu): void {
-  bit_common(cpu, (cpu.D & 0x08) > 0);
+  bit_common(cpu, (cpu.D & 0x10) > 0);
 }
 
 export function bit_4_E(cpu: Cpu): void {
-  bit_common(cpu, (cpu.E & 0x08) > 0);
+  bit_common(cpu, (cpu.E & 0x10) > 0);
 }
 
 export function bit_4_H(cpu: Cpu): void {
-  bit_common(cpu, (cpu.H & 0x08) > 0);
+  bit_common(cpu, (cpu.H & 0x10) > 0);
 }
 
 export function bit_4_L(cpu: Cpu): void {
-  bit_common(cpu, (cpu.L & 0x08) > 0);
+  bit_common(cpu, (cpu.L & 0x10) > 0);
 }
 
 export function bit_4_HLa(cpu: Cpu): void {
-  bit_common(cpu, (cpu.memoryMap.read8(cpu.HL) & 0x08) > 0);
+  bit_common(cpu, (cpu.memoryMap.read8(cpu.HL) & 0x10) > 0);
 }
 
 // BIT 5
 export function bit_5_A(cpu: Cpu): void {
-  bit_common(cpu, (cpu.A & 0x10) > 0);
+  bit_common(cpu, (cpu.A & 0x20) > 0);
 }
 
 export function bit_5_B(cpu: Cpu): void {
-  bit_common(cpu, (cpu.B & 0x10) > 0);
+  bit_common(cpu, (cpu.B & 0x20) > 0);
 }
 
 export function bit_5_C(cpu: Cpu): void {
-  bit_common(cpu, (cpu.C & 0x10) > 0);
+  bit_common(cpu, (cpu.C & 0x20) > 0);
 }
 
 export function bit_5_D(cpu: Cpu): void {
-  bit_common(cpu, (cpu.D & 0x10) > 0);
+  bit_common(cpu, (cpu.D & 0x20) > 0);
 }
 
 export function bit_5_E(cpu: Cpu): void {
-  bit_common(cpu, (cpu.E & 0x10) > 0);
+  bit_common(cpu, (cpu.E & 0x20) > 0);
 }
 
 export function bit_5_H(cpu: Cpu): void {
-  bit_common(cpu, (cpu.H & 0x10) > 0);
+  bit_common(cpu, (cpu.H & 0x20) > 0);
 }
 
 export function bit_5_L(cpu: Cpu): void {
-  bit_common(cpu, (cpu.L & 0x10) > 0);
+  bit_common(cpu, (cpu.L & 0x20) > 0);
 }
 
 export function bit_5_HLa(cpu: Cpu): void {
-  bit_common(cpu, (cpu.memoryMap.read8(cpu.HL) & 0x10) > 0);
+  bit_common(cpu, (cpu.memoryMap.read8(cpu.HL) & 0x20) > 0);
+}
+
+// BIT 6
+export function bit_6_A(cpu: Cpu): void {
+  bit_common(cpu, (cpu.A & 0x40) > 0);
+}
+
+export function bit_6_B(cpu: Cpu): void {
+  bit_common(cpu, (cpu.B & 0x40) > 0);
+}
+
+export function bit_6_C(cpu: Cpu): void {
+  bit_common(cpu, (cpu.C & 0x40) > 0);
+}
+
+export function bit_6_D(cpu: Cpu): void {
+  bit_common(cpu, (cpu.D & 0x40) > 0);
+}
+
+export function bit_6_E(cpu: Cpu): void {
+  bit_common(cpu, (cpu.E & 0x40) > 0);
+}
+
+export function bit_6_H(cpu: Cpu): void {
+  bit_common(cpu, (cpu.H & 0x40) > 0);
+}
+
+export function bit_6_L(cpu: Cpu): void {
+  bit_common(cpu, (cpu.L & 0x40) > 0);
+}
+
+export function bit_6_HLa(cpu: Cpu): void {
+  bit_common(cpu, (cpu.memoryMap.read8(cpu.HL) & 0x40) > 0);
 }
 
 // BIT 7
