@@ -796,7 +796,7 @@ export function add_A_HLa(cpu: Cpu): void {
 }
 
 export function add_A_d8(cpu: Cpu): void {
-  add_common(cpu, cpu.A + cpu.read8());
+  add_common(cpu, cpu.read8());
 }
 
 // ADC
