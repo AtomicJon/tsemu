@@ -252,10 +252,10 @@ export default class Ppu {
     this.spriteLayer.pixelArray.fill(0x000000);
 
     for (let i = 0; i < 40; i++) {
-      const y = this.memoryMap.read8(0xFE00 + i);
-      const x = this.memoryMap.read8(0xFE00 + i + 1);
-      const tileNumber = this.memoryMap.read8(0xFE00 + i + 2);
-      const flags = this.memoryMap.read8(0xFE00 + i)+ 3;
+      const y = this.memoryMap.read8(0xFE00 + i * 4);
+      const x = this.memoryMap.read8(0xFE00 + i * 4 + 1);
+      const tileNumber = this.memoryMap.read8(0xFE00 + i * 4 + 2);
+      const flags = this.memoryMap.read8(0xFE00 + i * 4 + 3);
       // TODO Read:
       // Bit 0-2 Palette number (CGB Only)
       // Bit 3 Tile VRAM Bank (CGB Only)
