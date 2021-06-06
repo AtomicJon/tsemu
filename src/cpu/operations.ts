@@ -2181,47 +2181,48 @@ export function cpl(cpu: Cpu): void {
 /**
  * Compare functions
  */
-function cp_common(cpu: Cpu, diff: number) {
+function cp_common(cpu: Cpu, value: number) {
+  const diff = cpu.A - value;
   cpu.flagZ = diff === 0;
   cpu.flagN = true;
-  cpu.flagH = false; // TODO: if no borrow from bit 4?
-  cpu.flagC = diff > 0;
+  cpu.flagH = (((cpu.A & 0x0F) - (value & 0x0F)) & 0x10) === 0x10;
+  cpu.flagC = diff < 0;
 }
 
 export function cp_A(cpu: Cpu): void {
-  cp_common(cpu, cpu.A - cpu.A);
+  cp_common(cpu, cpu.A);
 }
 
 export function cp_B(cpu: Cpu): void {
-  cp_common(cpu, cpu.A - cpu.B);
+  cp_common(cpu, cpu.B);
 }
 
 export function cp_C(cpu: Cpu): void {
-  cp_common(cpu, cpu.A - cpu.C);
+  cp_common(cpu, cpu.C);
 }
 
 export function cp_D(cpu: Cpu): void {
-  cp_common(cpu, cpu.A - cpu.D);
+  cp_common(cpu, cpu.D);
 }
 
 export function cp_E(cpu: Cpu): void {
-  cp_common(cpu, cpu.A - cpu.E);
+  cp_common(cpu, cpu.E);
 }
 
 export function cp_H(cpu: Cpu): void {
-  cp_common(cpu, cpu.A - cpu.H);
+  cp_common(cpu, cpu.H);
 }
 
 export function cp_L(cpu: Cpu): void {
-  cp_common(cpu, cpu.A - cpu.L);
+  cp_common(cpu, cpu.L);
 }
 
 export function cp_HLa(cpu: Cpu): void {
-  cp_common(cpu, cpu.A - cpu.read8(cpu.HL));
+  cp_common(cpu, cpu.read8(cpu.HL));
 }
 
 export function cp_d8(cpu: Cpu): void {
-  cp_common(cpu, cpu.A - cpu.read8());
+  cp_common(cpu, cpu.read8());
 }
 
 /**
