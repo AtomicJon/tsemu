@@ -352,6 +352,17 @@ export function ld_SP_HL(cpu: Cpu): void {
   cpu.SP = cpu.HL;
 }
 
+export function ld_HL_SP_d8s(cpu: Cpu): void {
+  const value = cpu.read8Signed();
+  const result = cpu.SP + value;
+  cpu.flagZ = false;
+  cpu.flagN = false;
+  cpu.flagH = (((cpu.SP & 0x0F) + (value & 0x0F)) & 0x10) === 0x10;
+  cpu.flagC = (result & 0x100) === 0x100;
+
+  cpu.HL = result;
+}
+
 // 16 bit Loads - LD n,nn
 export function ld_BC_d16(cpu: Cpu): void {
   cpu.BC = cpu.read16();
@@ -717,7 +728,7 @@ export function inc_L(cpu: Cpu): void {
 }
 
 export function inc_HLa(cpu: Cpu): void {
-  const value = cpu.read8(cpu.HL) + 1;
+  const value = cpu.read8(cpu.HL);
   cpu.write8(cpu.HL, inc_common(cpu, value));
 }
 
@@ -792,6 +803,7 @@ export function add_A_d8(cpu: Cpu): void {
 function adc_common(cpu: Cpu, value: number) {
   const result = cpu.A + value + (cpu.flagC ? 1 : 0);
 
+  cpu.flagZ = result === 0;
   cpu.flagN = false;
   cpu.flagH = (((cpu.A & 0x0F) + (value & 0x0F) + (cpu.flagC ? 1 : 0)) & 0x10) === 0x10;
   cpu.flagC = (result & 0x100) === 0x100;
@@ -829,6 +841,10 @@ export function adc_A_L(cpu: Cpu): void {
 
 export function adc_A_HLa(cpu: Cpu): void {
   adc_common(cpu, cpu.read8(cpu.HL));
+}
+
+export function adc_A_d8(cpu: Cpu): void {
+  adc_common(cpu, cpu.read8());
 }
 
 /**
@@ -1071,6 +1087,7 @@ export function xor_L(cpu: Cpu): void {
 
 export function xor_HLa(cpu: Cpu): void {
   cpu.A = cpu.A ^ cpu.read8(cpu.HL);
+  xor_common(cpu);
 }
 
 export function xor_d8(cpu: Cpu): void {
@@ -1085,10 +1102,17 @@ export function xor_d8(cpu: Cpu): void {
 function rlc_common(cpu: Cpu, value: number): number {
   const rotatedValue = value << 1;
   let result = rotatedValue;
-  const maskedResult = result & 0xFF;
 
   // Move carry to carry flag (existing flag discarded)
-  cpu.flagC = (result & 256) === 256;
+  cpu.flagC = (result & 0x100) === 0x100;
+
+  // Rotate 7th bit in same as carry
+  if (cpu.flagC) {
+    result = result | 0x01;
+  }
+
+  const maskedResult = result & 0xFF;
+
   cpu.flagZ = maskedResult === 0;
 
   cpu.flagN = false;
@@ -1133,13 +1157,15 @@ export function rlc_HLa(cpu: Cpu): void {
 function rl_common(cpu: Cpu, value: number): number {
   const rotatedValue = value << 1;
   let result = rotatedValue;
-  const maskedResult = result & 0xFF;
   // Shift the carry flag in
   if (cpu.flagC) {
     result = result | 0x01;
   }
+
+  const maskedResult = result & 0xFF;
+
   // Move carry to carry flag
-  cpu.flagC = (result & 256) === 256;
+  cpu.flagC = (result & 0x100) === 0x100;
   cpu.flagZ = maskedResult === 0;
 
   cpu.flagN = false;
@@ -1237,6 +1263,12 @@ function rrc_common(cpu: Cpu, value: number): number {
 
   // Move carry to carry flag
   cpu.flagC = (value & 0x01) === 0x01;
+
+  // Rotate 0 bit in same as carry
+  if (cpu.flagC) {
+    result = result | 0x80;
+  }
+
   cpu.flagZ = result === 0;
 
   cpu.flagN = false;
