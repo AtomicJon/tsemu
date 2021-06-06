@@ -33,6 +33,7 @@ export default class GB {
 
   private dbgTilesCanvas: HTMLCanvasElement;
   private dbgTilesCtx: CanvasRenderingContext2D;
+  private dbgOam: HTMLElement;
   private dbgLcdC: HTMLElement;
 
   constructor(canvas: HTMLCanvasElement) {
@@ -64,6 +65,7 @@ export default class GB {
 
     this.dbgTilesCanvas = document.getElementById('dbg_tiles')! as HTMLCanvasElement;
     this.dbgTilesCtx = this.dbgTilesCanvas.getContext('2d')!;
+    this.dbgOam = document.getElementById('dbg_oam')!;
     this.dbgLcdC = document.getElementById('dbg_lcdc')!;
   }
 
@@ -136,6 +138,17 @@ export default class GB {
 
     const joypadValue = this.memoryMap.read8(0xFF00);
     this.dbgJoypad.innerHTML = `${getBinaryString(joypadValue)} (${getHexString(joypadValue)}) [${this.joypad.getPressedInputs().join(', ')}]`;
+
+
+    const oamValues = [];
+    for (let i = 0; i < 40; i++) {
+      const y = this.memoryMap.read8(0xFE00 + i * 4);
+      const x = this.memoryMap.read8(0xFE00 + i * 4 + 1);
+      const id = this.memoryMap.read8(0xFE00 + i * 4 + 2);
+      const attrs = this.memoryMap.read8(0xFE00 + i * 4 + 3);
+      oamValues.push(`[${x}, ${y}, ${id}, ${getBinaryString(attrs)}]`);
+    }
+    this.dbgOam.innerHTML = oamValues.join('<br/>');
 
     const lcdc = this.memoryMap.read8(0xFF40);
     const bgWindowEnable =  (lcdc & 1);

@@ -26,12 +26,18 @@
         padding: 5px;
         border: 1px solid;
       }
+      #debug_table td {
+        vertical-align: top;
+      }
       #debug_table th.hex_16 {
         width: 32px;
       }
       #dbg_tiles {
         display: block;
         border: 1px solid #ccc;
+      }
+      #dbg_oam {
+        font-size: 9px;
       }
     </style>
   </head>
@@ -91,13 +97,15 @@
             <tr>
               <th rowspan="2">GFX</th>
               <th colspan="5">Tile Data</th>
-              <th colspan="19">LCD Control (FF40)</th>
+              <th colspan="5">OAM (FE00+9F)</th>
+              <th colspan="14">LCD Control (FF40)</th>
             </tr>
             <tr>
               <td colspan="5">
                 <canvas id="dbg_tiles" width="128" height="192"></canvas>
               </td>
-              <td id="dbg_lcdc" colspan="19"></td>
+              <td id="dbg_oam" colspan="5"></td>
+              <td id="dbg_lcdc" colspan="14"></td>
             </tr>
           </tbody>
         </table>
