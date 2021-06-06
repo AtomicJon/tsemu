@@ -4,7 +4,6 @@ import Joypad from '../io/Joypad';
 import MemoryMap from '../memory/MemoryMap';
 import getHexString from '../util/getHexString';
 import getBinaryString from '../util/getBinaryString';
-
 export default class GB {
   private cpu: Cpu;
   private gpu: Ppu;
@@ -99,7 +98,9 @@ export default class GB {
 
     let cycles = 0;
     // TODO: Adjust cycles based on framerate
-    while (cycles < 66667) {
+    // Gameboy Freq: 4.19 MHz @ 60FPS
+    const clock = 4190000;
+    while (cycles < (clock / 60)) {
       this.joypad.tick();
 
       let cpuSuccess = this.cpu.tick();

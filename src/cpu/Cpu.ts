@@ -11,6 +11,8 @@ type OpHistory = {
   nextBytesSigned: number[];
 }
 
+const DIVIDER_FREQ = 16384;
+
 export default class Cpu {
   private memoryMap: MemoryMap;
 
@@ -21,6 +23,9 @@ export default class Cpu {
   private registersBuffer: ArrayBuffer = new ArrayBuffer(12);
   private registers: Uint8Array = new Uint8Array(this.registersBuffer);
   private registers16: Uint16Array = new Uint16Array(this.registersBuffer);
+
+  private dividerTick: number = 0;
+  private timerTick: number = 0;
 
   // Interrupts
   public interruptsEnabled: boolean = false;
@@ -111,6 +116,9 @@ export default class Cpu {
   }
 
   public tick(): boolean {
+    this.updateDivider();
+    this.updateTimer();
+
     // Wait for main clock to catch up
     this.cycleOffset -= 1;
     if (this.cycleOffset > 0) {
@@ -238,6 +246,48 @@ export default class Cpu {
     }
 
     return false;
+  }
+
+  private updateDivider(): void {
+    this.dividerTick += 1;
+    if (this.dividerTick === DIVIDER_FREQ) {
+      this.dividerTick = 0;
+      const divider = this.memoryMap.read8(0xFF04) + 1;
+      this.memoryMap.write8(0xFF04, divider & 0xFF);
+    }
+  }
+
+  private updateTimer(): void {
+    const timerControl = this.memoryMap.read8(0xFF07);
+    const timerEnabled = (timerControl & 0x04) === 0x04;
+    if (timerEnabled) {
+      const timerFreqFlag = timerControl & 0x02;
+      let timerFreq = 4096;
+      if (timerFreqFlag === 0x01) {
+        timerFreq = 262144;
+      } else if (timerFreqFlag === 0x02) {
+        timerFreq = 65536;
+      } else if (timerFreqFlag === 0x03) {
+        timerFreq = 16384;
+      }
+      this.timerTick += 1;
+
+      if (this.timerTick === timerFreq) {
+        this.timerTick = 0;
+        const timer = this.memoryMap.read8(0xFF05) + 1;
+
+        // Overflow, write modulo to timer and trigger IRQ
+        if (timer > 0xFF) {
+          const timerModulo = this.memoryMap.read8(0xFF06);
+          this.memoryMap.write8(0xFF05, timerModulo);
+          // Trigger IRQ
+          const irq = this.memoryMap.read8(0xFF0F) | 0x04;
+          this.memoryMap.write8(0xFF0F, irq);
+        } else {
+          this.memoryMap.write8(0xFF05, timer & 0xFF);
+        }
+      }
+    }
   }
 
   private handleInterrupt(): boolean {
