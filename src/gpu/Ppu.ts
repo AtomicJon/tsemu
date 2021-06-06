@@ -264,7 +264,7 @@ export default class Ppu {
       // bit 6 y flip (1 = flip)
       // bit 7 obj-bg priority (0 obj above, 1 obj behind)
 
-      this.renderTile(x - 8, y - 16, tileNumber, 1, this.spriteLayer);
+      this.renderTile(x - 8, y - 16, tileNumber, 1, this.spriteLayer, true);
     }
   }
 
@@ -273,10 +273,12 @@ export default class Ppu {
     y: number,
     tileNumber: number,
     tileDataLocationFlag: number,
-    target: ImageLayer
+    target: ImageLayer,
+    isSprite: boolean = false
   ) {
-    const address = (tileDataLocationFlag === 0 ? 0x9000 : 0x8000) + (tileNumber * 16);
-    const tileSize = (this.objSize === 1) ? 16 : 8;
+    const tileSize = (this.objSize === 1 && isSprite) ? 16 : 8;
+    const tileOffset = (tileSize == 16) ? tileNumber & 0xFE : tileNumber; // For 16, ignore the lower bit
+    const address = (tileDataLocationFlag === 0 ? 0x9000 : 0x8000) + (tileOffset * 16);
     for (let row = 0; row < tileSize; row++) {
       const byte1 = this.memoryMap.read8(address + row * 2)
       const byte2 = this.memoryMap.read8(address + row * 2 + 1)
