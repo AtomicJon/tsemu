@@ -99,6 +99,10 @@ export default class Ppu {
     if (!this.lcdPpuEnable) {
       this.currentScanline = 0;
       this.currentScanlineOffset = 0;
+      const lcdStat = this.memoryMap.read8(0xFF41);
+      this.memoryMap.write8(0xFF41, lcdStat & 0xFC); // Set mode to 0, TODO:  LYC=LY (Coincidence)?
+      this.memoryMap.write8(0xFF44, this.currentScanline);
+      return;
     }
 
     this.currentScanlineOffset += 1;
