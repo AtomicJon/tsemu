@@ -74,6 +74,10 @@ export default class Joypad {
     this.memoryMap.write8(0xFF00, inputValue);
   }
 
+  public getPressedInputs(): string[] {
+    return this.pressedInputs;
+  }
+
   private onKeyDown = (evt: KeyboardEvent): void => {
     const input = INPUT_KEY_MAP[evt.key] ?? null;
     if (input !== null && !this.pressedInputs.includes(input)) {
