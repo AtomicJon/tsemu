@@ -615,51 +615,47 @@ export function rst_38(cpu: Cpu): void {
 /**
  * Decrement Functions
  */
-function dec_common(cpu: Cpu, result: number): void {
+function dec_common(cpu: Cpu, value: number): number {
+  const result = value - 1;
+
   cpu.flagZ = result === 0;
   cpu.flagN = true;
   cpu.flagH = (((result + 1) & 0x10) === 0x10) && ((result & 0x10) !== 0x10);
+
+  return result;
 }
 
 export function dec_A(cpu: Cpu): void {
-  cpu.A -= 1;
-  dec_common(cpu, cpu.A);
+  cpu.A = dec_common(cpu, cpu.A);
 }
 
 export function dec_B(cpu: Cpu): void {
-  cpu.B -= 1;
-  dec_common(cpu, cpu.B);
+  cpu.B = dec_common(cpu, cpu.B);
 }
 
 export function dec_C(cpu: Cpu): void {
-  cpu.C -= 1;
-  dec_common(cpu, cpu.C);
+  cpu.C = dec_common(cpu, cpu.C);
 }
 
 export function dec_D(cpu: Cpu): void {
-  cpu.D -= 1;
-  dec_common(cpu, cpu.D);
+  cpu.D = dec_common(cpu, cpu.D);
 }
 
 export function dec_E(cpu: Cpu): void {
-  cpu.E -= 1;
-  dec_common(cpu, cpu.E);
+  cpu.E = dec_common(cpu, cpu.E);
 }
 
 export function dec_H(cpu: Cpu): void {
-  cpu.H -= 1;
-  dec_common(cpu, cpu.H);
+  cpu.H = dec_common(cpu, cpu.H);
 }
 
 export function dec_L(cpu: Cpu): void {
-  cpu.L -= 1;
-  dec_common(cpu, cpu.L);
+  cpu.L = dec_common(cpu, cpu.L);
 }
 
 export function dec_HLa(cpu: Cpu): void {
-  const result = cpu.read8(cpu.HL) - 1;
+  const result = dec_common(cpu,  cpu.read8(cpu.HL));
   cpu.write8(cpu.HL, result);
-  dec_common(cpu, result);
 }
 
 // (DEC nn) - no flags affected
@@ -684,11 +680,12 @@ export function dec_SP(cpu: Cpu): void {
  */
 function inc_common(cpu: Cpu, value: number): number {
   const result = value + 1;
-  cpu.flagZ = result === 0;
+  const maskedResult = result & 0xFF;
+  cpu.flagZ = maskedResult === 0;
   cpu.flagN = false;
   cpu.flagH = (((value & 0x0F) + 1) & 0x10) === 0x10;
 
-  return result & 0xFF;
+  return maskedResult;
 }
 
 export function inc_A(cpu: Cpu): void {
@@ -745,13 +742,14 @@ export function inc_SP(cpu: Cpu): void {
  */
 function add_common(cpu: Cpu, value: number) {
   const result = cpu.A + value;
-  cpu.flagZ = cpu.A === 0;
+  const maskedResult = result & 0xFF;
 
+  cpu.flagZ = maskedResult === 0;
   cpu.flagN = false;
   cpu.flagH = (((cpu.A & 0x0F) + (value & 0x0F)) & 0x10) === 0x10;
   cpu.flagC = (result & 0x100) === 0x100;
 
-  cpu.A = result & 0xFF;
+  cpu.A = maskedResult;
 }
 
 export function add_A_A(cpu: Cpu): void {;
@@ -869,12 +867,13 @@ export function add_HL_SP(cpu: Cpu): void {
  */
 function sub_common(cpu: Cpu, value: number): void {
   const result = cpu.A - value;
-  cpu.flagZ = cpu.A === 0;
+  const maskedResult = result & 0xFF;
+  cpu.flagZ = maskedResult === 0;
   cpu.flagN = true;
 
   cpu.flagH = ((cpu.A & 0x10) === 0x10) && ((result & 0x10) !== 0x10);
-  cpu.flagC = cpu.A < 0;
-  cpu.A = result & 0xFF;
+  cpu.flagC = result < 0;
+  cpu.A = maskedResult;
 }
 
 export function sub_A(cpu: Cpu): void {
@@ -1086,14 +1085,16 @@ export function xor_d8(cpu: Cpu): void {
 function rlc_common(cpu: Cpu, value: number): number {
   const rotatedValue = value << 1;
   let result = rotatedValue;
+  const maskedResult = result & 0xFF;
+
   // Move carry to carry flag (existing flag discarded)
   cpu.flagC = (result & 256) === 256;
-  cpu.flagZ = result === 0;
+  cpu.flagZ = maskedResult === 0;
 
   cpu.flagN = false;
   cpu.flagH = false;
 
-  return result & 0xFF;
+  return maskedResult;
 }
 
 export function rlc_A(cpu: Cpu): void {
@@ -1132,18 +1133,19 @@ export function rlc_HLa(cpu: Cpu): void {
 function rl_common(cpu: Cpu, value: number): number {
   const rotatedValue = value << 1;
   let result = rotatedValue;
+  const maskedResult = result & 0xFF;
   // Shift the carry flag in
   if (cpu.flagC) {
     result = result | 0x01;
   }
   // Move carry to carry flag
   cpu.flagC = (result & 256) === 256;
-  cpu.flagZ = result === 0;
+  cpu.flagZ = maskedResult === 0;
 
   cpu.flagN = false;
   cpu.flagH = false;
 
-  return result & 0xFF;
+  return maskedResult;
 }
 
 export function rl_A(cpu: Cpu): void {
@@ -2229,12 +2231,14 @@ export function cp_d8(cpu: Cpu): void {
  * Shift Left to Carry functions
  */
 function sla_common(cpu: Cpu, value: number): number {
-  const shiftedLeft = value << 1;
-  cpu.flagC = (shiftedLeft & 0x100) === 0x100;
-  cpu.flagZ = (shiftedLeft & 0xFF) === 0;
+  const result = value << 1;
+  const maskedResult = result & 0xFF;
+
+  cpu.flagC = (result & 0x100) === 0x100;
+  cpu.flagZ = maskedResult === 0;
   cpu.flagN = false;
   cpu.flagH = false;
-  return shiftedLeft & 0xFF;
+  return maskedResult;
 }
 
 export function sla_A(cpu: Cpu): void {
