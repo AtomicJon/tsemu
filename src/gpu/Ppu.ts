@@ -48,6 +48,25 @@ export default class Ppu {
   private currentScanline = 0;
   private currentScanlineOffset = 0;
 
+
+  private lcdc: number = 0;
+  private bgWindowEnable: number = 0;
+  private objEnable: number = 0;
+  private objSize: number = 0;
+  private bgTileMap: number = 0;
+  private tileSource: number = 0;
+  private windowEnable: number = 0;
+  private windowTileMap: number = 0;
+  private lcdPpuEnable: number = 0;
+
+  private stat: number = 0;
+  private mode: number = 0;
+  private coincidence: number = 0;
+  private mode0HBlank: number = 0;
+  private mode1VBlank: number = 0;
+  private mode2Oam: number = 0;
+  private myCoincidence: number = 0;
+
   constructor(memoryMap: MemoryMap, canvas: HTMLCanvasElement) {
     this.memoryMap = memoryMap;
     this.canvas = canvas;
@@ -76,6 +95,11 @@ export default class Ppu {
   }
 
   public tick() {
+    this.updateState();
+    if (!this.lcdPpuEnable) {
+      return;
+    }
+
     this.currentScanlineOffset += 1;
     if (this.currentScanlineOffset === 456) {
       this.currentScanlineOffset = 0;
@@ -101,24 +125,7 @@ export default class Ppu {
   }
 
   public update() {
-    const lcdc = this.memoryMap.read8(0xFF40);
-    const bgWindowEnable =  (lcdc & 1);
-    const objEnable =       (lcdc & 2) >> 1;
-    const objSize =         (lcdc & 4) >> 2;
-    const bgTileMap =       (lcdc & 8) >> 3;
-    const tileSource =      (lcdc & 16) >> 4;
-    const windowEnable =    (lcdc & 32) >> 5;
-    const windowTileMap =   (lcdc & 64) >> 6;
-    const lcdPpuEnable =    (lcdc & 128) >> 7;
-
-    const stat = this.memoryMap.read8(0xFF41);
-    const mode =          (stat & 3); // Uses first two bits
-    const coincidence =   (stat & 4) >> 2;
-    const mode0HBlank =   (stat & 8) >> 3;
-    const mode1VBlank =   (stat & 16) >> 4;
-    const mode2Oam =      (stat & 32) >> 5;
-    const myCoincidence = (stat & 64) >> 6;
-    // 7th bit unused?
+    this.updateState();
 
     const scrollY = this.memoryMap.read8(0xFF42);
     const scrollX = this.memoryMap.read8(0xFF43);
@@ -130,13 +137,13 @@ export default class Ppu {
 
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    if (bgWindowEnable) {
+    if (this.bgWindowEnable) {
       // Draw the background onto the buffer so that it can be transferred
       // to the appropriate offset for scroll X/Y
-      if (bgTileMap === 0) {
-        this.renderTileMap(0x9800, tileSource, this.bufferLayer);
+      if (this.bgTileMap === 0) {
+        this.renderTileMap(0x9800, this.bufferLayer);
       } else {
-        this.renderTileMap(0x9C00, tileSource, this.bufferLayer);
+        this.renderTileMap(0x9C00, this.bufferLayer);
       }
       const startOffset = (scrollY * 256) + scrollX;
       for (let i = 0; i < this.bufferLayer.pixelArray.length; i++) {
@@ -150,16 +157,16 @@ export default class Ppu {
       this.renderLayer(this.backgroundLayer, 0, 0);
     }
 
-    if (objEnable) {
+    if (this.objEnable) {
       this.renderSprites();
       this.renderLayer(this.spriteLayer, 0, 0);
     }
 
-    if (windowEnable) {
-      if (windowTileMap === 0) {
-        this.renderTileMap(0x9800, tileSource, this.windowLayer);
+    if (this.windowEnable) {
+      if (this.windowTileMap === 0) {
+        this.renderTileMap(0x9800, this.windowLayer);
       } else {
-        this.renderTileMap(0x9C00, tileSource, this.windowLayer);
+        this.renderTileMap(0x9C00, this.windowLayer);
       }
       this.renderLayer(this.windowLayer, windowX, windowY);
     }
@@ -168,20 +175,41 @@ export default class Ppu {
     this.renderFps();
   }
 
+  private updateState(): void {
+    const lcdc = this.memoryMap.read8(0xFF40);
+    this.bgWindowEnable =  (lcdc & 1);
+    this.objEnable =       (lcdc & 2) >> 1;
+    this.objSize =         (lcdc & 4) >> 2;
+    this.bgTileMap =       (lcdc & 8) >> 3;
+    this.tileSource =      (lcdc & 16) >> 4;
+    this.windowEnable =    (lcdc & 32) >> 5;
+    this.windowTileMap =   (lcdc & 64) >> 6;
+    this.lcdPpuEnable =    (lcdc & 128) >> 7;
+
+    const stat = this.memoryMap.read8(0xFF41);
+    this.mode =          (stat & 3); // Uses first two bits
+    this.coincidence =   (stat & 4) >> 2;
+    this.mode0HBlank =   (stat & 8) >> 3;
+    this.mode1VBlank =   (stat & 16) >> 4;
+    this.mode2Oam =      (stat & 32) >> 5;
+    this.myCoincidence = (stat & 64) >> 6;
+    // 7th bit unused?
+  }
+
   private renderLayer(layer: ImageLayer, x: number, y: number) {
     this.bufferCtx.putImageData(layer.imageData, 0, 0);
     this.ctx.drawImage(this.bufferCanvas, 0, 0, this.canvas.width, this.canvas.height - statsBarHeight);
   }
 
-  private renderTileMap(address: number, tileDataLocationFlag: number, target: ImageLayer) {
+  private renderTileMap(address: number, target: ImageLayer) {
     for (let i = 0; i < 1024; i++)  {
       const y = Math.floor(i / 32);
       const x = i - y * 32;
 
-      const tileNumber = (tileDataLocationFlag === 0)
+      const tileNumber = (this.tileSource === 0)
         ? this.memoryMap.read8Signed(address + i)
         : this.memoryMap.read8(address + i);
-      this.renderTile(x * 8, y * 8, tileNumber, tileDataLocationFlag, target);
+      this.renderTile(x * 8, y * 8, tileNumber, this.tileSource, target);
     }
   }
 
@@ -211,11 +239,11 @@ export default class Ppu {
     y: number,
     tileNumber: number,
     tileDataLocationFlag: number,
-    target: ImageLayer,
-    size: number = 8
+    target: ImageLayer
   ) {
     const address = (tileDataLocationFlag === 0 ? 0x9000 : 0x8000) + (tileNumber * 16);
-    for (let row = 0; row < size; row++) {
+    const tileSize = (this.objSize === 1) ? 16 : 8;
+    for (let row = 0; row < tileSize; row++) {
       const byte1 = this.memoryMap.read8(address + row * 2)
       const byte2 = this.memoryMap.read8(address + row * 2 + 1)
 

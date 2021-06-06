@@ -8,11 +8,11 @@
       }
       #content {
         display: flex;
+        align-items: flex-start;
       }
       #screen {
+        display: block;
         flex: 0 0 auto;
-        width: 160px;
-        height: 144px;
         border: 1px solid #ccc;
       }
       #debug_table {
@@ -22,8 +22,16 @@
       }
       #debug_table th,
       #debug_table td {
+        width: 16px;
         padding: 5px;
         border: 1px solid;
+      }
+      #debug_table th.hex_16 {
+        width: 32px;
+      }
+      #dbg_tiles {
+        display: block;
+        border: 1px solid #ccc;
       }
     </style>
   </head>
@@ -44,47 +52,52 @@
           </thead>
           <tbody>
             <tr>
-              <td rowspan="2">Registers</td>
-              <td>A</td>
-              <td>F</td>
-              <td>AF</td>
-              <td>B</td>
-              <td>C</td>
-              <td>BC</td>
-              <td>D</td>
-              <td>E</td>
-              <td>DE</td>
-              <td>H</td>
-              <td>L</td>
-              <td>HL</td>
-              <td>PC</td>
-              <td>SP</td>
+              <th rowspan="2">Registers</th>
+              <th>A</th>
+              <th>F</th>
+              <th>B</th>
+              <th>C</th>
+              <th>D</th>
+              <th>E</th>
+              <th>H</th>
+              <th>L</th>
+              <th class="hex_16">AF</th>
+              <th class="hex_16">BC</th>
+              <th class="hex_16">DE</th>
+              <th class="hex_16">HL</th>
+              <th class="hex_16">PC</th>
+              <th class="hex_16">SP</th>
             </tr>
             <tr>
               <td id="dbg_a"></td>
               <td id="dbg_f"></td>
-              <td id="dbg_af"></td>
               <td id="dbg_b"></td>
               <td id="dbg_c"></td>
-              <td id="dbg_bc"></td>
               <td id="dbg_d"></td>
               <td id="dbg_e"></td>
-              <td id="dbg_de"></td>
               <td id="dbg_h"></td>
               <td id="dbg_l"></td>
+              <td id="dbg_af"></td>
+              <td id="dbg_bc"></td>
+              <td id="dbg_de"></td>
               <td id="dbg_hl"></td>
               <td id="dbg_pc"></td>
               <td id="dbg_sp"></td>
             </tr>
             <tr>
-              <td>Joypad</td>
+              <th>Joypad</th>
               <td id="dbg_joypad" colspan="24"></td>
             </tr>
             <tr>
-              <td>VRAM Tiles</td>
-              <td colspan="24">
-                <canvas id="dbg_tiles" width="256" height="96"></canvas>
+              <th rowspan="2">GFX</th>
+              <th colspan="5">Tile Data</th>
+              <th colspan="19">LCD Control (FF40)</th>
+            </tr>
+            <tr>
+              <td colspan="5">
+                <canvas id="dbg_tiles" width="128" height="192"></canvas>
               </td>
+              <td id="dbg_lcdc" colspan="19"></td>
             </tr>
           </tbody>
         </table>

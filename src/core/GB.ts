@@ -34,6 +34,7 @@ export default class GB {
 
   private dbgTilesCanvas: HTMLCanvasElement;
   private dbgTilesCtx: CanvasRenderingContext2D;
+  private dbgLcdC: HTMLElement;
 
   constructor(canvas: HTMLCanvasElement) {
     this.memoryMap = new MemoryMap();
@@ -64,6 +65,7 @@ export default class GB {
 
     this.dbgTilesCanvas = document.getElementById('dbg_tiles')! as HTMLCanvasElement;
     this.dbgTilesCtx = this.dbgTilesCanvas.getContext('2d')!;
+    this.dbgLcdC = document.getElementById('dbg_lcdc')!;
   }
 
   public togglePause(): boolean {
@@ -132,8 +134,29 @@ export default class GB {
     this.dbgSP.innerHTML = getHexString(this.cpu.SP);
 
     const joypadValue = this.memoryMap.read8(0xFF00);
-    this.dbgJoypad.innerHTML = `${getBinaryString(joypadValue)} (${getHexString(joypadValue)})`;
+    this.dbgJoypad.innerHTML = `${getBinaryString(joypadValue)} (${getHexString(joypadValue)}) [${this.joypad.getPressedInputs().join(', ')}]`;
 
+    const lcdc = this.memoryMap.read8(0xFF40);
+    const bgWindowEnable =  (lcdc & 1);
+    const objEnable =       (lcdc & 2) >> 1;
+    const objSize =         (lcdc & 4) >> 2;
+    const bgTileMap =       (lcdc & 8) >> 3;
+    const tileSource =      (lcdc & 16) >> 4;
+    const windowEnable =    (lcdc & 32) >> 5;
+    const windowTileMap =   (lcdc & 64) >> 6;
+    const lcdPpuEnable =    (lcdc & 128) >> 7;
+
+    this.dbgLcdC.innerHTML = `
+      ${getBinaryString(lcdc)} (${getHexString(lcdc)})<br/>
+      LCD Enabled:   ${lcdPpuEnable}<br/>
+      Window Source: ${windowTileMap}<br/>
+      Window Enabled: ${windowEnable}<br/>
+      Tile Source: ${tileSource}<br/>
+      BG Source: ${bgTileMap}<br/>
+      Obj Size: ${objSize}<br/>
+      Obj Enabled: ${objEnable}<br/>
+      BG Enabled: ${bgWindowEnable}<br/>
+    `;
 
     const colors = [
       0x00000000,
