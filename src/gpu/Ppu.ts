@@ -123,6 +123,8 @@ export default class Ppu {
 
     let lcdStatInterrupt = false;
 
+    // Clear the mode and LYC (Coincidence), set below
+    updatedLcdStat = updatedLcdStat & 0xF8;
     if (this.currentScanline < 143) {
       if (this.currentScanlineOffset < 80) {
         updatedLcdStat |= 0x02;
@@ -130,14 +132,14 @@ export default class Ppu {
       } else if (this.currentScanlineOffset < 252) {
         updatedLcdStat |= 0x03;
       } else if (this.currentScanlineOffset === 252) {
-        updatedLcdStat |= 0x08;
+        // updatedLcdStat |= 0 : 0 During HBlank
         lcdStatInterrupt = mode0HBlankInterruptEnabled || lcdStatInterrupt;
       }
     } else if (this.currentScanline === 144 && this.currentScanlineOffset === 0) {
       updatedLcdStat |= 0x01;
       updatedInterrupts |= 0x01;
     } else {
-      this.memoryMap.write8(0xFF41, 0x01);
+      updatedLcdStat |= 0x01;
     }
 
     const lyc = this.memoryMap.read8(0xFF45);
