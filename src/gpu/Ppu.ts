@@ -97,7 +97,8 @@ export default class Ppu {
   public tick() {
     this.updateState();
     if (!this.lcdPpuEnable) {
-      return;
+      this.currentScanline = 0;
+      this.currentScanlineOffset = 0;
     }
 
     this.currentScanlineOffset += 1;
@@ -107,20 +108,47 @@ export default class Ppu {
     }
     this.memoryMap.write8(0xFF44, this.currentScanline);
 
+    let updatedLcdStat = this.memoryMap.read8(0xFF41);
+    let updatedInterrupts = this.memoryMap.read8(0xFF0F);
+
+    const lycInterruptEnabled = (updatedInterrupts & 0x40) === 0x40;
+    const mode2OAMInterruptEnabled = (updatedInterrupts & 0x40) === 0x20;
+    // TODO: Does this flag need to be checked when firing VBlank IRQ?
+    const mode1VBlankInterruptEnabled = (updatedInterrupts & 0x40) === 0x10;
+    const mode0HBlankInterruptEnabled = (updatedInterrupts & 0x40) === 0x08;
+
+    let lcdStatInterrupt = false;
+
     if (this.currentScanline < 143) {
       if (this.currentScanlineOffset < 80) {
-        this.memoryMap.write8(0xFF41, 2);
+        updatedLcdStat |= 0x02;
+        lcdStatInterrupt = mode2OAMInterruptEnabled || lcdStatInterrupt;
       } else if (this.currentScanlineOffset < 252) {
-        this.memoryMap.write8(0xFF41, 3);
+        updatedLcdStat |= 0x03;
       } else if (this.currentScanlineOffset === 252) {
-        this.memoryMap.write8(0xFF41, 0x08);
+        updatedLcdStat |= 0x08;
+        lcdStatInterrupt = mode0HBlankInterruptEnabled || lcdStatInterrupt;
       }
     } else if (this.currentScanline === 144 && this.currentScanlineOffset === 0) {
-      this.memoryMap.write8(0xFF41, 0x11);
-      this.memoryMap.write8(0xFF0F, 0x01);
+      updatedLcdStat |= 0x01;
+      updatedInterrupts |= 0x01;
     } else {
       this.memoryMap.write8(0xFF41, 0x01);
     }
+
+    const lyc = this.memoryMap.read8(0xFF45);
+    if (lyc === this.currentScanline) {
+      updatedLcdStat |= 0x04;
+      lcdStatInterrupt = lycInterruptEnabled || lcdStatInterrupt;
+    }
+
+    if (lcdStatInterrupt) {
+      updatedInterrupts |= 0x02;
+    }
+
+    // Update stats and interrupts
+    this.memoryMap.write8(0xFF41, updatedLcdStat);
+    this.memoryMap.write8(0xFF0F, updatedInterrupts);
     // TODO: Move pixel manipulation to tick, keep drawing in update
   }
 
