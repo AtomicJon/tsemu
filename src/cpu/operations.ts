@@ -686,7 +686,7 @@ function inc_common(cpu: Cpu, value: number): number {
   const result = value + 1;
   cpu.flagZ = result === 0;
   cpu.flagN = false;
-  cpu.flagH = ((value & 0x10) !== 0x10) && ((result & 0x10) === 0x10);
+  cpu.flagH = (((value & 0x0F) + 1) & 0x10) === 0x10;
 
   return result & 0xFF;
 }
@@ -743,59 +743,51 @@ export function inc_SP(cpu: Cpu): void {
 /**
  * 8 bit Add Functions
  */
-function add_common(cpu: Cpu) {
+function add_common(cpu: Cpu, value: number) {
+  const result = cpu.A + value;
   cpu.flagZ = cpu.A === 0;
 
   cpu.flagN = false;
-  cpu.flagH = (((cpu.A - 1) & 0x10) !== 0x10) && ((cpu.A & 0x10) === 0x10);
-  cpu.flagC = (cpu.A & 0x100) === 0x100;
+  cpu.flagH = (((cpu.A & 0x0F) + (value & 0x0F)) & 0x10) === 0x10;
+  cpu.flagC = (result & 0x100) === 0x100;
 
-  cpu.A = cpu.A & 0xFF;
+  cpu.A = result & 0xFF;
 }
 
-export function add_A_A(cpu: Cpu): void {
-  cpu.A = cpu.A + cpu.A;
-  add_common(cpu);
+export function add_A_A(cpu: Cpu): void {;
+  add_common(cpu, cpu.A);
 }
 
-export function add_A_B(cpu: Cpu): void {
-  cpu.A = cpu.A + cpu.B;
-  add_common(cpu);
+export function add_A_B(cpu: Cpu): void {;
+  add_common(cpu, cpu.B);
 }
 
-export function add_A_C(cpu: Cpu): void {
-  cpu.A = cpu.A + cpu.C;
-  add_common(cpu);
+export function add_A_C(cpu: Cpu): void {;
+  add_common(cpu, cpu.C);
 }
 
-export function add_A_D(cpu: Cpu): void {
-  cpu.A = cpu.A + cpu.D;
-  add_common(cpu);
+export function add_A_D(cpu: Cpu): void {;
+  add_common(cpu, cpu.D);
 }
 
-export function add_A_E(cpu: Cpu): void {
-  cpu.A = cpu.A + cpu.E;
-  add_common(cpu);
+export function add_A_E(cpu: Cpu): void {;
+  add_common(cpu, cpu.E);
 }
 
-export function add_A_H(cpu: Cpu): void {
-  cpu.A = cpu.A + cpu.H;
-  add_common(cpu);
+export function add_A_H(cpu: Cpu): void {;
+  add_common(cpu, cpu.H);
 }
 
-export function add_A_L(cpu: Cpu): void {
-  cpu.A = cpu.A + cpu.L;
-  add_common(cpu);
+export function add_A_L(cpu: Cpu): void {;
+  add_common(cpu, cpu.L);
 }
 
 export function add_A_HLa(cpu: Cpu): void {
-  cpu.A = cpu.A + cpu.read8(cpu.HL);
-  add_common(cpu);
+  add_common(cpu, cpu.read8(cpu.HL));
 }
 
 export function add_A_d8(cpu: Cpu): void {
-  cpu.A = cpu.A + cpu.read8();
-  add_common(cpu);
+  add_common(cpu, cpu.A + cpu.read8());
 }
 
 // ADC
@@ -803,7 +795,7 @@ function adc_common(cpu: Cpu, value: number) {
   const result = cpu.A + value + (cpu.flagC ? 1 : 0);
 
   cpu.flagN = false;
-  cpu.flagH = (((cpu.A) & 0x10) !== 0x10) && ((result & 0x10) === 0x10);
+  cpu.flagH = (((cpu.A & 0x0F) + (value & 0x0F) + (cpu.flagC ? 1 : 0)) & 0x10) === 0x10;
   cpu.flagC = (result & 0x100) === 0x100;
 
   cpu.A = result & 0xFF;
@@ -844,91 +836,81 @@ export function adc_A_HLa(cpu: Cpu): void {
 /**
  * 16 bit Add Functions
  */
-function add_16_common(cpu: Cpu) {
+function add_16_common(cpu: Cpu, value: number) {
+  const result = cpu.HL + value;
+
   cpu.flagN = false;
   // If carry to bit 11
-  cpu.flagH = (((cpu.HL - 1) & 0x1000) !== 0x1000) && ((cpu.HL & 0x1000) === 0x1000);
+  cpu.flagH = (((cpu.HL & 0xFF) + (value & 0xFF)) & 0x1000) === 0x1000;
   // If carry to bit 15
   cpu.flagC = (cpu.HL & 0x10000) === 0x10000;
 
-  cpu.HL = cpu.HL & 0xFFFF;
+  cpu.HL = result & 0xFFFF;
 }
 
 export function add_HL_BC(cpu: Cpu): void {
-  cpu.HL = cpu.HL + cpu.BC;
-  add_16_common(cpu);
+  add_16_common(cpu, cpu.BC);
 }
 
 export function add_HL_DE(cpu: Cpu): void {
-  cpu.HL = cpu.HL + cpu.DE;
-  add_16_common(cpu);
+  add_16_common(cpu, cpu.DE);
 }
 
 export function add_HL_HL(cpu: Cpu): void {
-  cpu.HL = cpu.HL + cpu.HL;
-  add_16_common(cpu);
+  add_16_common(cpu, cpu.HL);
 }
 
 export function add_HL_SP(cpu: Cpu): void {
-  cpu.HL = cpu.HL + cpu.SP;
-  add_16_common(cpu);
+  add_16_common(cpu, cpu.SP);
 }
 
 /**
  * Subtraction functions
  */
-function sub_common(cpu: Cpu): void {
+function sub_common(cpu: Cpu, value: number): void {
+  const result = cpu.A - value;
   cpu.flagZ = cpu.A === 0;
   cpu.flagN = true;
 
-  cpu.flagH = (((cpu.A + 1) & 0x10) === 0x10) && ((cpu.A & 0x10) !== 0x10);
+  cpu.flagH = ((cpu.A & 0x10) === 0x10) && ((result & 0x10) !== 0x10);
   cpu.flagC = cpu.A < 0;
-  cpu.A = cpu.A & 0xFF;
+  cpu.A = result & 0xFF;
 }
 
 export function sub_A(cpu: Cpu): void {
-  cpu.A = cpu.A - cpu.A;
-  sub_common(cpu);
+  sub_common(cpu, cpu.A);
 }
 
 export function sub_B(cpu: Cpu): void {
-  cpu.A = cpu.A - cpu.B;
-  sub_common(cpu);
+  sub_common(cpu, cpu.B);
 }
 
 export function sub_C(cpu: Cpu): void {
-  cpu.A = cpu.A - cpu.C;
-  sub_common(cpu);
+  sub_common(cpu, cpu.C);
 }
 
 export function sub_D(cpu: Cpu): void {
-  cpu.A = cpu.A - cpu.D;
-  sub_common(cpu);
+  sub_common(cpu, cpu.D);
 }
 
 export function sub_E(cpu: Cpu): void {
-  cpu.A = cpu.A - cpu.E;
-  sub_common(cpu);
+  sub_common(cpu, cpu.E);
 }
 
 export function sub_H(cpu: Cpu): void {
-  cpu.A = cpu.A - cpu.H;
-  sub_common(cpu);
+  sub_common(cpu, cpu.H);
 }
 
 export function sub_L(cpu: Cpu): void {
-  cpu.A = cpu.A - cpu.L;
-  sub_common(cpu);
+  sub_common(cpu, cpu.L);
 }
 
 export function sub_HLa(cpu: Cpu): void {
-  cpu.A = cpu.A - cpu.read8(cpu.HL);
-  sub_common(cpu);
+  sub_common(cpu, cpu.read8(cpu.HL));
 }
 
 export function sub_d8(cpu: Cpu): void {
-  cpu.A = cpu.A - cpu.read8();
-  sub_common(cpu);
+  sub_common(cpu, cpu.read8());
 }
 
 /**
@@ -2387,32 +2369,31 @@ export function srl_HLa(cpu: Cpu): void {
  */
 export function daa(cpu: Cpu): void {
   let result = cpu.A;
-  let adjust = 0;
 
   // Addition - flagN = if previous op was subtraction
   if (!cpu.flagN) {
     if (cpu.flagH || (cpu.A & 0x0F) > 0x09) {
-      adjust = 0x06;
+      result += 0x06;
     }
 
-    if (cpu.flagC || (cpu.A & 0xF0) > 0x90) {
-      adjust |= 0x60;
+    if (cpu.flagC || (cpu.A & 0xF0) > 0x99) {
+      result += 0x60;
       cpu.flagC = true;
     }
-    result += adjust;
   } else if (cpu.flagH) {
     // Subtraction
     if (cpu.flagH) {
-      adjust = 0x06;
+      result -= 0x06;
     }
 
     if (cpu.flagC) {
-      adjust |= 0x60;
+      result -= 0x60;
       cpu.flagC = true;
     }
-    result -= adjust;
   }
 
   cpu.flagZ = result === 0;
   cpu.flagH = false;
+
+  cpu.A = result;
 }
