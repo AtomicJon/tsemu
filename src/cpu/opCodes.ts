@@ -193,18 +193,18 @@ const opCodes: Record<number, OpCode> = {
       C: 'C',
     }
   },
-  // 0x10: {
-  //   action: operations.nop, // TODO: Handle low power mode
-  //   mnemonic: 'STOP d8',
-  //   bytes: 2,
-  //   cycles: 4,
-  //   flags: {
-  //     Z: null,
-  //     N: null,
-  //     H: null,
-  //     C: null,
-  //   }
-  // },
+  0x10: {
+    action: operations.nop, // TODO: Handle low power mode
+    mnemonic: 'STOP d8',
+    bytes: 2,
+    cycles: 4,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
   0x11: {
     action: operations.ld_DE_d16,
     mnemonic: 'LD DE, d16',
@@ -1417,18 +1417,18 @@ const opCodes: Record<number, OpCode> = {
       C: null,
     }
   },
-  // 0x76: {
-  //   action: operations.halt, // TODO: Handle low power mode
-  //   mnemonic: 'HALT',
-  //   bytes: 1,
-  //   cycles: 4,
-  //   flags: {
-  //     Z: null,
-  //     N: null,
-  //     H: null,
-  //     C: null,
-  //   }
-  // },
+  0x76: {
+    action: operations.nop, // TODO: Handle low power mode
+    mnemonic: 'HALT',
+    bytes: 1,
+    cycles: 4,
+    flags: {
+      Z: null,
+      N: null,
+      H: null,
+      C: null,
+    }
+  },
   0x77: {
     action: operations.ld_HLa_A,
     mnemonic: 'LD (HL), A',
@@ -2365,6 +2365,18 @@ const opCodes: Record<number, OpCode> = {
       C: null,
     }
   },
+  0xCE: {
+    action: operations.adc_A_d8,
+    mnemonic: 'ADC A, d8',
+    bytes: 2,
+    cycles: 8,
+    flags: {
+      Z: 'Z',
+      N: '0',
+      H: 'H',
+      C: 'C',
+    }
+  },
   0xCF: {
     action: operations.rst_08,
     mnemonic: 'RST 08',
@@ -2711,6 +2723,18 @@ const opCodes: Record<number, OpCode> = {
       N: null,
       H: null,
       C: null,
+    }
+  },
+  0xF8: {
+    action: operations.ld_HL_SP_d8s,
+    mnemonic: 'LD HL, SP + r8',
+    bytes: 2,
+    cycles: 12,
+    flags: {
+      Z: '0',
+      N: '0',
+      H: 'H',
+      C: 'C',
     }
   },
   0xF9: {

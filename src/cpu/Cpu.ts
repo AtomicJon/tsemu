@@ -13,6 +13,8 @@ type OpHistory = {
 
 const DIVIDER_FREQ = 16384;
 
+const MAX_HISTORY = 1000;
+
 export default class Cpu {
   private memoryMap: MemoryMap;
 
@@ -29,6 +31,8 @@ export default class Cpu {
 
   // Interrupts
   public interruptsEnabled: boolean = false;
+
+  public serialData: number[] = [];
 
   // Getters to access registers array buffer
   // 8 bit
@@ -64,7 +68,7 @@ export default class Cpu {
   public set H(value: number) { this.registers[7] = value; }
   public set L(value: number) { this.registers[6] = value; }
   // 16 bit
-  public set AF(value: number) { this.registers16[0] = value; }
+  public set AF(value: number) { this.registers16[0] = value & 0xFFF0; }
   public set BC(value: number) { this.registers16[1] = value; }
   public set DE(value: number) { this.registers16[2] = value; }
   public set HL(value: number) { this.registers16[3] = value; }
@@ -167,7 +171,7 @@ export default class Cpu {
       ],
     });
 
-    if (this.opHistory.length > 100) {
+    if (this.opHistory.length > MAX_HISTORY) {
       this.opHistory.shift();
     }
     // - DEBUG ---
@@ -239,6 +243,11 @@ export default class Cpu {
   }
 
   private writeMasking(address: number, value: number): boolean {
+    // Serial port
+    if (address === 0xFF01) {
+      this.serialData.push(value);
+    }
+
     if (address === 0xFF04) {
       // Divider register - reset to 0 when any value is written to it
       this.memoryMap.write8(address, 0);

@@ -35,6 +35,7 @@ export default class GB {
   private dbgTilesCtx: CanvasRenderingContext2D;
   private dbgOam: HTMLElement;
   private dbgLcdC: HTMLElement;
+  private dbgSerial: HTMLElement;
 
   constructor(canvas: HTMLCanvasElement) {
     this.memoryMap = new MemoryMap();
@@ -67,6 +68,7 @@ export default class GB {
     this.dbgTilesCtx = this.dbgTilesCanvas.getContext('2d')!;
     this.dbgOam = document.getElementById('dbg_oam')!;
     this.dbgLcdC = document.getElementById('dbg_lcdc')!;
+    this.dbgSerial = document.getElementById('dbg_serial')!;
   }
 
   public togglePause(): boolean {
@@ -138,6 +140,11 @@ export default class GB {
 
     const joypadValue = this.memoryMap.read8(0xFF00);
     this.dbgJoypad.innerHTML = `${getBinaryString(joypadValue)} (${getHexString(joypadValue)}) [${this.joypad.getPressedInputs().join(', ')}]`;
+
+    // TODO: Add toggle for serial data
+    // const serialDataString = this.cpu.serialData.map((value: number) => getHexString(value)).join(' ');
+    // const serialTextString = this.cpu.serialData.map((value: number) => String.fromCharCode(value)).join('');
+    // this.dbgSerial.innerHTML = `${serialDataString}<br/>${serialTextString}`;
 
 
     const oamValues = [];

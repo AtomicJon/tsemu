@@ -92,6 +92,8 @@ export default class Ppu {
     this.bufferCtx = this.bufferCanvas.getContext('2d')!;
 
     this.ctx = ctx;
+
+    this.memoryMap.write8(0xFF40, 0x80);
   }
 
   public tick() {
