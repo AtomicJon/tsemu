@@ -1,5 +1,13 @@
 import Cpu from './Cpu';
 
+function addHasHalfCarry(value1: number, value2: number, plusOne: boolean = false) {
+  return (((value1 & 0x0F) + (value2 & 0x0F) + (plusOne ? 1 : 0)) & 0x10) === 0x10;
+}
+
+function subHasHalfCarry(value1: number, value2: number, minusOne: boolean = false) {
+  return (((value1 & 0x0F) - (value2 & 0x0F) - (minusOne ? 1 : 0)) & 0x10) === 0x10;
+}
+
 export function nop(cpu: Cpu): void { /* No op */ }
 
 /**
@@ -357,7 +365,7 @@ export function ld_HL_SP_d8s(cpu: Cpu): void {
   const result = cpu.SP + value;
   cpu.flagZ = false;
   cpu.flagN = false;
-  cpu.flagH = (((cpu.SP & 0x0F) + (value & 0x0F)) & 0x10) === 0x10;
+  cpu.flagH = addHasHalfCarry(cpu.SP, value);
   cpu.flagC = (result & 0x100) === 0x100;
 
   cpu.HL = result;
@@ -631,7 +639,7 @@ function dec_common(cpu: Cpu, value: number): number {
 
   cpu.flagZ = result === 0;
   cpu.flagN = true;
-  cpu.flagH = (((result + 1) & 0x10) === 0x10) && ((result & 0x10) !== 0x10);
+  cpu.flagH = subHasHalfCarry(value, 1);
 
   return result;
 }
@@ -694,7 +702,7 @@ function inc_common(cpu: Cpu, value: number): number {
   const maskedResult = result & 0xFF;
   cpu.flagZ = maskedResult === 0;
   cpu.flagN = false;
-  cpu.flagH = (((value & 0x0F) + 1) & 0x10) === 0x10;
+  cpu.flagH = addHasHalfCarry(value, 1);
 
   return maskedResult;
 }
@@ -757,7 +765,7 @@ function add_common(cpu: Cpu, value: number) {
 
   cpu.flagZ = maskedResult === 0;
   cpu.flagN = false;
-  cpu.flagH = (((cpu.A & 0x0F) + (value & 0x0F)) & 0x10) === 0x10;
+  cpu.flagH = addHasHalfCarry(cpu.A, value);
   cpu.flagC = (result & 0x100) === 0x100;
 
   cpu.A = maskedResult;
@@ -802,13 +810,14 @@ export function add_A_d8(cpu: Cpu): void {
 // ADC
 function adc_common(cpu: Cpu, value: number) {
   const result = cpu.A + value + (cpu.flagC ? 1 : 0);
+  const maskedResult = result & 0xFF;
 
-  cpu.flagZ = result === 0;
+  cpu.flagZ = maskedResult === 0;
   cpu.flagN = false;
-  cpu.flagH = (((cpu.A & 0x0F) + (value & 0x0F) + (cpu.flagC ? 1 : 0)) & 0x10) === 0x10;
+  cpu.flagH = addHasHalfCarry(cpu.A, value, cpu.flagC);
   cpu.flagC = (result & 0x100) === 0x100;
 
-  cpu.A = result & 0xFF;
+  cpu.A = maskedResult;
 }
 
 export function adc_A_A(cpu: Cpu): void {
@@ -857,7 +866,7 @@ function add_16_common(cpu: Cpu, value: number) {
   // If carry to bit 11
   cpu.flagH = (((cpu.HL & 0xFF) + (value & 0xFF)) & 0x1000) === 0x1000;
   // If carry to bit 15
-  cpu.flagC = (cpu.HL & 0x10000) === 0x10000;
+  cpu.flagC = (result & 0x10000) === 0x10000;
 
   cpu.HL = result & 0xFFFF;
 }
@@ -887,7 +896,7 @@ function sub_common(cpu: Cpu, value: number): void {
   cpu.flagZ = maskedResult === 0;
   cpu.flagN = true;
 
-  cpu.flagH = ((cpu.A & 0x10) === 0x10) && ((result & 0x10) !== 0x10);
+  cpu.flagH = subHasHalfCarry(cpu.A, value);
   cpu.flagC = result < 0;
   cpu.A = maskedResult;
 }
@@ -2219,7 +2228,7 @@ function cp_common(cpu: Cpu, value: number) {
   const diff = cpu.A - value;
   cpu.flagZ = diff === 0;
   cpu.flagN = true;
-  cpu.flagH = (((cpu.A & 0x0F) - (value & 0x0F)) & 0x10) === 0x10;
+  cpu.flagH = subHasHalfCarry(cpu.A, value);
   cpu.flagC = diff < 0;
 }
 
@@ -2413,7 +2422,7 @@ export function daa(cpu: Cpu): void {
       result += 0x06;
     }
 
-    if (cpu.flagC || (cpu.A & 0xF0) > 0x99) {
+    if (cpu.flagC || cpu.A > 0x99) {
       result += 0x60;
       cpu.flagC = true;
     }
@@ -2425,12 +2434,12 @@ export function daa(cpu: Cpu): void {
 
     if (cpu.flagC) {
       result -= 0x60;
-      cpu.flagC = true;
     }
   }
 
-  cpu.flagZ = result === 0;
+  const maskedResult = result & 0xFF;
+  cpu.flagZ = maskedResult === 0;
   cpu.flagH = false;
 
-  cpu.A = result;
+  cpu.A = maskedResult;
 }
