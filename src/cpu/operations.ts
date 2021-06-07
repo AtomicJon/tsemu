@@ -856,6 +856,55 @@ export function adc_A_d8(cpu: Cpu): void {
   adc_common(cpu, cpu.read8());
 }
 
+// SBC
+function sbc_common(cpu: Cpu, value: number) {
+  const result = cpu.A - value - (cpu.flagC ? 1 : 0);
+  const maskedResult = result & 0xFF;
+
+  cpu.flagZ = maskedResult === 0;
+  cpu.flagN = true;
+  cpu.flagH = subHasHalfCarry(cpu.A, value, cpu.flagC);
+  cpu.flagC = (result & 0x100) === 0x100;
+
+  cpu.A = maskedResult;
+}
+
+export function sbc_A_A(cpu: Cpu): void {
+  sbc_common(cpu, cpu.A);
+}
+
+export function sbc_A_B(cpu: Cpu): void {
+  sbc_common(cpu, cpu.B);
+}
+
+export function sbc_A_C(cpu: Cpu): void {
+  sbc_common(cpu, cpu.C);
+}
+
+export function sbc_A_D(cpu: Cpu): void {
+  sbc_common(cpu, cpu.D);
+}
+
+export function sbc_A_E(cpu: Cpu): void {
+  sbc_common(cpu, cpu.E);
+}
+
+export function sbc_A_H(cpu: Cpu): void {
+  sbc_common(cpu, cpu.H);
+}
+
+export function sbc_A_L(cpu: Cpu): void {
+  sbc_common(cpu, cpu.L);
+}
+
+export function sbc_A_HLa(cpu: Cpu): void {
+  sbc_common(cpu, cpu.read8(cpu.HL));
+}
+
+export function sbc_A_d8(cpu: Cpu): void {
+  sbc_common(cpu, cpu.read8());
+}
+
 /**
  * 16 bit Add Functions
  */

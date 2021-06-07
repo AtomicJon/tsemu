@@ -1825,6 +1825,102 @@ const opCodes: Record<number, OpCode> = {
       C: "C",
     }
   },
+  0x98: {
+    action: operations.sbc_A_B,
+    mnemonic: 'SBC A, B',
+    bytes: 1,
+    cycles: 4,
+    flags: {
+      Z: "Z",
+      N: "1",
+      H: "H",
+      C: "C",
+    }
+  },
+  0x99: {
+    action: operations.sbc_A_C,
+    mnemonic: 'SBC A, C',
+    bytes: 1,
+    cycles: 4,
+    flags: {
+      Z: "Z",
+      N: "1",
+      H: "H",
+      C: "C",
+    }
+  },
+  0x9A: {
+    action: operations.sbc_A_D,
+    mnemonic: 'SBC A, D',
+    bytes: 1,
+    cycles: 4,
+    flags: {
+      Z: "Z",
+      N: "1",
+      H: "H",
+      C: "C",
+    }
+  },
+  0x9B: {
+    action: operations.sbc_A_E,
+    mnemonic: 'SBC A, E',
+    bytes: 1,
+    cycles: 4,
+    flags: {
+      Z: "Z",
+      N: "1",
+      H: "H",
+      C: "C",
+    }
+  },
+  0x9C: {
+    action: operations.sbc_A_H,
+    mnemonic: 'SBC A, H',
+    bytes: 1,
+    cycles: 4,
+    flags: {
+      Z: "Z",
+      N: "1",
+      H: "H",
+      C: "C",
+    }
+  },
+  0x9D: {
+    action: operations.sbc_A_L,
+    mnemonic: 'SBC A, L',
+    bytes: 1,
+    cycles: 4,
+    flags: {
+      Z: "Z",
+      N: "1",
+      H: "H",
+      C: "C",
+    }
+  },
+  0x9E: {
+    action: operations.sbc_A_HLa,
+    mnemonic: 'SBC A, B',
+    bytes: 1,
+    cycles: 4,
+    flags: {
+      Z: "Z",
+      N: "1",
+      H: "H",
+      C: "C",
+    }
+  },
+  0x9F: {
+    action: operations.sbc_A_A,
+    mnemonic: 'SBC A, B',
+    bytes: 1,
+    cycles: 4,
+    flags: {
+      Z: "Z",
+      N: "1",
+      H: "H",
+      C: "C",
+    }
+  },
   0xA0: {
     action: operations.and_B,
     mnemonic: 'AND B',
@@ -2519,6 +2615,18 @@ const opCodes: Record<number, OpCode> = {
       N: null,
       H: null,
       C: null,
+    }
+  },
+  0xDE: {
+    action: operations.sbc_A_d8,
+    mnemonic: 'SBC A, B',
+    bytes: 2,
+    cycles: 8,
+    flags: {
+      Z: "Z",
+      N: "1",
+      H: "H",
+      C: "C",
     }
   },
   0xDF: {
