@@ -1,8 +1,6 @@
 import MemoryMap from '../memory/MemoryMap';
 
-const BIT_MASK_ALL =         0x3F; // 00111111b - BIT 6/7 Low (unused bits)
-const BIT_MASK_BUTTON =      0x1F; // 00011111b - BIT 5 Low
-const BIT_MASK_DIRECTION =   0x2F; // 00101111b - BIT 4 Low
+const BIT_INPUTS_HIGH =      0x0F; // 00001111b - Input bits all high
 const BIT_MASK_DOWN_START =  0x37; // 00110111b - BIT 3 Low
 const BIT_MASK_UP_SELECT =   0x3B; // 00111011b - BIT 2 Low
 const BIT_MASK_LEFT_B =      0x3D; // 00111101b - BIT 1 Low
@@ -17,15 +15,50 @@ const INPUT_UP = 'UP';
 const INPUT_LEFT = 'LEFT';
 const INPUT_RIGHT = 'RIGHT';
 
-const INPUT_BIT_MAP: Record<string, number> = {
-  [INPUT_START]: BIT_MASK_BUTTON & BIT_MASK_DOWN_START,
-  [INPUT_SELECT]: BIT_MASK_BUTTON & BIT_MASK_UP_SELECT,
-  [INPUT_B]: BIT_MASK_BUTTON & BIT_MASK_LEFT_B,
-  [INPUT_A]: BIT_MASK_BUTTON & BIT_MASK_RIGHT_A,
-  [INPUT_DOWN]: BIT_MASK_DIRECTION & BIT_MASK_DOWN_START,
-  [INPUT_UP]: BIT_MASK_DIRECTION & BIT_MASK_UP_SELECT,
-  [INPUT_LEFT]: BIT_MASK_DIRECTION & BIT_MASK_LEFT_B,
-  [INPUT_RIGHT]: BIT_MASK_DIRECTION & BIT_MASK_RIGHT_A,
+enum INPUT_TYPE {
+  INPUT_TYPE_BUTTON = 'BUTTON',
+  INPUT_TYPE_DIRECTION = 'DIRECTION',
+}
+
+
+type InputMask = {
+  type: INPUT_TYPE;
+  mask: number,
+}
+
+const INPUT_BIT_MAP: Record<string, InputMask> = {
+  [INPUT_START]: {
+    type: INPUT_TYPE.INPUT_TYPE_BUTTON,
+    mask: BIT_MASK_DOWN_START,
+  },
+  [INPUT_SELECT]: {
+    type: INPUT_TYPE.INPUT_TYPE_BUTTON,
+    mask: BIT_MASK_UP_SELECT,
+  },
+  [INPUT_B]: {
+    type: INPUT_TYPE.INPUT_TYPE_BUTTON,
+    mask: BIT_MASK_LEFT_B,
+  },
+  [INPUT_A]: {
+    type: INPUT_TYPE.INPUT_TYPE_BUTTON,
+    mask: BIT_MASK_RIGHT_A,
+  },
+  [INPUT_DOWN]: {
+    type: INPUT_TYPE.INPUT_TYPE_DIRECTION,
+    mask: BIT_MASK_DOWN_START,
+  },
+  [INPUT_UP]: {
+    type: INPUT_TYPE.INPUT_TYPE_DIRECTION,
+    mask: BIT_MASK_UP_SELECT,
+  },
+  [INPUT_LEFT]: {
+    type: INPUT_TYPE.INPUT_TYPE_DIRECTION,
+    mask: BIT_MASK_LEFT_B,
+  },
+  [INPUT_RIGHT]: {
+    type: INPUT_TYPE.INPUT_TYPE_DIRECTION,
+    mask: BIT_MASK_RIGHT_A,
+  },
 };
 
 // TODO: Make keys configurable
@@ -66,12 +99,31 @@ export default class Joypad {
       // TODO: Fire interrupt
     }
 
-    let inputValue = BIT_MASK_ALL;
+    let buttonBits = BIT_INPUTS_HIGH;
+    let directionBits = BIT_INPUTS_HIGH;
+
+    // Pull down the respective bits for each input type
     this.pressedInputs.forEach((input) => {
-      inputValue = inputValue & INPUT_BIT_MAP[input];
+      const inputDetails = INPUT_BIT_MAP[input];
+      if (inputDetails.type === INPUT_TYPE.INPUT_TYPE_BUTTON) {
+        buttonBits &= inputDetails.mask;
+      } else {
+        directionBits &= inputDetails.mask;
+      }
     });
 
-    this.memoryMap.write8(0xFF00, inputValue);
+    // Update the selected input state (bit 4/5 are 0 to select)
+    let joypadState = this.memoryMap.read8(0xFF00);
+    // Directions
+    if ((joypadState & 0x10) !== 0x10) {
+      joypadState |= directionBits;
+    } else if ((joypadState & 0x20) !== 0x20) {
+      joypadState |= buttonBits;
+    } else {
+      joypadState |= BIT_INPUTS_HIGH;
+    }
+
+    this.memoryMap.write8(0xFF00, joypadState);
   }
 
   public getPressedInputs(): string[] {
