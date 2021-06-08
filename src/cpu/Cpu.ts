@@ -185,17 +185,12 @@ export default class Cpu {
       return true;
     }
 
-    let opCode = this.memoryMap.read8(this.PC);
-    this.PC += 1;
-
-    let opCodeTable = opCodes;
-    let isCbCode = false;
-    // Prefixed op code
-    if (opCode === 0xCB) {
-      isCbCode = true;
-      opCode = this.memoryMap.read8(this.PC);
-      this.PC += 1
-      opCodeTable = cbOpCodes;
+    let opCode = this.read8();
+    const isCbCode = opCode === 0xCB;
+    const opCodeTable = isCbCode ? cbOpCodes : opCodes;
+    // Prefixed op code, read actual op code
+    if (isCbCode) {
+      opCode = this.read8();
     }
 
     if (!opCodeTable[opCode]) {
@@ -205,13 +200,10 @@ export default class Cpu {
     const operation = opCodeTable[opCode];
 
     // + DEBUG ---
-    const codeString = opCode.toString(16)
-    const paddedCodeString = `0x${'0'.repeat(2 - codeString.length)}${codeString}`
-
     this.opHistory.push({
       step: this.step,
       PC: this.PC - 1,
-      codeString,
+      codeString: opCode.toString(16),
       mnemonic: operation.mnemonic,
       nextBytes: [
         this.memoryMap.read8(this.PC),
@@ -391,7 +383,7 @@ export default class Cpu {
       this.SP -= 2;
       this.memoryMap.write16(this.SP, this.PC);
 
-      // Jump to the VSync Interrupt Vector
+      // Jump to the Interrupt Vector
       this.PC = interruptVector;
       this.cycleOffset = 5;
       return true;
