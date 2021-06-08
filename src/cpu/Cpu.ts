@@ -300,32 +300,38 @@ export default class Cpu {
   }
 
   private handleInterrupt(): boolean {
-    const irq = this.memoryMap.read8(0xFF0F); // Interrupt Request Flag
-    const irqe = this.memoryMap.read8(0xFFFF); // Interrupt Request Enable
-    if (this.interruptsEnabled && irq & irqe & 0x01) {
-      // Disable any further interrupts until re-enabled
-      this.interruptsEnabled = false;
+    if (this.interruptsEnabled) {
+      const irq = this.memoryMap.read8(0xFF0F); // Interrupt Request Flag
+      const irqe = this.memoryMap.read8(0xFFFF); // Interrupt Request Enable
 
       // Determine the vector based on which bit is set
       // Prioritized from bit 0 - 4
       let interruptVector = 0;
       let bitMask = 0x1F; // Default to no clearing
-      if ((irq && irqe && 0x01) === 0x01) { // VSync
+      if ((irq & irqe & 0x01) === 0x01) { // VSync
         bitMask = 0x1E;
         interruptVector = 0x0040;
-      } else if ((irq && irqe && 0x02) === 0x02) { // LCD STAT
+      } else if ((irq & irqe & 0x02) === 0x02) { // LCD STAT
         bitMask = 0x1D;
         interruptVector = 0x0048;
-      } else if ((irq && irqe && 0x04) === 0x04) { // Timer
+      } else if ((irq & irqe & 0x04) === 0x04) { // Timer
         bitMask = 0x1B;
         interruptVector = 0x0050;
-      } else if ((irq && irqe && 0x08) === 0x08) { // Serial
+      } else if ((irq & irqe & 0x08) === 0x08) { // Serial
         bitMask = 0x17;
         interruptVector = 0x0058;
-      } else if ((irq && irqe && 0x10) === 0x10) { // Joypad
+      } else if ((irq & irqe & 0x10) === 0x10) { // Joypad
         bitMask = 0x0F;
         interruptVector = 0x0060;
       }
+
+      // No interrupts matched
+      if (interruptVector === 0) {
+        return false;
+      }
+
+      // Disable any further interrupts until re-enabled
+      this.interruptsEnabled = false;
 
       // Clear the flag for the interrupt being processed
       this.memoryMap.write8(0xFF0F, irq & bitMask);
