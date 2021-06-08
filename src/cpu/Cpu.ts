@@ -1,5 +1,33 @@
 import MemoryMap from '../memory/MemoryMap';
 import cbOpCodes from './cbOpCodes';
+import {
+  DIVIDER_FREQUENCY,
+
+  REG_A,
+  REG_F,
+  REG_B,
+  REG_C,
+  REG_D,
+  REG_E,
+  REG_H,
+  REG_L,
+
+  REG_AF,
+  REG_BC,
+  REG_DE,
+  REG_HL,
+  REG_SP,
+  REG_PC,
+
+  BIT_FLAG_Z,
+  BIT_FLAG_N,
+  BIT_FLAG_H,
+  BIT_FLAG_C,
+  MASK_FLAG_Z,
+  MASK_FLAG_N,
+  MASK_FLAG_H,
+  MASK_FLAG_C,
+} from './constants';
 import opCodes from './opCodes';
 
 type OpHistory = {
@@ -11,8 +39,6 @@ type OpHistory = {
   nextBytesSigned: number[];
 }
 
-const DIVIDER_FREQ = 16384;
-
 const MAX_HISTORY = 1000;
 
 export default class Cpu {
@@ -23,8 +49,7 @@ export default class Cpu {
   private opHistory: OpHistory[] = [];
 
   private registersBuffer: ArrayBuffer = new ArrayBuffer(12);
-  private registers: Uint8Array = new Uint8Array(this.registersBuffer);
-  private registers16: Uint16Array = new Uint16Array(this.registersBuffer);
+  private registersView: DataView = new DataView(this.registersBuffer);
 
   private dividerTick: number = 0;
   private timerTick: number = 0;
@@ -36,71 +61,71 @@ export default class Cpu {
 
   // Getters to access registers array buffer
   // 8 bit
-  public get A(): number { return this.registers[1]; }
-  public get F(): number { return this.registers[0]; }
-  public get B(): number { return this.registers[3]; }
-  public get C(): number { return this.registers[2]; }
-  public get D(): number { return this.registers[5]; }
-  public get E(): number { return this.registers[4]; }
-  public get H(): number { return this.registers[7]; }
-  public get L(): number { return this.registers[6]; }
+  public get A(): number { return this.getRegister(REG_A); }
+  public get F(): number { return this.getRegister(REG_F); }
+  public get B(): number { return this.getRegister(REG_B); }
+  public get C(): number { return this.getRegister(REG_C); }
+  public get D(): number { return this.getRegister(REG_D); }
+  public get E(): number { return this.getRegister(REG_E); }
+  public get H(): number { return this.getRegister(REG_H); }
+  public get L(): number { return this.getRegister(REG_L); }
   // 16 bit
-  public get AF(): number { return this.registers16[0]; }
-  public get BC(): number { return this.registers16[1]; }
-  public get DE(): number { return this.registers16[2]; }
-  public get HL(): number { return this.registers16[3]; }
-  public get SP(): number { return this.registers16[4]; }
-  public get PC(): number { return this.registers16[5]; }
+  public get AF(): number { return this.getRegister16(REG_AF); }
+  public get BC(): number { return this.getRegister16(REG_BC); }
+  public get DE(): number { return this.getRegister16(REG_DE); }
+  public get HL(): number { return this.getRegister16(REG_HL); }
+  public get SP(): number { return this.getRegister16(REG_SP); }
+  public get PC(): number { return this.getRegister16(REG_PC); }
   // Flag boolean get helpers
-  public get flagZ(): boolean { return (this.F & 0x80) === 0x80; }
-  public get flagN(): boolean { return (this.F & 0x40) === 0x40; }
-  public get flagH(): boolean { return (this.F & 0x20) === 0x20; }
-  public get flagC(): boolean { return (this.F & 0x10) === 0x10; }
+  public get flagZ(): boolean { return (this.F & BIT_FLAG_Z) === BIT_FLAG_Z; }
+  public get flagN(): boolean { return (this.F & BIT_FLAG_N) === BIT_FLAG_N; }
+  public get flagH(): boolean { return (this.F & BIT_FLAG_H) === BIT_FLAG_H; }
+  public get flagC(): boolean { return (this.F & BIT_FLAG_C) === BIT_FLAG_C; }
 
   // Setters to access registers array buffer
   // 8 bit
-  public set A(value: number) { this.registers[1] = value; }
-  public set F(value: number) { this.registers[0] = value & 0xF0; }
-  public set B(value: number) { this.registers[3] = value; }
-  public set C(value: number) { this.registers[2] = value; }
-  public set D(value: number) { this.registers[5] = value; }
-  public set E(value: number) { this.registers[4] = value; }
-  public set H(value: number) { this.registers[7] = value; }
-  public set L(value: number) { this.registers[6] = value; }
+  public set A(value: number) { this.setRegister(REG_A, value); }
+  public set F(value: number) { this.setRegister(REG_F, value & 0xF0); }
+  public set B(value: number) { this.setRegister(REG_B, value); }
+  public set C(value: number) { this.setRegister(REG_C, value); }
+  public set D(value: number) { this.setRegister(REG_D, value); }
+  public set E(value: number) { this.setRegister(REG_E, value); }
+  public set H(value: number) { this.setRegister(REG_H, value); }
+  public set L(value: number) { this.setRegister(REG_L, value); }
   // 16 bit
-  public set AF(value: number) { this.registers16[0] = value & 0xFFF0; }
-  public set BC(value: number) { this.registers16[1] = value; }
-  public set DE(value: number) { this.registers16[2] = value; }
-  public set HL(value: number) { this.registers16[3] = value; }
-  public set SP(value: number) { this.registers16[4] = value; }
-  public set PC(value: number) { this.registers16[5] = value; }
+  public set AF(value: number) { this.setRegister16(REG_AF, value & 0xFFF0) }
+  public set BC(value: number) { this.setRegister16(REG_BC, value) }
+  public set DE(value: number) { this.setRegister16(REG_DE, value) }
+  public set HL(value: number) { this.setRegister16(REG_HL, value) }
+  public set SP(value: number) { this.setRegister16(REG_SP, value) }
+  public set PC(value: number) { this.setRegister16(REG_PC, value) }
   // Flag boolean set helpers
   public set flagZ(value: boolean) {
     if (value) {
-      this.F = this.F | 0x80;
+      this.F = this.F | BIT_FLAG_Z;
     } else {
-      this.F = this.F & 0x7F;
+      this.F = this.F & MASK_FLAG_Z;
     }
   }
   public set flagN(value: boolean) {
     if (value) {
-      this.F = this.F | 0x40;
+      this.F = this.F | BIT_FLAG_N;
     } else {
-      this.F = this.F & 0xBF;
+      this.F = this.F & MASK_FLAG_N;
     }
   }
   public set flagH(value: boolean) {
     if (value) {
-      this.F = this.F | 0x20;
+      this.F = this.F | BIT_FLAG_H;
     } else {
-      this.F = this.F & 0xDF;
+      this.F = this.F & MASK_FLAG_H;
     }
   }
   public set flagC(value: boolean) {
     if (value) {
-      this.F = this.F | 0x10;
+      this.F = this.F | BIT_FLAG_C;
     } else {
-      this.F = this.F & 0xEF;
+      this.F = this.F & MASK_FLAG_C;
     }
   }
 
@@ -108,10 +133,37 @@ export default class Cpu {
     this.memoryMap = memoryMap;
   }
 
+  public getRegister(register: number): number {
+    return this.registersView.getUint8(register);
+  }
+
+  public getRegister16(register: number): number {
+    return this.registersView.getUint16(register, false);
+  }
+
+  public setRegister(register: number, value: number): void {
+    // Need to mask the lower 4 bits of register F
+    if (register === REG_F) {
+      this.registersView.setUint8(register, value & 0xF0);
+    } else {
+      this.registersView.setUint8(register, value);
+    }
+  }
+
+  public setRegister16(register: number, value: number): void {
+    // Need to mask the lower 4 bits of register F
+    if (register === REG_AF) {
+      this.registersView.setUint16(register, value & 0xFFF0, false);
+    } else {
+      this.registersView.setUint16(register, value, false);
+    }
+  }
+
+
   public reset() {
     // Clear registers
-    for (let i = 0; i < this.registers.length; i++) {
-      this.registers[i] = 0;
+    for (let i = 0; i < this.registersView.byteLength; i++) {
+      this.registersView.setUint8(i, 0);
     }
 
     // Point the program counter at the entry point and stack pointer to the top of ram
@@ -259,7 +311,7 @@ export default class Cpu {
 
   private updateDivider(): void {
     this.dividerTick += 1;
-    if (this.dividerTick === DIVIDER_FREQ) {
+    if (this.dividerTick === DIVIDER_FREQUENCY) {
       this.dividerTick = 0;
       const divider = this.memoryMap.read8(0xFF04) + 1;
       this.memoryMap.write8(0xFF04, divider & 0xFF);
