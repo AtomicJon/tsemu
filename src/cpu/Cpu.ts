@@ -41,6 +41,9 @@ type OpHistory = {
 
 const MAX_HISTORY = 1000;
 
+/**
+ * Class emulating the CPU
+ */
 export default class Cpu {
   private memoryMap: MemoryMap;
 
@@ -133,14 +136,27 @@ export default class Cpu {
     this.memoryMap = memoryMap;
   }
 
+  /**
+   * Get the value of a register
+   * @param register The register offset
+   */
   public getRegister(register: number): number {
     return this.registersView.getUint8(register);
   }
 
+  /**
+   * Get the value of a 16bit register (2 8bit combined)
+   * @param register The register offset
+   */
   public getRegister16(register: number): number {
     return this.registersView.getUint16(register, false);
   }
 
+  /**
+   * Set the value of a register
+   * @param register The register offset
+   * @param value The value to set
+   */
   public setRegister(register: number, value: number): void {
     // Need to mask the lower 4 bits of register F
     if (register === REG_F) {
@@ -150,6 +166,11 @@ export default class Cpu {
     }
   }
 
+  /**
+   * Set the value of a 16bit register (2 8bit combined)
+   * @param register The register offset
+   * @param value The value to set
+   */
   public setRegister16(register: number, value: number): void {
     // Need to mask the lower 4 bits of register F
     if (register === REG_AF) {
@@ -159,7 +180,9 @@ export default class Cpu {
     }
   }
 
-
+  /**
+   * Reset the CPU
+   */
   public reset() {
     // Clear registers
     for (let i = 0; i < this.registersView.byteLength; i++) {
@@ -171,6 +194,9 @@ export default class Cpu {
     this.SP = 0xFFFE;
   }
 
+  /**
+   * Run one clock cycle of the CPU
+   */
   public tick(): boolean {
     this.updateDivider();
     this.updateTimer();
@@ -228,8 +254,11 @@ export default class Cpu {
     return true;
   }
 
-  // Memory access helpers
-  // Reading
+  /**
+   * Read an 8bit int from memory at the given offset
+   * Update the PC for direct reads (no address specified)
+   * @param address The address offset (PC if not set)
+   */
   public read8(address: number | null = null): number {
     const targetAddress = address ?? this.PC;
 
@@ -243,6 +272,11 @@ export default class Cpu {
     return value;
   }
 
+  /**
+   * Read an 8bit signed int from memory at the given offset
+   * Update the PC for direct reads (no address specified)
+   * @param address The address offset (PC if not set)
+   */
   public read8Signed(address: number | null = null): number {
     const targetAddress = address ?? this.PC;
 
@@ -256,6 +290,11 @@ export default class Cpu {
     return value;
   }
 
+  /**
+   * Read an 16bit int from memory at the given offset
+   * Update the PC for direct reads (no address specified)
+   * @param address The address offset (PC if not set)
+   */
   public read16(address: number | null = null): number {
     const targetAddress = address ?? this.PC;
 
@@ -269,7 +308,11 @@ export default class Cpu {
     return value;
   }
 
-  // Writing
+  /**
+   * Write an 8bit int to memory at the given offset
+   * @param address The address to write to
+   * @param value The 8bit value to write
+   */
   public write8(address: number, value: number): void {
     if (this.writeMasking(address, value)) {
       return;
@@ -278,6 +321,11 @@ export default class Cpu {
     this.memoryMap.write8(address, value);
   }
 
+  /**
+   * Write a 16bit int to memory at the given offset
+   * @param address The address to write to
+   * @param value The 16bit value to write
+   */
   public write16(address: number, value: number): void {
     if (this.writeMasking(address, value)) {
       return;
@@ -286,6 +334,12 @@ export default class Cpu {
     this.memoryMap.write16(address, value);
   }
 
+  /**
+   * Helper to intercept writing to special addresses
+   * @param address The address to check before writing
+   * @param value The value that is being written
+   * @returns Whether the write was intercepted
+   */
   private writeMasking(address: number, value: number): boolean {
     // Serial port
     if (address === 0xFF01) {
@@ -301,6 +355,9 @@ export default class Cpu {
     return false;
   }
 
+  /**
+   * Update the divider each cycle
+   */
   private updateDivider(): void {
     this.dividerTick += 1;
     if (this.dividerTick === DIVIDER_FREQUENCY) {
@@ -310,6 +367,9 @@ export default class Cpu {
     }
   }
 
+  /**
+   * Update the timer each cycle
+   */
   private updateTimer(): void {
     const timerControl = this.memoryMap.read8(0xFF07);
     const timerEnabled = (timerControl & 0x04) === 0x04;
@@ -343,6 +403,10 @@ export default class Cpu {
     }
   }
 
+  /**
+   * Check for and handle interrupts
+   * @returns Whether an interrupt was handled
+   */
   private handleInterrupt(): boolean {
     if (this.interruptsEnabled) {
       const irq = this.memoryMap.read8(0xFF0F); // Interrupt Request Flag

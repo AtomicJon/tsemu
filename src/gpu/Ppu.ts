@@ -26,6 +26,9 @@ class ImageLayer {
   }
 }
 
+/**
+ * Class for emulating the Picture Processing Unit (PPU)
+ */
 export default class Ppu {
   private memoryMap: MemoryMap;
   private canvas: HTMLCanvasElement;
@@ -49,6 +52,9 @@ export default class Ppu {
   private currentScanlineOffset = 0;
 
 
+  /**
+   * LCDC state
+   */
   private lcdc: number = 0;
   private bgWindowEnable: number = 0;
   private objEnable: number = 0;
@@ -59,6 +65,9 @@ export default class Ppu {
   private windowTileMap: number = 0;
   private lcdPpuEnable: number = 0;
 
+  /**
+   * STAT State
+   */
   private stat: number = 0;
   private mode: number = 0;
   private coincidence: number = 0;
@@ -96,6 +105,9 @@ export default class Ppu {
     this.memoryMap.write8(0xFF40, 0x80);
   }
 
+  /**
+   * Run one cycle of the clock, updates scan lines
+   */
   public tick() {
     this.updateState();
     if (!this.lcdPpuEnable) {
@@ -160,6 +172,9 @@ export default class Ppu {
     // TODO: Move pixel manipulation to tick, keep drawing in update
   }
 
+  /**
+   * The update the rendering (once per frame)
+   */
   public update() {
     this.updateState();
 
@@ -211,6 +226,10 @@ export default class Ppu {
     this.renderFps();
   }
 
+  /**
+   * Read the latest LCDC and STAT states and
+   * store them locally
+   */
   private updateState(): void {
     const lcdc = this.memoryMap.read8(0xFF40);
     this.bgWindowEnable =  (lcdc & 1);
@@ -232,11 +251,22 @@ export default class Ppu {
     // 7th bit unused?
   }
 
+  /**
+   * Render a layer onto the screen canvas
+   * @param layer The layer to render
+   * @param x The x coordinate to render the layer at
+   * @param y The y coordinate to render the layer at
+   */
   private renderLayer(layer: ImageLayer, x: number, y: number) {
     this.bufferCtx.putImageData(layer.imageData, 0, 0);
-    this.ctx.drawImage(this.bufferCanvas, 0, 0, this.canvas.width, this.canvas.height - statsBarHeight);
+    this.ctx.drawImage(this.bufferCanvas, x, y, this.canvas.width, this.canvas.height - statsBarHeight);
   }
 
+  /**
+   * Render a tile onto a layer
+   * @param address The address of the tile
+   * @param target The layer to render the tile onto
+   */
   private renderTileMap(address: number, target: ImageLayer) {
     for (let i = 0; i < 1024; i++)  {
       const y = Math.floor(i / 32);
@@ -249,6 +279,9 @@ export default class Ppu {
     }
   }
 
+  /**
+   * Render all sprites on to the sprite layer
+   */
   private renderSprites() {
     // Clear current sprite data
     this.spriteLayer.pixelArray.fill(0x000000);
@@ -270,6 +303,15 @@ export default class Ppu {
     }
   }
 
+  /**
+   * Render a tile onto a layer
+   * @param x The x coordinate to render the tile at
+   * @param y The y coordinate to render the tile at
+   * @param tileNumber The tile number within the OAM
+   * @param tileDataLocationFlag The flag to indicate the tile number indexing method
+   * @param target The layer to render the tile onto
+   * @param isSprite If the tile is a sprite
+   */
   private renderTile(
     x: number,
     y: number,
@@ -297,6 +339,9 @@ export default class Ppu {
     }
   }
 
+  /**
+   * Render the FPS at the bottom of the screen
+   */
   private renderFps() {
     const now = performance.now();
     const updateTime = now - this.lastUpdate || 1;

@@ -26,6 +26,9 @@ type InputMask = {
   mask: number,
 }
 
+/**
+ * Map of inputs to their type and bit to mask
+ */
 const INPUT_BIT_MAP: Record<string, InputMask> = {
   [INPUT_START]: {
     type: INPUT_TYPE.INPUT_TYPE_BUTTON,
@@ -79,6 +82,9 @@ const INPUT_KEY_MAP: Record<string, string> = {
 };
 
 
+/**
+ * Class for managing input/joypad emulation
+ */
 export default class Joypad {
   private memoryMap: MemoryMap;
   private inputPressed: boolean = false;
@@ -99,10 +105,10 @@ export default class Joypad {
       // TODO: Fire interrupt
     }
 
+    // Pull down direct and button bits based on
+    // which buttons are pressed
     let buttonBits = BIT_INPUTS_HIGH;
     let directionBits = BIT_INPUTS_HIGH;
-
-    // Pull down the respective bits for each input type
     this.pressedInputs.forEach((input) => {
       const inputDetails = INPUT_BIT_MAP[input];
       if (inputDetails.type === INPUT_TYPE.INPUT_TYPE_BUTTON) {
@@ -112,9 +118,10 @@ export default class Joypad {
       }
     });
 
-    // Update the selected input state (bit 4/5 are 0 to select)
+    // The game will indicate whether the buttons or
+    // direction are being read by pulling down
+    // bit 4/5 (0x10 / 0x20)
     let joypadState = this.memoryMap.read8(0xFF00);
-    // Directions
     if ((joypadState & 0x10) !== 0x10) {
       joypadState |= directionBits;
     } else if ((joypadState & 0x20) !== 0x20) {
@@ -123,13 +130,21 @@ export default class Joypad {
       joypadState |= BIT_INPUTS_HIGH;
     }
 
+    // Write back the state including the pulled down bits
     this.memoryMap.write8(0xFF00, joypadState);
   }
 
+  /**
+   * Helper for debugging
+   */
   public getPressedInputs(): string[] {
     return this.pressedInputs;
   }
 
+  /**
+   * Callback when a key is pressed
+   * @param evt The keyboard event
+   */
   private onKeyDown = (evt: KeyboardEvent): void => {
     const input = INPUT_KEY_MAP[evt.key] ?? null;
     if (input !== null && !this.pressedInputs.includes(input)) {
@@ -138,6 +153,10 @@ export default class Joypad {
     }
   }
 
+  /**
+   * Callback when a key is released
+   * @param evt The keyboard event
+   */
   private onKeyUp = (evt: KeyboardEvent): void => {
     const input = INPUT_KEY_MAP[evt.key] ?? null;
     if (input !== null && this.pressedInputs.includes(input)) {

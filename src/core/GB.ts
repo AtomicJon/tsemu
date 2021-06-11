@@ -4,6 +4,10 @@ import Joypad from '../io/Joypad';
 import MemoryMap from '../memory/MemoryMap';
 import getHexString from '../util/getHexString';
 import getBinaryString from '../util/getBinaryString';
+
+/**
+ * The core Game Boy class
+ */
 export default class GB {
   private cpu: Cpu;
   private gpu: Ppu;
@@ -71,11 +75,18 @@ export default class GB {
     this.dbgSerial = document.getElementById('dbg_serial')!;
   }
 
+  /**
+   * Pause/unpause emulation
+   */
   public togglePause(): boolean {
     this.isPaused = !this.isPaused;
     return this.isPaused;
   }
 
+  /**
+   * Load a cart into the emulator
+   * @param cartData An array buffer containing the cart data
+   */
   public loadCart(cartData: ArrayBuffer) {
     console.log('load cart');
     this.memoryMap.loadCart(cartData);
@@ -88,6 +99,9 @@ export default class GB {
     this.animationFrameRequest = requestAnimationFrame(this.update);
   }
 
+  /**
+   * The update callback - called per frame (requestAnimationFrame)
+   */
   private update = (): void => {
     if (!this.isRunning) {
       this.animationFrameRequest = null;
@@ -110,7 +124,7 @@ export default class GB {
       let cpuSuccess = this.cpu.tick();
       this.gpu.tick();
 
-      // 0 cycles indicates failure
+      // Halt if CPU cycle fails
       if (!cpuSuccess) {
         return;
       }
@@ -122,6 +136,9 @@ export default class GB {
     this.animationFrameRequest = requestAnimationFrame(this.update);
   }
 
+  /**
+   * Debug - update UI with debug info
+   */
   private updateDebug = (): void => {
     this.dbgA.innerHTML = getHexString(this.cpu.A);
     this.dbgF.innerHTML = getHexString(this.cpu.F);
