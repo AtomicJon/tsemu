@@ -1,6 +1,8 @@
 import GB from './core/GB';
 
-// 4.194304 MHz
+/**
+ * Main entry point - hooks up UI, GB, and keyboard events
+ */
 export default function main(): void {
   // Controls
   const gameSelect = document.getElementById('game') as HTMLInputElement;
@@ -31,4 +33,3 @@ export default function main(): void {
 }
 
 main();
-
