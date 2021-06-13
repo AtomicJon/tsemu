@@ -1,3 +1,5 @@
+import { ResultFlags } from './types';
+
 export const DIVIDER_FREQUENCY = 16384;
 
 export const REG_A = 0;
@@ -21,7 +23,14 @@ export const BIT_FLAG_N = 0x40;
 export const BIT_FLAG_H = 0x20;
 export const BIT_FLAG_C = 0x10;
 
-export const MASK_FLAG_Z = 0x7F;
-export const MASK_FLAG_N = 0xBF;
-export const MASK_FLAG_H = 0xDF;
-export const MASK_FLAG_C = 0xEF;
+export const MASK_FLAG_Z = 0x7f;
+export const MASK_FLAG_N = 0xbf;
+export const MASK_FLAG_H = 0xdf;
+export const MASK_FLAG_C = 0xef;
+
+export const FLAGS_NO_CHANGE: ResultFlags = {
+  Z: null,
+  N: null,
+  H: null,
+  C: null,
+};

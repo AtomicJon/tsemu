@@ -1,5 +1,5 @@
-const ADDRESS_OAM_DMA_REQUEST = 0xFF46;
-const SPRITES_OFFSET = 0xFE00;
+const ADDRESS_OAM_DMA_REQUEST = 0xff46;
+const SPRITES_OFFSET = 0xfe00;
 /**
  * Class to manage memory access
  */
@@ -18,7 +18,7 @@ export default class MemoryMap {
    * 0xFF00 -> 0xFF7F : (128) IO Registers
    * 0xFF80 -> 0xFFFE : (127) High RAM (HRAM)
    * 0xFFFF           : (1) Interrupt Enable Register
-  */
+   */
   private memoryBuffer: ArrayBuffer = new ArrayBuffer(0x10000);
   private memoryView: DataView = new DataView(this.memoryBuffer);
 
@@ -82,8 +82,11 @@ export default class MemoryMap {
     // DMA Transfer
     if (address == ADDRESS_OAM_DMA_REQUEST) {
       const fromAddress = value << 8;
-      for (let i = 0; i < 0x9F; i++) {
-        this.memoryView.setUint8(SPRITES_OFFSET + i, this.read8(fromAddress + i));
+      for (let i = 0; i < 0x9f; i++) {
+        this.memoryView.setUint8(
+          SPRITES_OFFSET + i,
+          this.read8(fromAddress + i),
+        );
       }
 
       return;
@@ -107,7 +110,7 @@ export default class MemoryMap {
    */
   private canRead(address: number): boolean {
     // Restricted / unknown for 0xFEA0 -> 0xFEFF
-    if (address >= 0xFEA0 && address <= 0xFEFF) {
+    if (address >= 0xfea0 && address <= 0xfeff) {
       return false;
     }
 

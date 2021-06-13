@@ -15,7 +15,13 @@
   "devDependencies": {
     "@babel/core": "^7.14.3",
     "@babel/preset-typescript": "^7.13.0",
-    "parcel-bundler": "^1.12.5"
+    "@typescript-eslint/eslint-plugin": "^4.26.1",
+    "@typescript-eslint/parser": "^4.26.1",
+    "eslint": "^7.28.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "parcel-bundler": "^1.12.5",
+    "prettier": "^2.3.1"
   },
   "browserslist": [
     "last 1 Chrome version"

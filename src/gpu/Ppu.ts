@@ -1,11 +1,6 @@
 import MemoryMap from '../memory/MemoryMap';
 
-const colors = [
-  0x00000000,
-  0xffAAAAAA,
-  0xff555555,
-  0xff000000
-];
+const colors = [0x00000000, 0xffaaaaaa, 0xff555555, 0xff000000];
 
 const screenWidth = 160;
 const screenHeight = 144;
@@ -51,7 +46,6 @@ export default class Ppu {
   private currentScanline = 0;
   private currentScanlineOffset = 0;
 
-
   /**
    * LCDC state
    */
@@ -90,10 +84,18 @@ export default class Ppu {
       throw new Error('Failed to get canvas 2D Context.');
     }
 
-    this.backgroundLayer = new ImageLayer(ctx.createImageData(bufferWidth, bufferHeight));
-    this.windowLayer = new ImageLayer(ctx.createImageData(bufferWidth, bufferHeight));
-    this.spriteLayer = new ImageLayer(ctx.createImageData(bufferWidth, bufferHeight));
-    this.bufferLayer = new ImageLayer(ctx.createImageData(bufferWidth, bufferHeight));
+    this.backgroundLayer = new ImageLayer(
+      ctx.createImageData(bufferWidth, bufferHeight),
+    );
+    this.windowLayer = new ImageLayer(
+      ctx.createImageData(bufferWidth, bufferHeight),
+    );
+    this.spriteLayer = new ImageLayer(
+      ctx.createImageData(bufferWidth, bufferHeight),
+    );
+    this.bufferLayer = new ImageLayer(
+      ctx.createImageData(bufferWidth, bufferHeight),
+    );
 
     this.bufferCanvas = document.createElement('canvas');
     this.bufferCanvas.width = screenWidth;
@@ -102,7 +104,7 @@ export default class Ppu {
 
     this.ctx = ctx;
 
-    this.memoryMap.write8(0xFF40, 0x80);
+    this.memoryMap.write8(0xff40, 0x80);
   }
 
   /**
@@ -113,32 +115,33 @@ export default class Ppu {
     if (!this.lcdPpuEnable) {
       this.currentScanline = 0;
       this.currentScanlineOffset = 0;
-      const lcdStat = this.memoryMap.read8(0xFF41);
-      this.memoryMap.write8(0xFF41, lcdStat & 0xFC); // Set mode to 0, TODO:  LYC=LY (Coincidence)?
-      this.memoryMap.write8(0xFF44, this.currentScanline);
+      const lcdStat = this.memoryMap.read8(0xff41);
+      this.memoryMap.write8(0xff41, lcdStat & 0xfc); // Set mode to 0, TODO:  LYC=LY (Coincidence)?
+      this.memoryMap.write8(0xff44, this.currentScanline);
       return;
     }
 
     this.currentScanlineOffset += 1;
     if (this.currentScanlineOffset === 456) {
       this.currentScanlineOffset = 0;
-      this.currentScanline = this.currentScanline === 153 ? 0 : this.currentScanline + 1;
+      this.currentScanline =
+        this.currentScanline === 153 ? 0 : this.currentScanline + 1;
     }
-    this.memoryMap.write8(0xFF44, this.currentScanline);
+    this.memoryMap.write8(0xff44, this.currentScanline);
 
-    let updatedLcdStat = this.memoryMap.read8(0xFF41);
-    let updatedInterrupts = this.memoryMap.read8(0xFF0F);
+    let updatedLcdStat = this.memoryMap.read8(0xff41);
+    let updatedInterrupts = this.memoryMap.read8(0xff0f);
 
     const lycInterruptEnabled = (updatedInterrupts & 0x40) === 0x40;
     const mode2OAMInterruptEnabled = (updatedInterrupts & 0x40) === 0x20;
     // TODO: Does this flag need to be checked when firing VBlank IRQ?
-    const mode1VBlankInterruptEnabled = (updatedInterrupts & 0x40) === 0x10;
+    // const mode1VBlankInterruptEnabled = (updatedInterrupts & 0x40) === 0x10;
     const mode0HBlankInterruptEnabled = (updatedInterrupts & 0x40) === 0x08;
 
     let lcdStatInterrupt = false;
 
     // Clear the mode and LYC (Coincidence), set below
-    updatedLcdStat = updatedLcdStat & 0xF8;
+    updatedLcdStat = updatedLcdStat & 0xf8;
     if (this.currentScanline < 143) {
       if (this.currentScanlineOffset < 80) {
         updatedLcdStat |= 0x02;
@@ -149,14 +152,17 @@ export default class Ppu {
         // updatedLcdStat |= 0 : 0 During HBlank
         lcdStatInterrupt = mode0HBlankInterruptEnabled || lcdStatInterrupt;
       }
-    } else if (this.currentScanline === 144 && this.currentScanlineOffset === 0) {
+    } else if (
+      this.currentScanline === 144 &&
+      this.currentScanlineOffset === 0
+    ) {
       updatedLcdStat |= 0x01;
       updatedInterrupts |= 0x01;
     } else {
       updatedLcdStat |= 0x01;
     }
 
-    const lyc = this.memoryMap.read8(0xFF45);
+    const lyc = this.memoryMap.read8(0xff45);
     if (lyc === this.currentScanline) {
       updatedLcdStat |= 0x04;
       lcdStatInterrupt = lycInterruptEnabled || lcdStatInterrupt;
@@ -167,8 +173,8 @@ export default class Ppu {
     }
 
     // Update stats and interrupts
-    this.memoryMap.write8(0xFF41, updatedLcdStat);
-    this.memoryMap.write8(0xFF0F, updatedInterrupts);
+    this.memoryMap.write8(0xff41, updatedLcdStat);
+    this.memoryMap.write8(0xff0f, updatedInterrupts);
     // TODO: Move pixel manipulation to tick, keep drawing in update
   }
 
@@ -178,13 +184,13 @@ export default class Ppu {
   public update() {
     this.updateState();
 
-    const scrollY = this.memoryMap.read8(0xFF42);
-    const scrollX = this.memoryMap.read8(0xFF43);
-    const lcdY = this.memoryMap.read8(0xFF44);
-    const lyCompare = this.memoryMap.read8(0xFF45);
+    const scrollY = this.memoryMap.read8(0xff42);
+    const scrollX = this.memoryMap.read8(0xff43);
+    // const lcdY = this.memoryMap.read8(0xff44);
+    // const lyCompare = this.memoryMap.read8(0xff45);
     // const dmaTransfer = this.memoryMap.read8(0xFF46);
-    const windowY = this.memoryMap.read8(0xFF4A);
-    const windowX = this.memoryMap.read8(0xFF4B);
+    const windowY = this.memoryMap.read8(0xff4a);
+    const windowX = this.memoryMap.read8(0xff4b);
 
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -194,15 +200,16 @@ export default class Ppu {
       if (this.bgTileMap === 0) {
         this.renderTileMap(0x9800, this.bufferLayer);
       } else {
-        this.renderTileMap(0x9C00, this.bufferLayer);
+        this.renderTileMap(0x9c00, this.bufferLayer);
       }
-      const startOffset = (scrollY * 256) + scrollX;
+      const startOffset = scrollY * 256 + scrollX;
       for (let i = 0; i < this.bufferLayer.pixelArray.length; i++) {
         let offset = i + startOffset;
         if (offset >= 65536) {
           offset -= 65536;
         }
-        this.backgroundLayer.pixelArray[i] = this.bufferLayer.pixelArray[offset];
+        this.backgroundLayer.pixelArray[i] =
+          this.bufferLayer.pixelArray[offset];
       }
 
       this.renderLayer(this.backgroundLayer, 0, 0);
@@ -217,7 +224,7 @@ export default class Ppu {
       if (this.windowTileMap === 0) {
         this.renderTileMap(0x9800, this.windowLayer);
       } else {
-        this.renderTileMap(0x9C00, this.windowLayer);
+        this.renderTileMap(0x9c00, this.windowLayer);
       }
       this.renderLayer(this.windowLayer, windowX, windowY);
     }
@@ -231,22 +238,22 @@ export default class Ppu {
    * store them locally
    */
   private updateState(): void {
-    const lcdc = this.memoryMap.read8(0xFF40);
-    this.bgWindowEnable =  (lcdc & 1);
-    this.objEnable =       (lcdc & 2) >> 1;
-    this.objSize =         (lcdc & 4) >> 2;
-    this.bgTileMap =       (lcdc & 8) >> 3;
-    this.tileSource =      (lcdc & 16) >> 4;
-    this.windowEnable =    (lcdc & 32) >> 5;
-    this.windowTileMap =   (lcdc & 64) >> 6;
-    this.lcdPpuEnable =    (lcdc & 128) >> 7;
+    const lcdc = this.memoryMap.read8(0xff40);
+    this.bgWindowEnable = lcdc & 1;
+    this.objEnable = (lcdc & 2) >> 1;
+    this.objSize = (lcdc & 4) >> 2;
+    this.bgTileMap = (lcdc & 8) >> 3;
+    this.tileSource = (lcdc & 16) >> 4;
+    this.windowEnable = (lcdc & 32) >> 5;
+    this.windowTileMap = (lcdc & 64) >> 6;
+    this.lcdPpuEnable = (lcdc & 128) >> 7;
 
-    const stat = this.memoryMap.read8(0xFF41);
-    this.mode =          (stat & 3); // Uses first two bits
-    this.coincidence =   (stat & 4) >> 2;
-    this.mode0HBlank =   (stat & 8) >> 3;
-    this.mode1VBlank =   (stat & 16) >> 4;
-    this.mode2Oam =      (stat & 32) >> 5;
+    const stat = this.memoryMap.read8(0xff41);
+    this.mode = stat & 3; // Uses first two bits
+    this.coincidence = (stat & 4) >> 2;
+    this.mode0HBlank = (stat & 8) >> 3;
+    this.mode1VBlank = (stat & 16) >> 4;
+    this.mode2Oam = (stat & 32) >> 5;
     this.myCoincidence = (stat & 64) >> 6;
     // 7th bit unused?
   }
@@ -259,7 +266,13 @@ export default class Ppu {
    */
   private renderLayer(layer: ImageLayer, x: number, y: number) {
     this.bufferCtx.putImageData(layer.imageData, 0, 0);
-    this.ctx.drawImage(this.bufferCanvas, x, y, this.canvas.width, this.canvas.height - statsBarHeight);
+    this.ctx.drawImage(
+      this.bufferCanvas,
+      x,
+      y,
+      this.canvas.width,
+      this.canvas.height - statsBarHeight,
+    );
   }
 
   /**
@@ -268,13 +281,14 @@ export default class Ppu {
    * @param target The layer to render the tile onto
    */
   private renderTileMap(address: number, target: ImageLayer) {
-    for (let i = 0; i < 1024; i++)  {
+    for (let i = 0; i < 1024; i++) {
       const y = Math.floor(i / 32);
       const x = i - y * 32;
 
-      const tileNumber = (this.tileSource === 0)
-        ? this.memoryMap.read8Signed(address + i)
-        : this.memoryMap.read8(address + i);
+      const tileNumber =
+        this.tileSource === 0
+          ? this.memoryMap.read8Signed(address + i)
+          : this.memoryMap.read8(address + i);
       this.renderTile(x * 8, y * 8, tileNumber, this.tileSource, target);
     }
   }
@@ -287,10 +301,10 @@ export default class Ppu {
     this.spriteLayer.pixelArray.fill(0x000000);
 
     for (let i = 0; i < 40; i++) {
-      const y = this.memoryMap.read8(0xFE00 + i * 4);
-      const x = this.memoryMap.read8(0xFE00 + i * 4 + 1);
-      const tileNumber = this.memoryMap.read8(0xFE00 + i * 4 + 2);
-      const flags = this.memoryMap.read8(0xFE00 + i * 4 + 3);
+      const y = this.memoryMap.read8(0xfe00 + i * 4);
+      const x = this.memoryMap.read8(0xfe00 + i * 4 + 1);
+      const tileNumber = this.memoryMap.read8(0xfe00 + i * 4 + 2);
+      // const flags = this.memoryMap.read8(0xfe00 + i * 4 + 3);
       // TODO Read:
       // Bit 0-2 Palette number (CGB Only)
       // Bit 3 Tile VRAM Bank (CGB Only)
@@ -318,14 +332,15 @@ export default class Ppu {
     tileNumber: number,
     tileDataLocationFlag: number,
     target: ImageLayer,
-    isSprite: boolean = false
+    isSprite: boolean = false,
   ) {
-    const tileSize = (this.objSize === 1 && isSprite) ? 16 : 8;
-    const tileOffset = (tileSize == 16) ? tileNumber & 0xFE : tileNumber; // For 16, ignore the lower bit
-    const address = (tileDataLocationFlag === 0 ? 0x9000 : 0x8000) + (tileOffset * 16);
+    const tileSize = this.objSize === 1 && isSprite ? 16 : 8;
+    const tileOffset = tileSize == 16 ? tileNumber & 0xfe : tileNumber; // For 16, ignore the lower bit
+    const address =
+      (tileDataLocationFlag === 0 ? 0x9000 : 0x8000) + tileOffset * 16;
     for (let row = 0; row < tileSize; row++) {
-      const byte1 = this.memoryMap.read8(address + row * 2)
-      const byte2 = this.memoryMap.read8(address + row * 2 + 1)
+      const byte1 = this.memoryMap.read8(address + row * 2);
+      const byte2 = this.memoryMap.read8(address + row * 2 + 1);
 
       for (let column = 0; column < 8; column++) {
         const bit1 = (byte1 >> (7 - column)) & 1;
@@ -333,7 +348,7 @@ export default class Ppu {
         const colorValue = bit1 + (bit2 << 1);
 
         const color = colors[colorValue];
-        const offset = ((y + row) * bufferWidth + x + column);
+        const offset = (y + row) * bufferWidth + x + column;
         target.pixelArray[offset] = color;
       }
     }
@@ -350,18 +365,33 @@ export default class Ppu {
     this.updateSamples.push(updateTime);
 
     if (this.updateSamples.length === this.fpsSampleRate) {
-      this.updateAverage = this.updateSamples.reduce((acc, val) => acc + val, 0) / this.fpsSampleRate;
+      this.updateAverage =
+        this.updateSamples.reduce((acc, val) => acc + val, 0) /
+        this.fpsSampleRate;
       this.updateSamples = [];
     }
 
-    const fpsString = this.updateAverage ? Math.round(1000 / this.updateAverage) : '-';
-    const updateString = this.updateAverage ? Math.round(this.updateAverage * 1000) / 1000 : '-';
+    const fpsString = this.updateAverage
+      ? Math.round(1000 / this.updateAverage)
+      : '-';
+    const updateString = this.updateAverage
+      ? Math.round(this.updateAverage * 1000) / 1000
+      : '-';
     this.ctx.save();
     this.ctx.fillStyle = 'black';
-    this.ctx.fillRect(0, this.canvas.height - statsBarHeight, this.canvas.width, statsBarHeight);
+    this.ctx.fillRect(
+      0,
+      this.canvas.height - statsBarHeight,
+      this.canvas.width,
+      statsBarHeight,
+    );
     this.ctx.fillStyle = 'white';
     this.ctx.textBaseline = 'bottom';
-    this.ctx.fillText(`FPS: ${fpsString} (${updateString}ms)`, 4, this.canvas.height - 2);
+    this.ctx.fillText(
+      `FPS: ${fpsString} (${updateString}ms)`,
+      4,
+      this.canvas.height - 2,
+    );
     this.ctx.restore();
   }
 }

@@ -68,7 +68,9 @@ export default class GB {
 
     this.dbgJoypad = document.getElementById('dbg_joypad')!;
 
-    this.dbgTilesCanvas = document.getElementById('dbg_tiles')! as HTMLCanvasElement;
+    this.dbgTilesCanvas = document.getElementById(
+      'dbg_tiles',
+    )! as HTMLCanvasElement;
     this.dbgTilesCtx = this.dbgTilesCanvas.getContext('2d')!;
     this.dbgOam = document.getElementById('dbg_oam')!;
     this.dbgLcdC = document.getElementById('dbg_lcdc')!;
@@ -118,23 +120,23 @@ export default class GB {
     // TODO: Adjust cycles based on framerate
     // Gameboy Freq: 4.19 MHz @ 60FPS
     const clock = 4190000;
-    while (cycles < (clock / 60)) {
+    while (cycles < clock / 60) {
       this.joypad.tick();
 
-      let cpuSuccess = this.cpu.tick();
+      const cpuSuccess = this.cpu.tick();
       this.gpu.tick();
 
       // Halt if CPU cycle fails
       if (!cpuSuccess) {
         return;
       }
-      cycles++;
+      cycles += 1;
     }
 
     this.gpu.update();
     this.updateDebug();
     this.animationFrameRequest = requestAnimationFrame(this.update);
-  }
+  };
 
   /**
    * Debug - update UI with debug info
@@ -155,34 +157,35 @@ export default class GB {
     this.dbgPC.innerHTML = getHexString(this.cpu.PC);
     this.dbgSP.innerHTML = getHexString(this.cpu.SP);
 
-    const joypadValue = this.memoryMap.read8(0xFF00);
-    this.dbgJoypad.innerHTML = `${getBinaryString(joypadValue)} (${getHexString(joypadValue)}) [${this.joypad.getPressedInputs().join(', ')}]`;
+    const joypadValue = this.memoryMap.read8(0xff00);
+    this.dbgJoypad.innerHTML = `${getBinaryString(joypadValue)} (${getHexString(
+      joypadValue,
+    )}) [${this.joypad.getPressedInputs().join(', ')}]`;
 
     // TODO: Add toggle for serial data
     // const serialDataString = this.cpu.serialData.map((value: number) => getHexString(value)).join(' ');
     // const serialTextString = this.cpu.serialData.map((value: number) => String.fromCharCode(value)).join('');
     // this.dbgSerial.innerHTML = `${serialDataString}<br/>${serialTextString}`;
 
-
     const oamValues = [];
     for (let i = 0; i < 40; i++) {
-      const y = this.memoryMap.read8(0xFE00 + i * 4);
-      const x = this.memoryMap.read8(0xFE00 + i * 4 + 1);
-      const id = this.memoryMap.read8(0xFE00 + i * 4 + 2);
-      const attrs = this.memoryMap.read8(0xFE00 + i * 4 + 3);
+      const y = this.memoryMap.read8(0xfe00 + i * 4);
+      const x = this.memoryMap.read8(0xfe00 + i * 4 + 1);
+      const id = this.memoryMap.read8(0xfe00 + i * 4 + 2);
+      const attrs = this.memoryMap.read8(0xfe00 + i * 4 + 3);
       oamValues.push(`[${x}, ${y}, ${id}, ${getBinaryString(attrs)}]`);
     }
     this.dbgOam.innerHTML = oamValues.join('<br/>');
 
-    const lcdc = this.memoryMap.read8(0xFF40);
-    const bgWindowEnable =  (lcdc & 1);
-    const objEnable =       (lcdc & 2) >> 1;
-    const objSize =         (lcdc & 4) >> 2;
-    const bgTileMap =       (lcdc & 8) >> 3;
-    const tileSource =      (lcdc & 16) >> 4;
-    const windowEnable =    (lcdc & 32) >> 5;
-    const windowTileMap =   (lcdc & 64) >> 6;
-    const lcdPpuEnable =    (lcdc & 128) >> 7;
+    const lcdc = this.memoryMap.read8(0xff40);
+    const bgWindowEnable = lcdc & 1;
+    const objEnable = (lcdc & 2) >> 1;
+    const objSize = (lcdc & 4) >> 2;
+    const bgTileMap = (lcdc & 8) >> 3;
+    const tileSource = (lcdc & 16) >> 4;
+    const windowEnable = (lcdc & 32) >> 5;
+    const windowTileMap = (lcdc & 64) >> 6;
+    const lcdPpuEnable = (lcdc & 128) >> 7;
 
     this.dbgLcdC.innerHTML = `
       ${getBinaryString(lcdc)} (${getHexString(lcdc)})<br/>
@@ -196,32 +199,30 @@ export default class GB {
       BG Enabled: ${bgWindowEnable}<br/>
     `;
 
-    const colors = [
-      0x00000000,
-      0xffAAAAAA,
-      0xff555555,
-      0xff000000
-    ];
+    const colors = [0x00000000, 0xffaaaaaa, 0xff555555, 0xff000000];
     const canvasWidth = this.dbgTilesCanvas.width;
     const canvasHeight = this.dbgTilesCanvas.height;
 
-    const tileData = this.dbgTilesCtx.createImageData(canvasWidth, canvasHeight);
+    const tileData = this.dbgTilesCtx.createImageData(
+      canvasWidth,
+      canvasHeight,
+    );
     const pixelArray = new Uint32Array(tileData.data.buffer);
     for (let i = 0; i < 384; i++) {
-      const address = 0x8000 + (i * 16);
+      const address = 0x8000 + i * 16;
       const x = (i * 8) % canvasWidth;
       const y = Math.floor(i / (canvasWidth / 8)) * 8;
 
       for (let row = 0; row < 8; row++) {
-        const byte1 = this.memoryMap.read8(address + row * 2)
-        const byte2 = this.memoryMap.read8(address + row * 2 + 1)
+        const byte1 = this.memoryMap.read8(address + row * 2);
+        const byte2 = this.memoryMap.read8(address + row * 2 + 1);
         for (let column = 0; column < 8; column++) {
           const bit1 = (byte1 >> (7 - column)) & 1;
           const bit2 = (byte2 >> (7 - column)) & 1;
           const colorValue = bit1 + (bit2 << 1);
 
           const color = colors[colorValue];
-          const offset = ((y + row) * canvasWidth + x + column);
+          const offset = (y + row) * canvasWidth + x + column;
           pixelArray[offset] = color;
         }
       }
@@ -234,5 +235,5 @@ export default class GB {
     // this.dbgTilesCtx.strokeRect(0, 0, canvasWidth, canvasHeight / 3);
     // this.dbgTilesCtx.strokeRect(0, canvasHeight / 3, canvasWidth, canvasHeight / 3);
     // this.dbgTilesCtx.strokeRect(0, (canvasHeight / 3) * 2, canvasWidth, canvasHeight / 3);
-  }
+  };
 }
