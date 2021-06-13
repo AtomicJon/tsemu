@@ -1,10 +1,17 @@
 import MemoryMap from '../memory/MemoryMap';
 
-const BIT_INPUTS_HIGH = 0x0f; // 00001111b - Input bits all high
-const BIT_MASK_DOWN_START = 0x37; // 00110111b - BIT 3 Low
-const BIT_MASK_UP_SELECT = 0x3b; // 00111011b - BIT 2 Low
-const BIT_MASK_LEFT_B = 0x3d; // 00111101b - BIT 1 Low
-const BIT_MASK_RIGHT_A = 0x3e; // 00111110b - BIT 0 Low
+/**
+ * 0x0f = 00001111b - Input bits all high
+ * 0x37 = 00110111b - BIT 3 Low
+ * 0x3b = 00111011b - BIT 2 Low
+ * 0x3d = 00111101b - BIT 1 Low
+ * 0x3e = 00111110b - BIT 0 Low
+ */
+const BIT_INPUTS_HIGH = 0x0f;
+const BIT_MASK_DOWN_START = 0x37;
+const BIT_MASK_UP_SELECT = 0x3b;
+const BIT_MASK_LEFT_B = 0x3d;
+const BIT_MASK_RIGHT_A = 0x3e;
 
 const INPUT_START = 'START';
 const INPUT_SELECT = 'SELECT';
