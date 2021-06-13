@@ -14,6 +14,7 @@ import {
 } from '../constants';
 import { adc } from '../operations/adc';
 import add from '../operations/add';
+import addSp from '../operations/addSp';
 import and from '../operations/and';
 import call from '../operations/call';
 import callC from '../operations/callC';
@@ -3333,6 +3334,17 @@ const main: Record<number, OpCode> = {
     mnemonic: 'RST 20',
     bytes: 1,
     cycles: 32,
+  },
+  0xe8: {
+    action: addSp,
+    operands: [
+      {
+        type: OperandType.Immediate8Signed,
+      },
+    ],
+    mnemonic: 'ADD SP, r8',
+    bytes: 2,
+    cycles: 16,
   },
   0xe9: {
     action: jp,
