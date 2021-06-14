@@ -1,3 +1,4 @@
+import { REG_SP } from '../constants';
 import Cpu from '../Cpu';
 import { checkAddHalfCarry } from '../helpers/checkAddHalfCarry';
 import { Operand, OperandType, ResultFlags } from '../types';
@@ -12,13 +13,16 @@ export default function add(cpu: Cpu, operands: Operand[]): ResultFlags {
   const value2 = cpu.readOperand(operands[1]);
   const result = value1 + value2;
 
-  // Handle 16bit add
-  if (operands[0].type === OperandType.Register16) {
+  // Handle 16bit add (except SP)
+  if (
+    operands[0].type === OperandType.Register16 &&
+    operands[0].target !== REG_SP
+  ) {
     const maskedResult = result & 0xffff;
 
     cpu.writeToOperand(operands[0], maskedResult);
     return {
-      Z: maskedResult === 0,
+      Z: null,
       N: false,
       H: (((value1 & 0xff) + (value2 & 0xff)) & 0x1000) === 0x1000,
       C: (result & 0x10000) === 0x10000,

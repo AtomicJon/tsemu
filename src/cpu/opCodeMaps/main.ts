@@ -3417,7 +3417,7 @@ const main: Record<number, OpCode> = {
         isAddress: true,
       },
     ],
-    mnemonic: 'POP AF',
+    mnemonic: 'LD A, (C)',
     bytes: 1,
     cycles: 12,
   },
@@ -3446,7 +3446,6 @@ const main: Record<number, OpCode> = {
       {
         type: OperandType.Register8,
         target: REG_A,
-        isAddress: true,
       },
       {
         type: OperandType.Immediate8,
