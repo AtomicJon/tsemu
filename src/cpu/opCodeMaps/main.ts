@@ -1526,7 +1526,7 @@ const main: Record<number, OpCode> = {
         target: REG_H,
       },
       {
-        type: OperandType.Register8,
+        type: OperandType.Register16,
         target: REG_HL,
         isAddress: true,
       },
