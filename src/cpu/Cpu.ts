@@ -29,7 +29,7 @@ import { Operand, OperandModifier, OperandType } from './types';
 
 type OpHistory = {
   step: number;
-  PC: number;
+  PC: string;
   codeString: string;
   mnemonic: string;
   nextBytes: number[];
@@ -405,7 +405,7 @@ export default class Cpu {
     // + DEBUG ---
     this.opHistory.push({
       step: this.step,
-      PC: this.PC - 1,
+      PC: `${(this.PC - 1)} [${(this.PC - 1).toString(16)}]`,
       codeString: opCode.toString(16),
       mnemonic: operation.mnemonic,
       nextBytes: [
@@ -523,6 +523,11 @@ export default class Cpu {
    * @returns Whether the write was intercepted
    */
   private writeMasking(address: number, value: number): boolean {
+    // TODO: ROM Bank Select
+    if (address === 0x2000) {
+      return true;
+    }
+
     // Serial port
     if (address === 0xff01) {
       this.serialData.push(value);

@@ -30,6 +30,7 @@ yarn build
   - [ ] Sprite flip
   - [ ] Sprite rendering priority
 - [ ] Sound
+- [ ] Configurable input for joypad
 - [ ] Clock adjustment based on FPS (clock is tied to framerate)
 - [ ] Handle STOP/HALT
 - [ ] Cartridge type parsing (0x0147)
