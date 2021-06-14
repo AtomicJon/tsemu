@@ -2597,7 +2597,7 @@ const prefixed: Record<number, OpCode> = {
       },
       {
         type: OperandType.Register8,
-        target: REG_B,
+        target: REG_A,
       },
     ],
     mnemonic: 'RES 5, A',
