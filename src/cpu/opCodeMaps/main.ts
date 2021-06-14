@@ -51,10 +51,10 @@ import reti from '../operations/reti';
 import retNc from '../operations/retnc';
 import retNz from '../operations/retnz';
 import retZ from '../operations/retz';
-import rl from '../operations/rl';
-import rlc from '../operations/rlc';
-import rr from '../operations/rr';
-import rrc from '../operations/rrc';
+import rla from '../operations/rla';
+import rlca from '../operations/rlca';
+import rra from '../operations/rra';
+import rrca from '../operations/rrca';
 import rst00 from '../operations/rst00';
 import rst08 from '../operations/rst08';
 import rst10 from '../operations/rst10';
@@ -161,14 +161,9 @@ const main: Record<number, OpCode> = {
     cycles: 8,
   },
   0x07: {
-    action: rlc,
+    action: rlca,
     mnemonic: 'RLCA',
-    operands: [
-      {
-        type: OperandType.Register8,
-        target: REG_A,
-      },
-    ],
+    operands: [],
     bytes: 1,
     cycles: 4,
   },
@@ -273,13 +268,8 @@ const main: Record<number, OpCode> = {
     cycles: 8,
   },
   0x0f: {
-    action: rrc,
-    operands: [
-      {
-        type: OperandType.Register8,
-        target: REG_A,
-      },
-    ],
+    action: rrca,
+    operands: [],
     mnemonic: 'RRCA',
     bytes: 1,
     cycles: 4,
@@ -375,13 +365,8 @@ const main: Record<number, OpCode> = {
     cycles: 8,
   },
   0x17: {
-    action: rl,
-    operands: [
-      {
-        type: OperandType.Register8,
-        target: REG_A,
-      },
-    ],
+    action: rla,
+    operands: [],
     mnemonic: 'RLA',
     bytes: 1,
     cycles: 4,
@@ -482,13 +467,8 @@ const main: Record<number, OpCode> = {
     cycles: 8,
   },
   0x1f: {
-    action: rr,
-    operands: [
-      {
-        type: OperandType.Register8,
-        target: REG_A,
-      },
-    ],
+    action: rra,
+    operands: [],
     mnemonic: 'RRA',
     bytes: 1,
     cycles: 4,
