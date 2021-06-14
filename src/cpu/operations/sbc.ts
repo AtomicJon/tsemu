@@ -17,7 +17,7 @@ export default function sbc(cpu: Cpu, operands: Operand[]): ResultFlags {
 
   return {
     Z: maskedResult === 0,
-    N: false,
+    N: true,
     H: checkSubtractHalfCarry(value1, value2, cpu.flagC),
     C: result < 0,
   };

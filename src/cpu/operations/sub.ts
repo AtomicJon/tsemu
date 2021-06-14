@@ -17,7 +17,7 @@ export default function sub(cpu: Cpu, operands: Operand[]): ResultFlags {
 
   return {
     Z: maskedResult === 0,
-    N: false,
+    N: true,
     H: checkSubtractHalfCarry(value1, value2),
     C: result < 0,
   };

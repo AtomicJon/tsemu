@@ -2321,7 +2321,7 @@ const prefixed: Record<number, OpCode> = {
         target: 3,
       },
       {
-        type: OperandType.Register8,
+        type: OperandType.Register16,
         target: REG_HL,
         isAddress: true,
       },

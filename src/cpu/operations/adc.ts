@@ -18,8 +18,8 @@ export function adc(cpu: Cpu, operands: Operand[]): ResultFlags {
 
   return {
     Z: maskedResult === 0,
-    H: false,
-    N: checkAddHalfCarry(value1, value2, cpu.flagC),
+    N: false,
+    H: checkAddHalfCarry(value1, value2, cpu.flagC),
     C: (result & 0x100) === 0x100,
   };
 }
