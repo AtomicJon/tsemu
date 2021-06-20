@@ -4,6 +4,8 @@ import Joypad from '../io/Joypad';
 import MemoryMap from '../memory/MemoryMap';
 import getHexString from '../util/getHexString';
 import getBinaryString from '../util/getBinaryString';
+import { CORE_CLOCK } from './constants';
+import Apu from '../audio/Apu';
 
 /**
  * The core Game Boy class
@@ -11,11 +13,13 @@ import getBinaryString from '../util/getBinaryString';
 export default class GB {
   private cpu: Cpu;
   private gpu: Ppu;
+  private apu: Apu;
   private joypad: Joypad;
   private memoryMap: MemoryMap;
 
   private isRunning: boolean = false;
   private isPaused: boolean = false;
+  private isAudioEnabled: boolean = true;
   private animationFrameRequest: number | null = null;
 
   private dbgA: HTMLElement;
@@ -45,6 +49,7 @@ export default class GB {
     this.memoryMap = new MemoryMap();
     this.cpu = new Cpu(this.memoryMap);
     this.gpu = new Ppu(this.memoryMap, canvas);
+    this.apu = new Apu(this.memoryMap);
     this.joypad = new Joypad(this.memoryMap);
 
     this.joypad.init();
@@ -82,7 +87,28 @@ export default class GB {
    */
   public togglePause(): boolean {
     this.isPaused = !this.isPaused;
+    if (this.isPaused && this.isAudioEnabled) {
+      this.apu.pause();
+    } else if (this.isAudioEnabled) {
+      this.apu.resume();
+    }
     return this.isPaused;
+  }
+
+  /**
+   * Enable audio output
+   */
+  public enableAudio(): void {
+    this.isAudioEnabled = true;
+    this.apu.resume();
+  }
+
+  /**
+   * Disable audio output
+   */
+  public disableAudio(): void {
+    this.isAudioEnabled = false;
+    this.apu.pause();
   }
 
   /**
@@ -93,6 +119,10 @@ export default class GB {
     console.log('load cart');
     this.memoryMap.loadCart(cartData);
     this.cpu.reset();
+
+    if (this.isAudioEnabled) {
+      this.apu.resume();
+    }
 
     this.isRunning = true;
     if (this.animationFrameRequest) {
@@ -118,13 +148,16 @@ export default class GB {
 
     let cycles = 0;
     // TODO: Adjust cycles based on framerate
-    // Gameboy Freq: 4.19 MHz @ 60FPS
-    const clock = 4190000;
-    while (cycles < clock / 60) {
+    // Game Boy Freq: 4.19 MHz @ 60FPS
+    while (cycles < CORE_CLOCK / 60) {
       this.joypad.tick();
 
       const cpuSuccess = this.cpu.tick();
       this.gpu.tick();
+
+      if (this.isAudioEnabled) {
+        this.apu.tick();
+      }
 
       // Halt if CPU cycle fails
       if (!cpuSuccess) {

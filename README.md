@@ -25,11 +25,16 @@ yarn build
 - [x] Joypad input
 - [x] Timer clock
 - [x] Divider clock
+- [x] Basic Tone Audio channels (1 & 2) - frequency only
 - [ ] Sprite flags
   - [ ] Proper palette implementation
   - [ ] Sprite flip
   - [ ] Sprite rendering priority
 - [ ] Sound
+  - [ ] Channel 1 - Tone & Sweep
+  - [ ] Channel 2 - Tone
+  - [ ] Channel 3 - Wave Output
+  - [ ] Channel 4 - Noise Output
 - [ ] Configurable input for joypad
 - [ ] Clock adjustment based on FPS (clock is tied to framerate)
 - [ ] Handle STOP/HALT
