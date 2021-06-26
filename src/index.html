@@ -52,6 +52,10 @@
         <span>Sound</span>
         <input id="sound" type="checkbox" checked />
       </label>
+      <label>
+        <span>Volume</span>
+        <input id="volume" type="range" min="0" max="100" value="50" />
+      </label>
     </div>
     <div id="content">
       <canvas id="screen" width="160" height="160"></canvas>
@@ -100,6 +104,22 @@
             <tr>
               <th>Joypad</th>
               <td id="dbg_joypad" colspan="24"></td>
+            </tr>
+            <tr>
+              <th>Sound Channel 1</th>
+              <td id="dbg_sound1" colspan="24"></td>
+            </tr>
+            <tr>
+              <th>Sound Channel 2</th>
+              <td id="dbg_sound2" colspan="24"></td>
+            </tr>
+            <tr>
+              <th>Sound Channel 3</th>
+              <td id="dbg_sound3" colspan="24"></td>
+            </tr>
+            <tr>
+              <th>Sound Channel 4</th>
+              <td id="dbg_sound4" colspan="24"></td>
             </tr>
             <tr>
               <th rowspan="2">GFX</th>

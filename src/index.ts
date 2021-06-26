@@ -8,6 +8,7 @@ export default function main(): void {
   const gameSelect = document.getElementById('game') as HTMLInputElement;
   const pauseButton = document.getElementById('pause') as HTMLButtonElement;
   const soundCheckBox = document.getElementById('sound') as HTMLInputElement;
+  const volumeSlider = document.getElementById('volume') as HTMLInputElement;
 
   // UI
   const canvas = document.getElementById('screen') as HTMLCanvasElement;
@@ -36,6 +37,10 @@ export default function main(): void {
     } else {
       gb.disableAudio();
     }
+  });
+
+  volumeSlider.addEventListener('change', (evt) => {
+    gb.setVolume(parseInt((evt.target as HTMLInputElement).value, 10));
   });
 
   console.log('Starting...');

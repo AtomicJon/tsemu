@@ -39,6 +39,11 @@ export default class GB {
 
   private dbgJoypad: HTMLElement;
 
+  private dbgSound1: HTMLElement;
+  private dbgSound2: HTMLElement;
+  private dbgSound3: HTMLElement;
+  private dbgSound4: HTMLElement;
+
   private dbgTilesCanvas: HTMLCanvasElement;
   private dbgTilesCtx: CanvasRenderingContext2D;
   private dbgOam: HTMLElement;
@@ -72,6 +77,11 @@ export default class GB {
     this.dbgSP = document.getElementById('dbg_sp')!;
 
     this.dbgJoypad = document.getElementById('dbg_joypad')!;
+
+    this.dbgSound1 = document.getElementById('dbg_sound1')!;
+    this.dbgSound2 = document.getElementById('dbg_sound2')!;
+    this.dbgSound3 = document.getElementById('dbg_sound3')!;
+    this.dbgSound4 = document.getElementById('dbg_sound4')!;
 
     this.dbgTilesCanvas = document.getElementById(
       'dbg_tiles',
@@ -109,6 +119,14 @@ export default class GB {
   public disableAudio(): void {
     this.isAudioEnabled = false;
     this.apu.pause();
+  }
+
+  /**
+   * Set the volume
+   * @param volume The volume to set (0 - 100)
+   */
+  public setVolume(volume: number): void {
+    this.apu.setVolume(volume / 100);
   }
 
   /**
@@ -194,6 +212,32 @@ export default class GB {
     this.dbgJoypad.innerHTML = `${getBinaryString(joypadValue)} (${getHexString(
       joypadValue,
     )}) [${this.joypad.getPressedInputs().join(', ')}]`;
+
+    const nr11 = this.memoryMap.read8(0xff10);
+    const nr12 = this.memoryMap.read8(0xff11);
+    const nr13 = this.memoryMap.read8(0xff12);
+    const nr14 = this.memoryMap.read8(0xff13);
+    const nr15 = this.memoryMap.read8(0xff14);
+    this.dbgSound1.innerHTML = `
+      ${getBinaryString(nr11)}
+      ${getBinaryString(nr12)}
+      ${getBinaryString(nr13)}
+      ${getBinaryString(nr14)}
+      ${getBinaryString(nr15)}
+    `;
+
+    const nr21 = this.memoryMap.read8(0xff15);
+    const nr22 = this.memoryMap.read8(0xff16);
+    const nr23 = this.memoryMap.read8(0xff17);
+    const nr24 = this.memoryMap.read8(0xff18);
+    const nr25 = this.memoryMap.read8(0xff19);
+    this.dbgSound2.innerHTML = `
+      ${getBinaryString(nr21)}
+      ${getBinaryString(nr22)}
+      ${getBinaryString(nr23)}
+      ${getBinaryString(nr24)}
+      ${getBinaryString(nr25)}
+    `;
 
     // TODO: Add toggle for serial data
     // const serialDataString = this.cpu.serialData.map((value: number) => getHexString(value)).join(' ');

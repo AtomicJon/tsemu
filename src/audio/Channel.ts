@@ -11,12 +11,12 @@ export default class Channel {
 
   public isMuted: boolean = false;
 
-  constructor(audioCtx: AudioContext) {
+  constructor(audioCtx: AudioContext, output: AudioNode) {
     this.audioCtx = audioCtx;
 
     this.gainNode = audioCtx.createGain();
     this.gainNode.gain.setValueAtTime(this.volume, audioCtx.currentTime);
-    this.gainNode.connect(audioCtx.destination);
+    this.gainNode.connect(output);
 
     this.oscillatorNode = audioCtx.createOscillator();
     this.oscillatorNode.type = 'square';

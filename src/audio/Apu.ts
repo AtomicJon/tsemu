@@ -14,14 +14,25 @@ export default class Apu {
   private channel1: Channel;
   private channel2: Channel;
 
+  private masterGainNode: GainNode;
+
   private clockOffset: number = 0;
+  private volume: number = 0.5;
 
   constructor(memoryMap: MemoryMap) {
     this.memoryMap = memoryMap;
     this.audioCtx = new AudioContext();
 
-    this.channel1 = new Channel(this.audioCtx);
-    this.channel2 = new Channel(this.audioCtx);
+    // Create master gain all output goes through for volume control
+    this.masterGainNode = this.audioCtx.createGain();
+    this.masterGainNode.connect(this.audioCtx.destination);
+    this.masterGainNode.gain.setValueAtTime(
+      this.volume,
+      this.audioCtx.currentTime,
+    );
+
+    this.channel1 = new Channel(this.audioCtx, this.masterGainNode);
+    this.channel2 = new Channel(this.audioCtx, this.masterGainNode);
   }
 
   /**
@@ -62,11 +73,21 @@ export default class Apu {
   }
 
   /**
+   * Set the volume of the APU
+   * @param volume The volume to set (0-1)
+   */
+  public setVolume(volume: number): void {
+    this.volume = volume;
+    this.masterGainNode.gain.setValueAtTime(volume, this.audioCtx.currentTime);
+  }
+
+  /**
    * Update the output on channel 1
    */
   private updateChannel1(): void {
     const details = this.getChannelDetails(0xff10);
     this.channel1.setFrequency(details.frequency);
+    this.channel1.setVolume(details.envelopeInitialVolume / 0x0f);
     // TODO: Sweep, envelope, length countdown
     // Length counter @ 256Hz (1/2 APU clock)
     // Sweep @ 128Hz (1/4 APU clock)
@@ -79,6 +100,7 @@ export default class Apu {
   private updateChannel2(): void {
     const details = this.getChannelDetails(0xff15);
     this.channel2.setFrequency(details.frequency);
+    this.channel2.setVolume(details.envelopeInitialVolume / 0x0f);
     // TODO: Envelope, length countdown
     // Length counter @ 256Hz (1/2 APU clock)
     // Volume envelope 64Hz (1/8 APU clock)
