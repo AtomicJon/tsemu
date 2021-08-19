@@ -1,8 +1,11 @@
 {
+  "homepage": "https://atomicjon.github.io/tsemu/",
   "license": "UNLICENSED",
   "scripts": {
     "start": "parcel src/index.html",
-    "build": "parcel build src/index.html"
+    "build": "parcel build src/index.html --public-url ./",
+    "predeploy": "yarn build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "hardware": "^0.0.1",
@@ -17,6 +20,7 @@
     "eslint": "^7.28.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
+    "gh-pages": "^3.2.3",
     "parcel": "^2.0.0-beta.3.1",
     "prettier": "^2.3.1"
   },
