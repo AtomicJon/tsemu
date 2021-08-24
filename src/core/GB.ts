@@ -110,7 +110,10 @@ export default class GB {
    */
   public enableAudio(): void {
     this.isAudioEnabled = true;
-    this.apu.resume();
+
+    if (!this.isPaused && this.isRunning) {
+      this.apu.resume();
+    }
   }
 
   /**
