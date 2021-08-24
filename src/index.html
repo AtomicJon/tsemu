@@ -2,51 +2,12 @@
 <html>
   <head>
     <title>TSEMU</title>
-    <style>
-      body {
-        font-family: sans-serif;
-      }
-      #content {
-        display: flex;
-        align-items: flex-start;
-      }
-      #screen {
-        display: block;
-        flex: 0 0 auto;
-        border: 1px solid #ccc;
-      }
-      #debug_table {
-        border-collapse: collapse;
-        border-spacing: 0;
-        font-family: monospace;
-      }
-      #debug_table th,
-      #debug_table td {
-        width: 16px;
-        padding: 5px;
-        border: 1px solid;
-      }
-      #debug_table td {
-        vertical-align: top;
-      }
-      #debug_table th.hex_16 {
-        width: 32px;
-      }
-      #dbg_tiles {
-        display: block;
-        border: 1px solid #ccc;
-      }
-      #dbg_oam {
-        font-size: 9px;
-      }
-      #dbg_serial {
-        white-space: pre-wrap;
-      }
-    </style>
+    <link rel="stylesheet" href="./styles/main.scss" />
   </head>
   <body>
     <div id="controls">
       <button id="pause">Pause</button>
+      <label for="game">Open Game</label>
       <input id="game" type="file" />
       <label>
         <span>Sound</span>
