@@ -1,6 +1,8 @@
 # TSEmu
 An experiment writing a Game Boy emulator in TypeScript
 
+Try the latest build here: https://atomicjon.github.io/tsemu/
+
 
 ## Getting Started
 
