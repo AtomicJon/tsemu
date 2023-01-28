@@ -33,8 +33,8 @@ yarn build
   - [ ] Sprite flip
   - [ ] Sprite rendering priority
 - [ ] Sound
-  - [ ] Channel 1 - Tone & Sweep
-  - [ ] Channel 2 - Tone
+  - [x] Channel 1 - Tone & Sweep
+  - [x] Channel 2 - Tone
   - [ ] Channel 3 - Wave Output
   - [ ] Channel 4 - Noise Output
 - [ ] Configurable input for joypad
